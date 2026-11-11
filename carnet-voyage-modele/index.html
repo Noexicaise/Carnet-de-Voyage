@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Carnet de voyage</title>
+<meta name="description" content="Suivez notre voyage jour après jour : itinéraire, comptes rendus et photos.">
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Carnet de voyage">
+<meta property="og:description" content="Suivez notre voyage jour après jour : itinéraire, comptes rendus et photos.">
+<meta property="og:image" content="og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="apple-mobile-web-app-title" content="Voyage">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#A65A40">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+:root{
+  /* valeurs par défaut avant le chargement de la configuration du voyage */
+  color-scheme:light;
+  --paper:#F6F2E9; --paper2:#EFE9DB; --card:#FBF9F4; --ink:#2B2A26; --ink-soft:#6B6455; --line:#D9D0BC;
+  --primary:#3C4A54; --warm:#A65A40; --green:#7C8A6E; --sand:#C9A876;
+  --primary-ink:#3C4A54; --warm-ink:#A0523A; --green-ink:#566349;
+  --on-primary:#FBF9F4; --on-warm:#FBF9F4; --on-green:#1F1D19; --on-sand:#1F1D19;
+  --font-head:Georgia,serif; --font-body:system-ui,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:inherit}
+[hidden]{display:none !important}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 70px)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);line-height:1.6}
+h1,h2,h3,h4{font-family:var(--font-head);font-weight:700;margin:0}
+:focus-visible{outline:2px solid var(--primary-ink);outline-offset:2px;border-radius:4px}
+.meta{color:var(--ink-soft);font-size:.85rem}
+
+/* En-tête */
+header.hero{padding:56px 24px 28px;max-width:760px;margin:0 auto}
+.kicker{color:var(--warm-ink);font-size:.95rem;letter-spacing:.02em;margin-bottom:8px}
+header.hero h1{font-size:2.4rem}
+header.hero p.lead{color:var(--ink-soft);max-width:52ch;margin:14px 0 0}
+.trip-switch{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:.85rem;color:var(--ink-soft)}
+.trip-switch select{font-family:inherit;font-size:.9rem;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);max-width:70%}
+.trip-status{margin-top:14px}
+.countdown{display:inline-block;background:var(--warm);color:var(--on-warm);padding:4px 14px;border-radius:20px;font-size:.85rem}
+.progress-wrap{max-width:320px}
+.progress-label{font-size:.8rem;color:var(--ink-soft);margin-bottom:5px}
+.progress-bar{height:6px;background:var(--paper2);border-radius:4px;overflow:hidden;border:1px solid var(--line)}
+.progress-fill{height:100%;background:var(--green)}
+.clocks{margin-top:10px;font-size:.82rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--primary-ink);padding:8px 16px;min-height:40px;border-radius:20px;font-family:inherit;font-size:.85rem;cursor:pointer}
+.btn:hover{border-color:var(--primary-ink)}
+
+/* Encart du jour */
+.today-card{margin-top:18px;background:var(--green);color:var(--on-green);border-radius:12px;padding:16px 20px;max-width:620px}
+.today-card .tc-label{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+.today-card h3{font-family:var(--font-body);font-size:1.1rem;margin:4px 0 8px}
+.today-card ul{margin:0;padding-left:18px;font-size:.88rem}
+.today-card li{margin-bottom:3px}
+.today-card .tc-note{margin:10px 0 0;padding-top:8px;border-top:1px solid color-mix(in srgb, var(--on-green) 35%, transparent);font-size:.86rem;white-space:pre-line}
+
+/* Carte schématique */
+.route-wrap{max-width:760px;margin:0 auto 10px;padding:0 24px}
+.route-svg{width:100%;height:auto;overflow:visible}
+.route-svg circle{fill:var(--warm);cursor:pointer}
+.route-svg .stop:hover circle{fill:var(--primary-ink)}
+.route-svg text{font-family:var(--font-body);font-size:11px;fill:var(--ink-soft);text-anchor:middle;cursor:pointer}
+.route-svg .stop.home circle{fill:var(--sand)}
+.route-svg .stop.current circle{fill:var(--green);animation:pulse 1.8s ease-in-out infinite}
+.route-svg .stop.current text{fill:var(--green-ink);font-weight:700}
+@keyframes pulse{0%,100%{r:7}50%{r:10}}
+
+/* Filtres */
+.filters{position:sticky;top:0;z-index:5;background:var(--paper);border-bottom:1px solid var(--line);padding:12px 24px;backdrop-filter:blur(4px)}
+.filters-inner{max-width:900px;margin:0 auto}
+.filter-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink-soft);padding:6px 14px;min-height:36px;border-radius:20px;font-size:.82rem;cursor:pointer;font-family:inherit}
+.chip.active{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.chip[data-cat="region"].active{background:var(--green);border-color:var(--green);color:var(--on-green)}
+.reset{border:none;background:none;color:var(--warm-ink);font-size:.82rem;cursor:pointer;text-decoration:underline;padding:8px 4px;font-family:inherit}
+
+/* Étapes */
+main{max-width:900px;margin:0 auto;padding:36px 24px 90px}
+.empty{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:24px;color:var(--ink-soft)}
+.empty a{color:var(--primary-ink)}
+.etape{margin-bottom:40px}
+.etape-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin-bottom:22px;border-bottom:1px solid var(--line);padding-bottom:12px;cursor:pointer;user-select:none}
+.etape-head .icon{font-size:1.6rem}
+.etape-head h2{font-size:1.5rem}
+.etape-btn{all:unset;cursor:pointer;color:var(--primary-ink)}
+.etape-btn:focus-visible{outline:2px solid var(--primary-ink);outline-offset:3px;border-radius:4px}
+.etape-head .weather{margin-left:auto}
+.chevron{color:var(--ink-soft);font-size:.8rem;transition:transform .2s}
+.etape-head.collapsed .chevron{transform:rotate(-90deg)}
+.timeline{position:relative;padding-left:26px;border-left:1px solid var(--line)}
+.timeline.collapsed{display:none}
+main.filtering .timeline.collapsed{display:block}
+.transit{margin:-20px 0 36px 50px;color:var(--ink-soft);font-size:.85rem;font-style:italic}
+
+/* Jours */
+.day{position:relative;margin-bottom:28px;border-radius:10px}
+.day::before{content:"";position:absolute;left:-31px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--warm)}
+.day.today::before{background:var(--green);width:13px;height:13px;left:-33px;box-shadow:0 0 0 4px color-mix(in srgb, var(--green) 30%, transparent)}
+.day.flash{animation:flash 2.4s ease-out}
+@keyframes flash{0%{box-shadow:0 0 0 6px color-mix(in srgb, var(--green) 55%, transparent)}100%{box-shadow:0 0 0 6px transparent}}
+.day-head{display:flex;align-items:baseline;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.day-date{font-family:var(--font-head);font-weight:700}
+.day-dow,.day-title{color:var(--ink-soft);font-size:.9rem}
+.day.today .day-head{background:var(--green);color:var(--on-green);display:inline-flex;padding:2px 10px;border-radius:8px}
+.day.today .day-date,.day.today .day-dow,.day.today .day-title{color:var(--on-green)}
+.items{display:flex;flex-direction:column;gap:8px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.item .time{color:var(--ink-soft);font-size:.78rem}
+.item .text{font-size:.95rem}
+.item.hide,.day.hide,.etape.hide{display:none}
+.tags{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center}
+.tag{font-size:.72rem;padding:2px 9px;border-radius:12px}
+.badge{font-size:.72rem;padding:2px 9px;border-radius:12px}
+.badge.booked{background:var(--green);color:var(--on-green)}
+.badge.todo{background:var(--sand);color:var(--on-sand)}
+.map-link,.expand-btn{display:inline-flex;align-items:center;min-height:34px;padding:0 6px;font-size:.74rem;font-family:inherit;background:none;border:none;cursor:pointer}
+.map-link{color:var(--primary-ink);text-decoration:underline dotted}
+.expand-btn{color:var(--warm-ink);text-decoration:underline}
+.item .info-more{display:none;margin-top:6px;padding-top:9px;border-top:1px dashed var(--line);font-size:.86rem;color:var(--ink-soft)}
+.item.expanded .info-more{display:block}
+
+/* Compte rendu et photos */
+.day-note{margin-top:10px;padding:12px 16px;background:var(--paper2);border-left:3px solid var(--green);border-radius:0 10px 10px 0}
+.day-note .note-label{display:block;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--green-ink);margin-bottom:4px}
+.day-note p{margin:0;font-family:var(--font-head);font-size:.95rem;white-space:pre-line}
+.photo-gallery{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.ph{padding:0;border:0;background:none;cursor:zoom-in;border-radius:8px;line-height:0}
+.ph img{width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+
+/* Visionneuse */
+.lb{position:fixed;inset:0;z-index:50;background:rgba(20,18,15,.93);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 12px) 12px calc(env(safe-area-inset-bottom,0px) + 12px)}
+.lb img{max-width:100%;max-height:76vh;object-fit:contain;border-radius:6px}
+.lb-cap{color:#EDE7D9;font-size:.9rem;margin:12px 0 0;text-align:center;max-width:60ch;min-height:1.5em;white-space:pre-line}
+.lb-btn{position:absolute;width:44px;height:44px;border-radius:50%;border:none;background:rgba(255,255,255,.16);color:#fff;font-size:1.3rem;cursor:pointer}
+.lb-close{top:calc(env(safe-area-inset-top,0px) + 12px);right:12px}
+.lb-prev{left:10px;top:50%;transform:translateY(-50%)}
+.lb-next{right:10px;top:50%;transform:translateY(-50%)}
+
+/* Admin */
+.admin-panel{max-width:760px;margin:0 auto 20px;padding:18px 24px;background:var(--card);border:1px dashed var(--warm);border-radius:12px;display:flex;flex-direction:column;gap:8px}
+.admin-panel label{font-size:.82rem;color:var(--ink-soft)}
+.admin-panel input,.admin-panel textarea,.admin-panel select{padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);font-family:inherit;font-size:1rem;width:100%}
+.admin-panel input[type=checkbox]{width:22px;height:22px;padding:0;margin:0;accent-color:var(--warm);flex-shrink:0}
+.admin-panel textarea{resize:vertical}
+.admin-panel textarea.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.8rem}
+.admin-panel details{border-top:1px solid var(--line);padding-top:8px}
+.admin-panel summary{cursor:pointer;font-family:var(--font-head);font-weight:700;padding:6px 0}
+.admin-panel details>*{margin-top:8px}
+.admin-panel .btn{align-self:flex-start}
+.btn-line{display:flex;gap:10px;flex-wrap:wrap}
+#tripAdmin{display:flex;flex-direction:column;gap:8px}
+.pf-item{border:1px solid var(--line);border-radius:8px;padding:10px;margin-top:8px;display:flex;flex-direction:column;gap:6px;background:var(--paper2)}
+.pf-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.pf-row>*{flex:1 1 120px;width:auto}.pf-row .btn{flex:0 0 auto;padding:4px 12px;min-height:36px}
+.ex-row{display:flex;gap:8px;align-items:center}
+.ex-row img{width:48px;height:48px;object-fit:cover;border-radius:6px;flex-shrink:0}
+.ex-wait{width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:var(--paper2);border-radius:6px;flex-shrink:0}
+.ex-row label{display:flex;align-items:center;gap:6px;white-space:nowrap}
+
+footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);font-size:.8rem}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
+}
+@media print{
+  .filters,.route-wrap,.btn-row,.trip-status,.clocks,.trip-switch,.map-link,.expand-btn,.admin-panel,.lb,.chevron{display:none !important}
+  body{background:#fff;color:#000}
+  .timeline.collapsed{display:block !important}
+  .item.hide,.day.hide,.etape.hide{display:block !important}
+  .item .info-more{display:block !important}
+  .day{break-inside:avoid}
+  .item{border:1px solid #ccc}
+  @page{margin:14mm}
+  .hero{padding:0 0 10px}
+  #todayCard{display:none}
+  .photo-gallery{display:flex !important;flex-wrap:wrap;gap:4px;margin-top:6px;break-inside:avoid}
+  .photo-gallery .ph{width:84px;height:84px;padding:0;border:0}
+  .photo-gallery .ph img{width:100%;height:100%;object-fit:cover}
+  .day-note{display:block !important;border-left:3px solid #999;padding-left:8px}
+  .etape{break-before:auto}
+  a{color:inherit;text-decoration:none}
+}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="kicker" id="kicker"></div>
+  <div class="trip-switch" id="tripSwitch" hidden>
+    <label for="tripSelect">Voyage</label>
+    <select id="tripSelect"></select>
+  </div>
+  <h1 id="title">Carnet de voyage</h1>
+  <div class="trip-status" id="tripStatus"></div>
+  <div class="clocks" id="clocks" aria-label="Heures locales" hidden></div>
+  <div id="todayCard"></div>
+  <p class="lead" id="lead"></p>
+  <div class="btn-row">
+    <button class="btn" id="shareBtn" type="button">Partager le lien ↗</button>
+    <button class="btn" id="themeBtn" type="button">🌓 Thème : auto</button>
+    <button class="btn" id="printBtn" type="button">🖨️ Version imprimable / PDF</button>
+    <select class="btn" id="langSelect" aria-label="Langue"><option value="fr">Français</option><option value="en">English</option><option value="nl">Nederlands</option></select>
+  </div>
+</header>
+
+<section id="adminPanel" class="admin-panel" hidden>
+  <h3>Admin</h3>
+  <p class="meta" id="adminTripLabel"></p>
+
+  <details id="ghBox" open>
+    <summary>Connexion GitHub</summary>
+    <p class="meta">Le token (fine-grained, « Contents : Read and write » sur ce seul dépôt) reste uniquement dans ce navigateur.</p>
+    <label for="ghOwner">Compte GitHub (propriétaire du dépôt)</label>
+    <input id="ghOwner" autocomplete="off" autocapitalize="none" spellcheck="false">
+    <label for="ghRepo">Dépôt</label>
+    <input id="ghRepo" autocomplete="off" autocapitalize="none" spellcheck="false">
+    <label for="ghBranch">Branche</label>
+    <input id="ghBranch" autocomplete="off" autocapitalize="none" spellcheck="false">
+    <label for="ghToken">Token GitHub</label>
+    <input type="password" id="ghToken" autocomplete="off" placeholder="github_pat_...">
+    <label class="ex-row"><input type="checkbox" id="ghNoKeep"> Appareil partagé : ne pas garder le token (effacé à la fermeture de l’onglet)</label>
+    <div class="btn-line">
+      <button class="btn" id="ghTest" type="button">Enregistrer et tester</button>
+      <button class="btn" id="ghForget" type="button">Oublier ce token</button>
+    </div>
+    <div id="ghStatus" class="meta" role="status"></div>
+  </details>
+
+  <div id="tripAdmin" hidden>
+    <label for="photoDate">Date du jour concerné</label>
+    <input type="date" id="photoDate">
+
+    <details open>
+      <summary>Photos</summary>
+      <label for="photoFiles">Nouvelles photos (20 max par envoi, recompressées automatiquement)</label>
+      <input type="file" id="photoFiles" accept="image/*" multiple>
+      <details id="capsBox" hidden><summary>Légendes (optionnel)</summary><div id="newCaps"></div></details>
+      <button class="btn" id="publishPhotos" type="button">Publier les photos</button>
+      <div id="adminStatus" class="meta" role="status"></div>
+      <h4>Déjà publiées ce jour-là</h4>
+      <div id="existing"></div>
+      <button class="btn" id="savePhotoEdits" type="button">Enregistrer légendes et suppressions</button>
+      <div id="editStatus" class="meta" role="status"></div>
+    </details>
+
+    <details open>
+      <summary>Compte rendu</summary>
+      <label for="noteText">Quelques lignes (optionnel ; vide + publier = supprimer)</label>
+      <textarea id="noteText" rows="4" maxlength="800" placeholder="Ce qu'on a vu, mangé, aimé aujourd'hui..."></textarea>
+      <button class="btn" id="publishNote" type="button">Publier le compte rendu</button>
+      <button class="btn" id="shareNote" type="button" hidden>Partager ce compte rendu ↗</button>
+      <div id="noteStatus" class="meta" role="status"></div>
+    </details>
+
+    <details>
+      <summary>Planning du jour</summary>
+      <div id="planForm"></div>
+      <details><summary>Afficher / modifier en JSON (avancé)</summary>
+      <label for="planText">Titre et activités de ce jour, au format JSON</label>
+      <textarea id="planText" class="mono" rows="10" spellcheck="false"></textarea></details>
+      <button class="btn" id="savePlan" type="button">Enregistrer le planning du jour</button>
+      <div id="planStatus" class="meta" role="status"></div>
+    </details>
+
+    <details>
+      <summary>Planning complet du voyage (avancé)</summary>
+      <p class="meta">Tout l'itinéraire au format JSON : étapes, jours (« iso » obligatoire, « date » et « dow » facultatifs), activités. Idéal pour coller un planning préparé à l'avance.</p>
+      <textarea id="fullPlanText" class="mono" rows="12" spellcheck="false"></textarea>
+      <button class="btn" id="saveFullPlan" type="button">Enregistrer le planning complet</button>
+      <div id="fullPlanStatus" class="meta" role="status"></div>
+    </details>
+
+    <details>
+      <summary>Réglages du voyage</summary>
+      <label for="setTitle">Titre</label><input id="setTitle">
+      <label for="setDest">Destination (pour l'horloge, ex. « Italie »)</label><input id="setDest">
+      <label for="setLead">Texte d'introduction</label><textarea id="setLead" rows="3"></textarea>
+      <label for="setPreset">Préréglage (thème, polices, catégories)</label><select id="setPreset"></select>
+      <label for="setTz">Fuseau horaire de la destination</label><input id="setTz" list="tzList" autocapitalize="none" placeholder="Europe/Rome">
+      <label for="setHomeLabel">Ville de départ</label><input id="setHomeLabel">
+      <label for="setHomeTz">Fuseau horaire de départ</label><input id="setHomeTz" list="tzList" autocapitalize="none" placeholder="Europe/Brussels">
+      <button class="btn" id="sharePageBtn" type="button">Créer / mettre à jour la page de partage (aperçu du lien)</button>
+      <button class="btn" id="saveSettings" type="button">Enregistrer les réglages</button>
+      <div id="settingsStatus" class="meta" role="status"></div>
+      <label for="cfgJson">Configuration complète (JSON : catégories, couleurs, carte…)</label>
+      <textarea id="cfgJson" class="mono" rows="10" spellcheck="false"></textarea>
+      <button class="btn" id="saveCfgJson" type="button">Enregistrer la configuration JSON</button>
+      <div id="cfgStatus" class="meta" role="status"></div>
+    </details>
+  </div>
+
+  <details id="newTripBox">
+    <summary>Nouveau voyage</summary>
+    <p class="meta">Crée un dossier de voyage dans ce dépôt. Les voyages existants restent consultables dans le menu « Voyage » en haut de page.</p>
+    <label for="ntTitle">Titre</label><input id="ntTitle" placeholder="Italie 2027">
+    <label for="ntDest">Destination (pour l'horloge)</label><input id="ntDest" placeholder="Italie">
+    <label for="ntStart">Premier jour</label><input type="date" id="ntStart">
+    <label for="ntEnd">Dernier jour</label><input type="date" id="ntEnd">
+    <label for="ntTz">Fuseau horaire de la destination</label><input id="ntTz" list="tzList" autocapitalize="none" placeholder="Europe/Rome">
+    <label for="ntHome">Ville de départ</label><input id="ntHome" placeholder="Bruxelles">
+    <label for="ntHomeTz">Fuseau horaire de départ</label><input id="ntHomeTz" list="tzList" autocapitalize="none" placeholder="Europe/Brussels">
+    <label for="ntPreset">Préréglage</label><select id="ntPreset"></select>
+    <button class="btn" id="createTrip" type="button">Créer le voyage</button>
+    <div id="ntStatus" class="meta" role="status"></div>
+  </details>
+  <datalist id="tzList"></datalist>
+</section>
+
+<div class="route-wrap" id="routeWrap" hidden>
+  <svg class="route-svg" id="routeSvg" viewBox="0 0 600 200" role="group" aria-label="Schéma du trajet"></svg>
+</div>
+
+<div class="filters" id="filters" hidden>
+  <div class="filters-inner">
+    <div class="filter-row" id="typeRow"></div>
+    <div class="filter-row" id="regionRow"></div>
+    <button class="reset" id="resetBtn" type="button">Réinitialiser les filtres</button>
+  </div>
+</div>
+
+<main id="main"><noscript>Ce carnet de voyage a besoin de JavaScript pour s'afficher.</noscript></main>
+
+<footer id="footer">Carnet de voyage — mis à jour au fil du voyage.</footer>
+
+<script>
+(async function(){
+'use strict';
+
+/* ======================================================================
+   RÉGLAGES GÉNÉRAUX — rien de spécifique à un voyage ici.
+   Tout ce qui concerne un voyage (titre, fuseau, catégories, carte…) vit
+   dans son fichier trip.json ; les préréglages ci-dessous ne sont que des
+   points de départ (polices, couleurs, catégories d'activités).
+   ====================================================================== */
+const DARK = {paper:'#211F1B', paper2:'#2A2822', card:'#2A2822', ink:'#EDE7D9', soft:'#B6AD98', line:'#453F35'};
+const PRESETS = {
+  japan:{ label:'Japandi — Japon, Asie', fonts:{head:'Shippori Mincho', body:'Zen Maru Gothic'},
+    palette:{paper:'#F6F2E9', paper2:'#EFE9DB', card:'#FBF9F4', ink:'#2B2A26', soft:'#6B6455', line:'#D9D0BC', primary:'#3C4A54', warm:'#A65A40', green:'#7C8A6E', sand:'#C9A876'},
+    types:{culture:{label:'Culture & visites', color:'#3C4A54'}, nature:{label:'Nature & plein air', color:'#7C8A6E'}, gastronomie:{label:'Gastronomie', color:'#A65A40'}, shopping:{label:'Shopping', color:'#C9A876'}, parc:{label:'Parc à thème', color:'#8E5B8F'}, transport:{label:'Transport', color:'#8C8577'}, detente:{label:'Détente & onsen', color:'#66928E'}}},
+  mediterranee:{ label:'Méditerranée — soleil, mer', fonts:{head:'Playfair Display', body:'Nunito Sans'},
+    palette:{paper:'#FAF6EE', paper2:'#F2EAD9', card:'#FFFCF6', ink:'#25303A', soft:'#5E6A72', line:'#E1D6BF', primary:'#1F5C7A', warm:'#B5532F', green:'#6F8F5A', sand:'#E0B25C'},
+    types:{culture:{label:'Culture & visites', color:'#1F5C7A'}, plage:{label:'Plage & baignade', color:'#3A8FB0'}, balade:{label:'Balades & nature', color:'#6F8F5A'}, gastronomie:{label:'Gastronomie', color:'#B5532F'}, shopping:{label:'Marchés & boutiques', color:'#E0B25C'}, transport:{label:'Transport', color:'#8C8577'}, detente:{label:'Détente', color:'#8E5B8F'}}},
+  nature:{ label:'Nature — randonnée, road trip', fonts:{head:'Merriweather', body:'Source Sans 3'},
+    palette:{paper:'#F3F1EA', paper2:'#E8E5D9', card:'#FAF9F4', ink:'#232A22', soft:'#5C6558', line:'#D3CFBF', primary:'#2F5D4A', warm:'#A0542F', green:'#6B8E4E', sand:'#CDA45E'},
+    types:{randonnee:{label:'Randonnée', color:'#2F5D4A'}, paysage:{label:'Paysages & faune', color:'#6B8E4E'}, route:{label:'Route & transport', color:'#8C8577'}, bivouac:{label:'Bivouac & hébergement', color:'#A0542F'}, gastronomie:{label:'Repas', color:'#CDA45E'}, culture:{label:'Visites', color:'#3C4A54'}, detente:{label:'Détente', color:'#66928E'}}},
+  ville:{ label:'Ville — city break', fonts:{head:'Libre Baskerville', body:'DM Sans'},
+    palette:{paper:'#F5F4F1', paper2:'#EAE8E3', card:'#FFFFFF', ink:'#1E1E22', soft:'#62626B', line:'#D9D7D0', primary:'#2B2D42', warm:'#C2492F', green:'#4F7F6A', sand:'#D9A441'},
+    types:{culture:{label:'Musées & monuments', color:'#2B2D42'}, gastronomie:{label:'Restos & cafés', color:'#C2492F'}, balade:{label:'Balades & parcs', color:'#4F7F6A'}, shopping:{label:'Shopping', color:'#D9A441'}, sortie:{label:'Soirées & sorties', color:'#8E5B8F'}, transport:{label:'Transport', color:'#8C8577'}}}
+};
+const MAX_PHOTOS = 20;   /* photos par envoi (le total par jour n'est pas limité) */
+
+/* ---------- Langue de l'interface publique (fr / en / nl) ---------- */
+const UI_DICT = {
+  en:{'Voyage':'Trip','Carnet de voyage':'Travel journal','Partager le lien ↗':'Share link ↗','Réinitialiser les filtres':'Reset filters',
+    "Ce carnet de voyage a besoin de JavaScript pour s'afficher.":'This travel journal needs JavaScript to display.','Carnet de voyage — mis à jour au fil du voyage.':'Travel journal — updated along the way.',
+    '🌓 Thème : auto':'🌓 Theme: auto','🌙 Thème : sombre':'🌙 Theme: dark','☀️ Thème : clair':'☀️ Theme: light','Lien copié ✓':'Link copied ✓',
+    'Photo précédente':'Previous photo','Photo suivante':'Next photo','Photo':'Photo','Photo du voyage':'Trip photo','− réduire ⌃':'− collapse ⌃','+ d’infos ⌄':'+ details ⌄',
+    '✅ Réservé':'✅ Booked','⏳ À réserver':'⏳ To book','Aller à l’étape ':'Go to stage ','Voyage terminé ✓':'Trip over ✓',"Aujourd'hui":'Today','· aujourd’hui':'· today',
+    'Le carnet du jour':'Journal of the day','Destination':'Destination','Départ':'Home','🖨️ Version imprimable / PDF':'🖨️ Print / PDF version','Langue':'Language',
+    'J-{n} avant le départ':'{n} days to go','Jour {n} / {t}':'Day {n} / {t}','{n} photo(s)':'{n} photo(s)','{n} compte(s) rendu(s)':'{n} entry(ies)','Étape':'Stage'},
+  nl:{'Voyage':'Reis','Carnet de voyage':'Reisdagboek','Partager le lien ↗':'Link delen ↗','Réinitialiser les filtres':'Filters wissen',
+    "Ce carnet de voyage a besoin de JavaScript pour s'afficher.":'Dit reisdagboek heeft JavaScript nodig om te worden weergegeven.','Carnet de voyage — mis à jour au fil du voyage.':'Reisdagboek — bijgewerkt tijdens de reis.',
+    '🌓 Thème : auto':'🌓 Thema: auto','🌙 Thème : sombre':'🌙 Thema: donker','☀️ Thème : clair':'☀️ Thema: licht','Lien copié ✓':'Link gekopieerd ✓',
+    'Photo précédente':'Vorige foto','Photo suivante':'Volgende foto','Photo':'Foto','Photo du voyage':'Reisfoto','− réduire ⌃':'− inklappen ⌃','+ d’infos ⌄':'+ meer info ⌄',
+    '✅ Réservé':'✅ Geboekt','⏳ À réserver':'⏳ Nog te boeken','Aller à l’étape ':'Ga naar etappe ','Voyage terminé ✓':'Reis afgelopen ✓',"Aujourd'hui":'Vandaag','· aujourd’hui':'· vandaag',
+    'Le carnet du jour':'Dagboek van de dag','Destination':'Bestemming','Départ':'Vertrek','🖨️ Version imprimable / PDF':'🖨️ Afdrukken / PDF','Langue':'Taal',
+    'J-{n} avant le départ':'Nog {n} dagen tot vertrek','Jour {n} / {t}':'Dag {n} / {t}','{n} photo(s)':'{n} foto(\'s)','{n} compte(s) rendu(s)':'{n} verslag(en)','Étape':'Etappe'}
+};
+const LANGS = {fr:'fr-FR', en:'en-GB', nl:'nl-BE'};
+let LANG = 'fr';
+try{
+  const q = new URLSearchParams(location.search).get('lang'), saved = localStorage.getItem('lang');
+  const nav = ((navigator.language || 'fr').slice(0, 2)).toLowerCase();
+  LANG = [q, saved].find(x => x && LANGS[x]) || (LANGS[nav] ? nav : 'fr');
+}catch(e){}
+const LOC = LANGS[LANG];
+document.documentElement.lang = LANG;
+const tr = (k, vars) => { let v = (UI_DICT[LANG] && UI_DICT[LANG][k]) || k; if(vars) for(const x in vars) v = v.replace('{' + x + '}', vars[x]); return v; };
+
+/* ---------- Outils généraux ---------- */
+const $ = id => document.getElementById(id);
+const SITE_URL = location.origin + location.pathname;
+const REDUCE = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const smooth = () => REDUCE ? 'auto' : 'smooth';
+const SVGNS = 'http://www.w3.org/2000/svg';
+function el(tag, props = {}, ...kids){
+  const e = document.createElement(tag);
+  for(const [k,v] of Object.entries(props)){
+    if(v == null || v === false) continue;
+    if(k === 'class') e.className = v;
+    else if(k === 'text') e.textContent = v;
+    else if(k === 'style') e.style.cssText = v;
+    else if(k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  kids.flat().forEach(c => { if(c != null) e.append(c); });
+  return e;
+}
+function svg(tag, attrs = {}, ...kids){
+  const e = document.createElementNS(SVGNS, tag);
+  for(const [k,v] of Object.entries(attrs)) e.setAttribute(k, v);
+  kids.forEach(c => { if(c != null) e.append(c); });
+  return e;
+}
+async function fetchJson(path, fallback){
+  try{
+    const r = await fetch('./' + path + (path.includes('?') ? '&' : '?') + 't=' + Date.now(), {cache:'no-store'});
+    if(!r.ok) throw new Error(r.status);
+    return await r.json();
+  }catch(e){ return fallback; }
+}
+const validTz = tz => { try{ new Intl.DateTimeFormat('fr-FR', {timeZone:tz}); return true; }catch(e){ return false; } };
+const isHex = s => typeof s === 'string' && /^#[0-9a-f]{6}$/i.test(s);
+const isIso = s => { if(typeof s !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false; const d = new Date(s + 'T00:00:00Z'); return !isNaN(d) && d.toISOString().slice(0,10) === s; };
+const dayLabel = iso => new Date(iso + 'T12:00:00Z').toLocaleDateString(LOC, {day:'numeric', month:'short', timeZone:'UTC'}).replace('.', '');
+const dowLabel = iso => new Date(iso + 'T12:00:00Z').toLocaleDateString(LOC, {weekday:'short', timeZone:'UTC'}).replace('.', '');
+const longDate = iso => new Date(iso + 'T12:00:00Z').toLocaleDateString(LOC, {day:'numeric', month:'long', timeZone:'UTC'});
+const slugify = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+function normPhoto(p){ return typeof p === 'string' ? {src:p, thumb:p, caption:''} : {src:p.src, thumb:p.thumb || p.src, caption:p.caption || ''}; }
+
+/* ---------- Couleurs : contrastes garantis quelle que soit la palette ---------- */
+const hex2rgb = h => { const n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; };
+const rgb2hex = (r, g, b) => '#' + [r, g, b].map(v => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0')).join('');
+function lum(hex){
+  const f = c => { c /= 255; return c <= .03928 ? c/12.92 : Math.pow((c+.055)/1.055, 2.4); };
+  const [r, g, b] = hex2rgb(hex); return .2126*f(r) + .7152*f(g) + .0722*f(b);
+}
+function contrast(a, b){ const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + .05) / (y + .05); }
+function rgb2hsl(r, g, b){
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b); let h = 0, s = 0; const l = (max + min) / 2;
+  if(max !== min){
+    const d = max - min; s = l > .5 ? d / (2 - max - min) : d / (max + min);
+    if(max === r) h = (g - b) / d + (g < b ? 6 : 0); else if(max === g) h = (b - r) / d + 2; else h = (r - g) / d + 4;
+    h /= 6;
+  }
+  return [h, s, l];
+}
+function hsl2rgb(h, s, l){
+  if(s === 0){ const v = l * 255; return [v, v, v]; }
+  const q = l < .5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q;
+  const f = t => { if(t < 0) t += 1; if(t > 1) t -= 1; if(t < 1/6) return p + (q-p)*6*t; if(t < 1/2) return q; if(t < 2/3) return p + (q-p)*(2/3-t)*6; return p; };
+  return [f(h + 1/3) * 255, f(h) * 255, f(h - 1/3) * 255];
+}
+const ON_LIGHT = '#FBF9F4', ON_DARK = '#1F1D19';
+const textOn = bg => contrast(bg, ON_LIGHT) >= contrast(bg, ON_DARK) ? ON_LIGHT : ON_DARK;
+/* Fond coloré dont le texte (clair ou foncé) sera lisible : on ajuste la clarté si besoin */
+function fillOk(hex){
+  let out = hex;
+  for(let i = 0; i < 60 && Math.max(contrast(out, ON_LIGHT), contrast(out, ON_DARK)) < 4.5; i++){
+    const [h, s, l] = rgb2hsl(...hex2rgb(out));
+    out = rgb2hex(...hsl2rgb(h, s, l + (contrast(out, ON_DARK) >= contrast(out, ON_LIGHT) ? .02 : -.02)));
+  }
+  return out;
+}
+/* Couleur de texte lisible sur tous les fonds donnés : on assombrit (dir = -1) ou éclaircit (dir = +1) */
+function inkOn(hex, dir, bgs){
+  let out = hex;
+  for(let i = 0; i < 60 && !bgs.every(b => contrast(out, b) >= 4.5); i++){
+    const [h, s, l] = rgb2hsl(...hex2rgb(out));
+    out = rgb2hex(...hsl2rgb(h, s, Math.max(0, Math.min(1, l + dir * .02))));
+  }
+  return out;
+}
+
+/* ---------- Thème du voyage (polices + palette -> variables CSS) ---------- */
+function applyTheme(cfg){
+  const preset = PRESETS[cfg.preset] || PRESETS.ville;
+  const pal = Object.assign({}, preset.palette, cfg.palette || {});
+  Object.keys(pal).forEach(k => { if(typeof pal[k] === 'object' || !isHex(pal[k])) pal[k] = preset.palette[k]; });
+  const dark = Object.assign({}, DARK, (cfg.palette && typeof cfg.palette.dark === 'object') ? cfg.palette.dark : {});
+  Object.keys(dark).forEach(k => { if(!isHex(dark[k])) dark[k] = DARK[k]; });
+  const fills = {primary:fillOk(pal.primary), warm:fillOk(pal.warm), green:fillOk(pal.green), sand:fillOk(pal.sand)};
+  const lightBgs = [pal.paper, pal.paper2, pal.card], darkBgs = [dark.paper, dark.paper2, dark.card];
+  const light = {paper:pal.paper, paper2:pal.paper2, card:pal.card, ink:inkOn(pal.ink, -1, lightBgs), soft:inkOn(pal.soft, -1, lightBgs), line:pal.line};
+  const night = {paper:dark.paper, paper2:dark.paper2, card:dark.card, ink:inkOn(dark.ink, 1, darkBgs), soft:inkOn(dark.soft, 1, darkBgs), line:dark.line};
+  const inks = (bgs, dir) => ({primary:inkOn(fills.primary, dir, bgs), warm:inkOn(fills.warm, dir, bgs), green:inkOn(fills.green, dir, bgs)});
+  const set = (t, i) => `--paper:${t.paper};--paper2:${t.paper2};--card:${t.card};--ink:${t.ink};--ink-soft:${t.soft};--line:${t.line};--primary-ink:${i.primary};--warm-ink:${i.warm};--green-ink:${i.green};`;
+  const fontOk = n => typeof n === 'string' && /^[A-Za-z0-9 \-]{2,40}$/.test(n);
+  const head = fontOk(cfg.fonts && cfg.fonts.head) ? cfg.fonts.head : preset.fonts.head;
+  const body = fontOk(cfg.fonts && cfg.fonts.body) ? cfg.fonts.body : preset.fonts.body;
+  const common = `--primary:${fills.primary};--warm:${fills.warm};--green:${fills.green};--sand:${fills.sand};` +
+    `--on-primary:${textOn(fills.primary)};--on-warm:${textOn(fills.warm)};--on-green:${textOn(fills.green)};--on-sand:${textOn(fills.sand)};` +
+    `--font-head:'${head}',Georgia,serif;--font-body:'${body}',system-ui,sans-serif;`;
+  const css = `:root{color-scheme:light;${common}${set(light, inks(lightBgs, -1))}}\n` +
+    `@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){color-scheme:dark;${set(night, inks(darkBgs, 1))}}}\n` +
+    `:root[data-theme="dark"]{color-scheme:dark;${set(night, inks(darkBgs, 1))}}`;
+  let st = $('themeCss'); if(!st){ st = el('style', {id:'themeCss'}); document.head.append(st); }
+  st.textContent = css;
+  const fam = n => 'family=' + n.replace(/ /g, '+') + ':wght@400;700';
+  let fl = $('themeFonts'); if(!fl){ fl = el('link', {id:'themeFonts', rel:'stylesheet'}); document.head.append(fl); }
+  fl.href = 'https://fonts.googleapis.com/css2?' + (head === body ? fam(head) : fam(head) + '&' + fam(body)) + '&display=swap';
+}
+
+/* ---------- Thème clair/sombre, partage ---------- */
+const themeBtn = $('themeBtn');
+function setThemeMode(mode){
+  if(mode === 'auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', mode);
+  themeBtn.textContent = tr(mode === 'auto' ? '🌓 Thème : auto' : (mode === 'dark' ? '🌙 Thème : sombre' : '☀️ Thème : clair'));
+  try{ localStorage.setItem('themeMode', mode); }catch(e){}
+}
+let themeMode = 'auto';
+try{ themeMode = localStorage.getItem('themeMode') || 'auto'; }catch(e){}
+setThemeMode(themeMode);
+themeBtn.addEventListener('click', () => {
+  const order = ['auto', 'light', 'dark'];
+  themeMode = order[(order.indexOf(themeMode) + 1) % order.length];
+  setThemeMode(themeMode);
+});
+
+
+/* ---------- Textes statiques traduits, sélecteur de langue, impression ---------- */
+(function(){
+  const setT = (sel, key) => { const e = document.querySelector(sel); if(e) e.textContent = tr(key); };
+  setT('#tripSwitch label', 'Voyage'); setT('#shareBtn', 'Partager le lien ↗'); setT('#resetBtn', 'Réinitialiser les filtres');
+  setT('#printBtn', '🖨️ Version imprimable / PDF'); setT('#footer', 'Carnet de voyage — mis à jour au fil du voyage.');
+  if('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});
+  setT('noscript', "Ce carnet de voyage a besoin de JavaScript pour s'afficher.");
+  $('langSelect').value = LANG; $('langSelect').setAttribute('aria-label', tr('Langue'));
+  $('langSelect').addEventListener('change', () => { try{ localStorage.setItem('lang', $('langSelect').value); }catch(e){} const u = new URL(location.href); u.searchParams.delete('lang'); location.href = u.toString(); });
+  /* Impression : thème clair forcé, photos chargées, sections dépliées (voir @media print) */
+  let before = null;
+  const lightOn = () => { if(before === null){ before = document.documentElement.getAttribute('data-theme') || ''; document.documentElement.setAttribute('data-theme', 'light'); } };
+  const lightOff = () => { if(before !== null){ if(before) document.documentElement.setAttribute('data-theme', before); else document.documentElement.removeAttribute('data-theme'); before = null; } };
+  window.addEventListener('beforeprint', lightOn); window.addEventListener('afterprint', lightOff);
+  $('printBtn').addEventListener('click', async () => {
+    const imgs = [...document.querySelectorAll('img[loading="lazy"]')]; imgs.forEach(i => { i.loading = 'eager'; });
+    await Promise.race([Promise.all(imgs.map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; }))), new Promise(r => setTimeout(r, 4000))]);
+    window.print();
+  });
+})();
+
+/* ---------- État du voyage affiché ---------- */
+let trips = [], CUR = null, DIR = '', cfg = {preset:'ville'}, TRIP_RAW = {}, DATA = null, TYPES = {};
+let TZ = 'UTC', NOWISO = '', YESTERDAY = '', START_ISO = '', END_ISO = '', TOTAL = 0, allDays = [], todayDay = null;
+let SITE_PHOTOS = {}, NOTES = {};
+const dirOf = t => typeof t.dir === 'string' ? t.dir : 'trips/' + t.slug + '/';
+const abs = p => /^(https?:)?\/\//.test(p) ? p : DIR + p;
+let SHARE_PAGE = false;
+if(CUR && DIR) fetch(DIR + 'index.html', {method:'HEAD', cache:'no-store'}).then(r => { SHARE_PAGE = r.ok; }).catch(() => {});
+const shareUrl = () => (SHARE_PAGE && DIR) ? SITE_URL + DIR : SITE_URL + (trips.length > 1 && CUR && CUR.slug ? '?trip=' + encodeURIComponent(CUR.slug) : '');
+
+$('shareBtn').addEventListener('click', async () => {
+  const btn = $('shareBtn'), url = shareUrl();
+  try{ await navigator.clipboard.writeText(url); btn.textContent = tr('Lien copié ✓'); }
+  catch(e){ btn.textContent = url; }
+  setTimeout(() => btn.textContent = tr('Partager le lien ↗'), 2000);
+});
+
+/* ---------- Visionneuse de photos ---------- */
+let lbList = [], lbIdx = 0, lbFocus = null;
+const lbImg = el('img', {alt:''});
+const lbCap = el('p', {class:'lb-cap'});
+const lbPrev = el('button', {class:'lb-btn lb-prev', type:'button', 'aria-label':tr('Photo précédente'), text:'‹'});
+const lbNext = el('button', {class:'lb-btn lb-next', type:'button', 'aria-label':tr('Photo suivante'), text:'›'});
+const lbClose = el('button', {class:'lb-btn lb-close', type:'button', 'aria-label':'Fermer', text:'✕'});
+const lb = el('div', {class:'lb', role:'dialog', 'aria-modal':'true', 'aria-label':'Photo', hidden:true}, lbClose, lbPrev, lbImg, lbCap, lbNext);
+document.body.append(lb);
+function lbShow(){
+  const p = lbList[lbIdx];
+  lbImg.src = abs(p.src); lbImg.alt = p.caption || 'Photo du voyage';
+  lbCap.textContent = (p.caption ? p.caption + '  ·  ' : '') + (lbIdx + 1) + ' / ' + lbList.length;
+  lbPrev.hidden = lbNext.hidden = lbList.length < 2;
+}
+function lbStep(n){ lbIdx = (lbIdx + n + lbList.length) % lbList.length; lbShow(); }
+function lbOpen(list, i){ lbList = list; lbIdx = i; lbFocus = document.activeElement; lbShow(); lb.hidden = false; document.body.style.overflow = 'hidden'; lbClose.focus(); }
+function lbHide(){ lb.hidden = true; lbImg.removeAttribute('src'); document.body.style.overflow = ''; if(lbFocus && lbFocus.focus) lbFocus.focus(); }
+lbPrev.addEventListener('click', () => lbStep(-1));
+lbNext.addEventListener('click', () => lbStep(1));
+lbClose.addEventListener('click', lbHide);
+lb.addEventListener('click', e => { if(e.target === lb) lbHide(); });
+document.addEventListener('keydown', e => {
+  if(lb.hidden) return;
+  if(e.key === 'Escape') lbHide();
+  if(e.key === 'ArrowLeft' && lbList.length > 1) lbStep(-1);
+  if(e.key === 'ArrowRight' && lbList.length > 1) lbStep(1);
+});
+let touchX = null;
+lb.addEventListener('touchstart', e => { touchX = e.changedTouches[0].clientX; }, {passive:true});
+lb.addEventListener('touchend', e => {
+  if(touchX == null || lbList.length < 2) return;
+  const dx = e.changedTouches[0].clientX - touchX; touchX = null;
+  if(Math.abs(dx) > 50) lbStep(dx < 0 ? 1 : -1);
+}, {passive:true});
+
+/* ======================================================================
+   CHARGEMENT : liste des voyages, voyage affiché, configuration, planning
+   ====================================================================== */
+const params = new URLSearchParams(location.search);
+const index = await fetchJson('trips/index.json', null);
+let preloadedPlan = null;
+if(index && Array.isArray(index.trips)) trips = index.trips;
+else{
+  /* Ancien dépôt à un seul voyage : fichiers à la racine */
+  preloadedPlan = await fetchJson('itinerary.json', null);
+  if(Array.isArray(preloadedPlan) && preloadedPlan.length) trips = [{slug:'principal', dir:'', title:''}];
+}
+(function pickTrip(){
+  if(!trips.length) return;
+  const wanted = params.get('trip');
+  const todayUtc = new Date().toISOString().slice(0, 10);
+  const dated = trips.filter(t => t.start && t.end);
+  const ongoing = dated.find(t => t.start <= todayUtc && todayUtc <= t.end);
+  const upcoming = dated.filter(t => t.start > todayUtc).sort((a, b) => a.start.localeCompare(b.start))[0];
+  const latest = dated.slice().sort((a, b) => b.end.localeCompare(a.end))[0];
+  /* ?trip= > voyage en cours > prochain voyage > le plus récent > premier de la liste */
+  CUR = trips.find(t => wanted && t.slug === wanted) || ongoing || upcoming || latest || trips[0];
+  DIR = dirOf(CUR);
+})();
+if(CUR){
+  TRIP_RAW = await fetchJson(DIR + 'trip.json', {}) || {};
+  DATA = (DIR === '' && preloadedPlan) ? preloadedPlan : await fetchJson(DIR + 'itinerary.json', null);
+}
+cfg = Object.assign({preset:'ville'}, TRIP_RAW);
+if(!PRESETS[cfg.preset]) cfg.preset = 'ville';
+const planOk = Array.isArray(DATA) && DATA.length > 0 && DATA.every(e => e && Array.isArray(e.days) && e.days.length);
+
+/* ---------- Affichage du voyage ---------- */
+function resolveTypes(){
+  const base = (cfg.types && typeof cfg.types === 'object' && Object.keys(cfg.types).length) ? cfg.types : PRESETS[cfg.preset].types;
+  const out = {};
+  Object.entries(base).forEach(([k, t]) => { out[k] = {label:(t && t.label) || k, color:isHex(t && t.color) ? t.color : '#8C8577'}; });
+  DATA.forEach(e => e.days.forEach(d => (d.items || []).forEach(i => {
+    if(out[i.type]) return;
+    const f = Object.values(PRESETS).map(p => p.types[i.type]).find(Boolean);
+    out[i.type] = f ? {label:f.label, color:f.color} : {label:i.type, color:'#8C8577'};
+  })));
+  return out;
+}
+const typeColors = {};
+const colorOf = key => typeColors[key] || (typeColors[key] = fillOk((TYPES[key] || {color:'#8C8577'}).color));
+
+function buildItem(it){
+  const t = TYPES[it.type] || {label:it.type};
+  const bg = colorOf(it.type), grey = fillOk('#8C8577');
+  const row = el('div', {class:'item', 'data-type':it.type, 'data-region':it.region || ''});
+  if(it.time) row.append(el('div', {class:'time', text:it.time}));
+  row.append(el('div', {class:'text', text:it.text}));
+  const q = encodeURIComponent(it.maps || (it.text + ' ' + (it.region || '')));
+  const tags = el('div', {class:'tags'},
+    el('span', {class:'tag', style:'background:' + bg + ';color:' + textOn(bg), text:t.label}),
+    it.region ? el('span', {class:'tag', style:'background:' + grey + ';color:' + textOn(grey), text:it.region}) : null,
+    el('a', {class:'map-link', href:'https://www.google.com/maps/search/?api=1&query=' + q, target:'_blank', rel:'noopener', text:'Voir sur la carte ↗'}));
+  if(it.info){
+    const b = el('button', {class:'expand-btn', type:'button', 'aria-expanded':'false', text:tr('+ d’infos ⌄')});
+    b.addEventListener('click', () => {
+      const open = row.classList.toggle('expanded');
+      b.setAttribute('aria-expanded', String(open));
+      b.textContent = open ? tr('− réduire ⌃') : '+ d’infos ⌄';
+    });
+    tags.append(b);
+  }
+  if(it.booked === true) tags.append(el('span', {class:'badge booked', text:tr('✅ Réservé')}));
+  if(it.booked === false) tags.append(el('span', {class:'badge todo', text:tr('⏳ À réserver')}));
+  row.append(tags);
+  if(it.info) row.append(el('div', {class:'info-more', text:it.info}));
+  return row;
+}
+function setEtape(sec, open){
+  sec.querySelector('.etape-head').classList.toggle('collapsed', !open);
+  sec.querySelector('.timeline').classList.toggle('collapsed', !open);
+  sec.querySelector('.etape-btn').setAttribute('aria-expanded', String(open));
+}
+const shortName = e => (e.short || String(e.etape || '').replace(/^\s*[ÉE]tape\s*\d+\s*[—–:\-]\s*/i, '')).slice(0, 18);
+function goToEtape(key){
+  const sec = document.querySelector('.etape[data-etape="' + key + '"]');
+  if(sec){ setEtape(sec, true); sec.scrollIntoView({behavior:smooth(), block:'start'}); }
+}
+
+function renderMap(currentKey){
+  const wrap = $('routeWrap'), map = $('routeSvg'), m = cfg.map || {};
+  map.replaceChildren();
+  if(m.mode === 'none'){ wrap.hidden = true; return; }
+  wrap.hidden = false;
+  const n = DATA.length; let pts, home = null;
+  if(m.mode === 'manual' && Array.isArray(m.points) && m.points.length === n){
+    pts = m.points.map((p, i) => ({x:+p.x, y:+p.y, label:p.label || shortName(DATA[i]), pos:p.pos || 'below'}));
+    if(m.home && cfg.home) home = {x:+m.home.x, y:+m.home.y, label:cfg.home.label || '', pos:m.home.pos || 'above'};
+  }else{
+    pts = DATA.map((e, i) => ({x:n === 1 ? 330 : 120 + i * (450 / (n - 1)), y:i % 2 ? 125 : 80, label:shortName(e), pos:i % 2 ? 'below' : 'above'}));
+    if(cfg.home && cfg.home.label) home = {x:30, y:100, label:cfg.home.label, pos:'above'};
+  }
+  if(home) map.append(svg('path', {d:'M' + home.x + ',' + home.y + ' L' + pts[0].x + ',' + pts[0].y, fill:'none', stroke:'var(--ink-soft)', 'stroke-width':'1.2', 'stroke-dasharray':'2,4', opacity:'.5'}));
+  map.append(svg('path', {d:'M' + pts.map(p => p.x + ',' + p.y).join(' L'), fill:'none', stroke:'var(--line)', 'stroke-width':'2', 'stroke-dasharray':'5,6'}));
+  const stop = (key, p, cls, interactive) => {
+    const g = svg('g', Object.assign({class:'stop' + (cls ? ' ' + cls : ''), 'data-e':String(key)}, interactive ? {tabindex:'0', role:'link', 'aria-label':'Aller à l’étape ' + p.label} : {}),
+      svg('circle', {cx:p.x, cy:p.y, r:cls === 'home' ? 6 : 7}),
+      svg('text', {x:p.x, y:p.pos === 'above' ? p.y - 15 : p.y + 22}, p.label));
+    if(interactive){
+      g.addEventListener('click', () => goToEtape(key));
+      g.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); goToEtape(key); } });
+    }
+    return g;
+  };
+  if(home) map.append(stop('home', home, 'home', false));
+  pts.forEach((p, i) => map.append(stop(i, p, '', true)));
+  map.querySelectorAll('.stop').forEach(g => g.classList.toggle('current', g.dataset.e === currentKey));
+}
+
+function renderTrip(){
+  TYPES = resolveTypes();
+  TZ = validTz(cfg.timezone) ? cfg.timezone : 'UTC';
+  NOWISO = new Date().toLocaleDateString('sv-SE', {timeZone:TZ});
+  YESTERDAY = new Date(Date.parse(NOWISO) - 864e5).toISOString().slice(0, 10);
+  allDays = DATA.flatMap((e, ei) => e.days.map(d => Object.assign({ei}, d)));
+  START_ISO = allDays[0].iso; END_ISO = allDays[allDays.length - 1].iso; TOTAL = allDays.length;
+  todayDay = allDays.find(d => d.iso === NOWISO) || null;
+
+  applyTheme(cfg);
+  document.title = cfg.title || 'Carnet de voyage';
+  $('title').textContent = cfg.title || 'Carnet de voyage';
+  $('kicker').textContent = cfg.kicker || (longDate(START_ISO) + (START_ISO === END_ISO ? '' : ' — ' + longDate(END_ISO)));
+  $('lead').textContent = cfg.lead || (TOTAL + ' jour' + (TOTAL > 1 ? 's' : '') + ' à suivre au fil de l’eau. Filtrez par type d’activité ou par lieu pour suivre une partie du trajet.');
+
+  /* Menu des voyages */
+  if(trips.length > 1){
+    $('tripSwitch').hidden = false;
+    $('tripSelect').replaceChildren(...trips.map(t => el('option', {value:t.slug, text:t.title || t.slug, selected:t === CUR})));
+    $('tripSelect').onchange = () => { location.href = SITE_URL + '?trip=' + encodeURIComponent($('tripSelect').value) + location.hash; };
+  }
+
+  /* Statut du voyage, horloges, carte */
+  const statusEl = $('tripStatus');
+  if(NOWISO < START_ISO){
+    statusEl.append(el('span', {class:'countdown', text:tr('J-{n} avant le départ', {n:Math.round((Date.parse(START_ISO) - Date.parse(NOWISO)) / 864e5)})}));
+  }else if(NOWISO <= END_ISO){
+    const n = Math.round((Date.parse(NOWISO) - Date.parse(START_ISO)) / 864e5) + 1;
+    statusEl.append(el('div', {class:'progress-wrap'},
+      el('div', {class:'progress-label', text:tr('Jour {n} / {t}', {n, t:TOTAL})}),
+      el('div', {class:'progress-bar'}, el('div', {class:'progress-fill', style:'width:' + Math.round(n / TOTAL * 100) + '%'}))));
+  }else statusEl.append(el('span', {class:'countdown', text:tr('Voyage terminé ✓')}));
+  const homeTz = cfg.home && cfg.home.timezone;
+  if(validTz(cfg.timezone) && homeTz && validTz(homeTz) && homeTz !== cfg.timezone){
+    const f = tz => new Date().toLocaleTimeString(LOC, {hour:'2-digit', minute:'2-digit', timeZone:tz});
+    const tick = () => { $('clocks').textContent = (cfg.destinationLabel || tr('Destination')) + ' ' + f(cfg.timezone) + ' · ' + (cfg.home.clockLabel || cfg.home.label || tr('Départ')) + ' ' + f(homeTz); };
+    $('clocks').hidden = false; tick(); setInterval(tick, 30000);
+  }
+  renderMap(todayDay ? String(todayDay.ei) : 'home');
+
+  /* Encart du jour */
+  if(todayDay){
+    $('todayCard').append(el('div', {class:'today-card'},
+      el('div', {class:'tc-label', text:tr("Aujourd'hui")}),
+      el('h3', {text:(todayDay.date || dayLabel(todayDay.iso)) + ' — ' + (todayDay.title || '')}),
+      el('ul', {}, (todayDay.items || []).map(it => el('li', {}, it.time ? el('strong', {text:it.time}) : null, (it.time ? ' — ' : '') + it.text)))));
+  }
+
+  /* Planning */
+  const main = $('main'); main.replaceChildren();
+  DATA.forEach((etape, ei) => {
+    const isPast = NOWISO <= END_ISO && etape.days[etape.days.length - 1].iso < YESTERDAY;   /* repliée 2 jours après sa fin, jamais après le voyage */
+    const tl = el('div', {class:'timeline', id:'tl-' + ei});
+    etape.days.forEach(day => {
+      const isToday = day.iso === NOWISO;
+      tl.append(el('div', {class:'day' + (isToday ? ' today' : ''), id:'jour-' + day.iso, 'data-iso':day.iso},
+        el('div', {class:'day-head'},
+          el('span', {class:'day-date', text:day.date || dayLabel(day.iso)}), el('span', {class:'day-dow', text:day.dow || dowLabel(day.iso)}),
+          day.title ? el('span', {class:'day-title', text:'— ' + day.title}) : null,
+          isToday ? el('span', {class:'day-title', text:tr('· aujourd’hui')}) : null),
+        el('div', {class:'items'}, (day.items || []).map(buildItem))));
+    });
+    const btn = el('button', {class:'etape-btn', type:'button', 'aria-expanded':'true', 'aria-controls':'tl-' + ei, text:etape.etape || ('Étape ' + (ei + 1))});
+    const head = el('div', {class:'etape-head'},
+      el('span', {class:'icon', 'aria-hidden':'true', text:etape.icon || ''}), el('h2', {}, btn),
+      etape.meta ? el('span', {class:'meta', text:etape.meta}) : null,
+      etape.weather ? el('span', {class:'meta weather', text:'🌤️ ' + etape.weather}) : null,
+      el('span', {class:'meta extras', hidden:true}),
+      el('span', {class:'chevron', 'aria-hidden':'true', text:'▾'}));
+    const sec = el('section', {class:'etape', 'data-etape':ei}, head, tl);
+    head.addEventListener('click', () => setEtape(sec, tl.classList.contains('collapsed')));
+    main.append(sec);
+    setEtape(sec, !isPast);
+    if(etape.transit) main.append(el('div', {class:'transit', text:etape.transit}));
+  });
+
+  /* Filtres */
+  const used = new Set(allDays.flatMap(d => (d.items || []).map(i => i.type)));
+  const regions = [...new Set(allDays.flatMap(d => (d.items || []).map(i => i.region).filter(Boolean)))];
+  const chip = (cat, key, label) => {
+    const b = el('button', {class:'chip', type:'button', 'data-cat':cat, 'data-key':key, 'aria-pressed':'false', text:label});
+    b.addEventListener('click', () => { b.setAttribute('aria-pressed', String(b.classList.toggle('active'))); applyFilters(); });
+    return b;
+  };
+  $('typeRow').replaceChildren(...Object.entries(TYPES).filter(([k]) => used.has(k)).map(([k, t]) => chip('type', k, t.label)));
+  $('regionRow').replaceChildren(...regions.map(r => chip('region', r, r)));
+  $('filters').hidden = !(used.size || regions.length);
+  $('resetBtn').onclick = () => {
+    document.querySelectorAll('.chip.active').forEach(c => { c.classList.remove('active'); c.setAttribute('aria-pressed', 'false'); });
+    applyFilters();
+  };
+  $('footer').textContent = (cfg.title || 'Carnet de voyage') + ' — mis à jour au fil du voyage.';
+}
+function applyFilters(){
+  const main = $('main');
+  const types = [...document.querySelectorAll('.chip[data-cat="type"].active')].map(c => c.dataset.key);
+  const regs = [...document.querySelectorAll('.chip[data-cat="region"].active')].map(c => c.dataset.key);
+  main.classList.toggle('filtering', types.length > 0 || regs.length > 0);
+  document.querySelectorAll('.etape').forEach(sec => {
+    let secVisible = false;
+    sec.querySelectorAll('.day').forEach(day => {
+      let dayVisible = false;
+      day.querySelectorAll('.item').forEach(it => {
+        const show = (!types.length || types.includes(it.dataset.type)) && (!regs.length || regs.includes(it.dataset.region));
+        it.classList.toggle('hide', !show);
+        if(show) dayVisible = true;
+      });
+      day.classList.toggle('hide', !dayVisible);
+      if(dayVisible) secVisible = true;
+    });
+    sec.classList.toggle('hide', !secVisible);
+  });
+}
+
+/* ---------- Photos et comptes rendus ---------- */
+function renderExtras(){
+  const tally = DATA.map(() => ({p:0, n:0}));
+  allDays.forEach(day => {
+    const dayEl = $('jour-' + day.iso);
+    if(!dayEl) return;
+    dayEl.querySelectorAll('.day-note,.photo-gallery').forEach(n => n.remove());
+    const note = NOTES[day.iso];
+    if(note){
+      dayEl.querySelector('.items').after(el('div', {class:'day-note'},
+        el('span', {class:'note-label', text:tr('Le carnet du jour')}), el('p', {text:note})));
+      if(day.iso === NOWISO){
+        const tc = document.querySelector('#todayCard .today-card');
+        if(tc && !tc.querySelector('.tc-note')) tc.append(el('p', {class:'tc-note', text:note}));
+      }
+    }
+    const list = [...(day.photos || []), ...(SITE_PHOTOS[day.iso] || [])].map(normPhoto);
+    tally[day.ei].p += list.length; if(note) tally[day.ei].n++;
+    if(list.length){
+      dayEl.append(el('div', {class:'photo-gallery'}, list.map((p, i) =>
+        el('button', {class:'ph', type:'button', 'aria-label':p.caption || (tr('Photo') + ' ' + (i + 1) + ' / ' + list.length), onclick:() => lbOpen(list, i)},
+          el('img', {src:abs(p.thumb), alt:p.caption || tr('Photo du voyage'), loading:'lazy', decoding:'async'})))));
+    }
+  });
+  document.querySelectorAll('.etape').forEach(sec => {
+    const t = tally[+sec.dataset.etape], ex = sec.querySelector('.extras');
+    const parts = [t.p ? '📷 ' + t.p : '', t.n ? '✍️ ' + t.n : ''].filter(Boolean);
+    ex.textContent = parts.join(' · '); ex.hidden = !parts.length;
+    ex.setAttribute('aria-label', [t.p ? tr('{n} photo(s)', {n:t.p}) : '', t.n ? tr('{n} compte(s) rendu(s)', {n:t.n}) : ''].filter(Boolean).join(', '));
+  });
+}
+function goToHash(){
+  const m = location.hash.match(/^#jour-(\d{4}-\d{2}-\d{2})$/);
+  const d = m && $('jour-' + m[1]);
+  if(!d) return;
+  setEtape(d.closest('.etape'), true);
+  d.scrollIntoView({behavior:smooth(), block:'start'});
+  d.classList.add('flash'); setTimeout(() => d.classList.remove('flash'), 2500);
+}
+
+if(planOk){
+  renderTrip();
+  ;[SITE_PHOTOS, NOTES] = await Promise.all([fetchJson(DIR + 'photos.json', {}), fetchJson(DIR + 'notes.json', {})]);
+  renderExtras();
+  goToHash();
+}else{
+  applyTheme(cfg);
+  const msg = CUR
+    ? el('p', {}, 'Le planning de ce voyage est introuvable (', el('code', {text:DIR + 'itinerary.json'}), '). Vérifiez que le fichier existe dans le dépôt.')
+    : el('p', {}, 'Aucun voyage pour l’instant. Ouvrez l’administration (', el('a', {href:'#admin', text:'ajoutez #admin à l’adresse'}), '), connectez GitHub puis créez votre premier voyage.');
+  $('main').append(el('div', {class:'empty'}, msg));
+}
+window.addEventListener('hashchange', () => { goToHash(); if(location.hash === '#admin') initAdmin(); });
+
+/* ======================================================================
+   ADMIN (#admin) : connexion GitHub, photos, comptes rendus, planning,
+   réglages, nouveaux voyages. Tout est écrit dans le dépôt, en un commit.
+   ====================================================================== */
+let adminReady = false;
+function initAdmin(){
+  if(adminReady) return;
+  adminReady = true;
+  $('adminPanel').hidden = false;
+  const say = (id, msg) => { $(id).textContent = msg; };
+  const P = path => DIR + path;
+  const ghDefaults = () => {
+    const h = location.hostname;
+    if(h.endsWith('.github.io')) return {owner:h.split('.')[0], repo:location.pathname.split('/').filter(Boolean)[0] || h};
+    return {owner:'', repo:''};
+  };
+  const ghFields = () => ({owner:$('ghOwner').value.trim(), repo:$('ghRepo').value.trim(), branch:$('ghBranch').value.trim() || 'main', token:$('ghToken').value.trim()});
+  const saveGh = () => { try{ const f = ghFields(), keep = !$('ghNoKeep').checked; localStorage.setItem('ghNoKeep', keep ? '' : '1'); localStorage.setItem('ghCfg', JSON.stringify(keep ? f : Object.assign({}, f, {token:''}))); localStorage.removeItem('ghPAT'); if(keep) sessionStorage.removeItem('ghTok'); else sessionStorage.setItem('ghTok', f.token); }catch(e){} };
+  (function loadGh(){
+    let s = {}; try{ s = JSON.parse(localStorage.getItem('ghCfg') || '{}') || {}; }catch(e){}
+    if(!s.token){ try{ s.token = localStorage.getItem('ghPAT') || sessionStorage.getItem('ghTok') || ''; }catch(e){} }
+    try{ $('ghNoKeep').checked = localStorage.getItem('ghNoKeep') === '1'; }catch(e){}
+    const d = ghDefaults();
+    $('ghOwner').value = s.owner || d.owner; $('ghRepo').value = s.repo || d.repo;
+    $('ghBranch').value = s.branch || 'main'; $('ghToken').value = s.token || '';
+    $('ghBox').open = !s.token;
+  })();
+  const token = () => ghFields().token;
+  const dateVal = () => $('photoDate').value;
+  const defaultDate = () => !planOk ? (NOWISO || new Date().toISOString().slice(0, 10)) : (NOWISO >= START_ISO && NOWISO <= END_ISO ? NOWISO : (NOWISO < START_ISO ? START_ISO : END_ISO));
+
+  function needGh(statusId){
+    const g = ghFields();
+    if(!g.token){ say(statusId, 'Collez d’abord votre token GitHub dans « Connexion GitHub », en haut du panneau (une fois par appareil).'); $('ghBox').open = true; $('ghToken').focus(); return false; }
+    if(!g.owner || !g.repo){ say(statusId, 'Renseignez le compte GitHub et le dépôt dans « Connexion GitHub ».'); $('ghBox').open = true; return false; }
+    saveGh(); return true;
+  }
+  function precheck(statusId){
+    if(!needGh(statusId)) return false;
+    if(!dateVal()){ say(statusId, 'Choisissez d’abord une date.'); return false; }
+    return true;
+  }
+  async function gh(path, opt = {}){
+    const g = ghFields();
+    const res = await fetch('https://api.github.com/repos/' + g.owner + '/' + g.repo + (path ? '/' + path : ''), {
+      method: opt.method || 'GET', cache:'no-store',
+      headers: Object.assign({Authorization:'Bearer ' + g.token, Accept:'application/vnd.github+json'}, opt.body ? {'Content-Type':'application/json'} : {}),
+      body: opt.body ? JSON.stringify(opt.body) : undefined
+    });
+    if(!res.ok){
+      let m = ''; try{ m = (await res.json()).message || ''; }catch(e){}
+      const err = new Error(res.status + (m ? ' ' + m : '')); err.status = res.status; throw err;
+    }
+    return res.json();
+  }
+  async function readRepoJson(path, fallback){
+    try{
+      const d = await gh('contents/' + path + '?ref=' + encodeURIComponent(ghFields().branch));
+      return JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\s/g, '')))));
+    }catch(e){ if(e.status === 404) return fallback; throw e; }
+  }
+  async function withRetry(fn, tries = 3){
+    for(let i = 1; ; i++){
+      try{ return await fn(); }
+      catch(e){
+        const transient = e.status === undefined || e.status >= 500 || e.status === 403 || e.status === 429;
+        if(!transient || i >= tries) throw e;
+        await new Promise(r => setTimeout(r, 1500 * i));
+      }
+    }
+  }
+  /* Un seul commit pour tout (photos, miniatures, JSON) : une seule republication de GitHub Pages */
+  async function commitFiles(message, files, progress){
+    const branch = ghFields().branch;
+    const head = (await gh('git/ref/heads/' + branch)).object.sha;
+    const base = (await gh('git/commits/' + head)).tree.sha;
+    const entries = [], blobs = files.filter(f => f.base64).length; let n = 0;
+    for(const f of files){
+      if(f.base64){
+        if(progress) progress(++n, blobs);
+        const b = await withRetry(() => gh('git/blobs', {method:'POST', body:{content:f.base64, encoding:'base64'}}));
+        entries.push({path:f.path, mode:'100644', type:'blob', sha:b.sha});
+      }else if(f.text !== undefined) entries.push({path:f.path, mode:'100644', type:'blob', content:f.text});
+      else if(f.remove) entries.push({path:f.path, mode:'100644', type:'blob', sha:null});
+    }
+    const tree = await withRetry(() => gh('git/trees', {method:'POST', body:{base_tree:base, tree:entries}}));
+    const commit = await withRetry(() => gh('git/commits', {method:'POST', body:{message, tree:tree.sha, parents:[head]}}));
+    await withRetry(() => gh('git/refs/heads/' + branch, {method:'PATCH', body:{sha:commit.sha}}));
+  }
+  const toText = obj => JSON.stringify(obj, null, 2) + '\n';
+  /* Petite page par voyage : aperçu de lien (titre, dates, image) puis redirection vers le carnet */
+  function sharePageHtml(slug, title, dest, start, end){
+    const base = SITE_URL.replace(/[^/]*$/, ''), url = base + '?trip=' + encodeURIComponent(slug), desc = (dest ? dest + ' · ' : '') + start + ' → ' + end;
+    const x = v => String(v).replace(/[&<>"]/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;'}[c]));
+    return '<!DOCTYPE html>\n<html lang="fr"><head><meta charset="UTF-8"><title>' + x(title) + '</title>\n<meta name="robots" content="noindex, nofollow">\n<meta property="og:type" content="website"><meta property="og:title" content="' + x(title) + '"><meta property="og:description" content="' + x(desc) + '">\n<meta property="og:image" content="' + x(base + 'og.png') + '"><meta property="og:url" content="' + x(url) + '"><meta name="twitter:card" content="summary_large_image">\n<meta http-equiv="refresh" content="0;url=' + x(url) + '"></head>\n<body><script>location.replace(' + JSON.stringify(url) + ');<\/script><a href="' + x(url) + '">' + x(title) + '</a></body></html>\n';
+  }
+  function formatPlan(plan){
+    const out = ['['];
+    plan.forEach((e, ei) => {
+      const {days, ...rest} = e;
+      out.push('  {');
+      Object.entries(rest).forEach(([k, v]) => out.push('    ' + JSON.stringify(k) + ': ' + JSON.stringify(v) + ','));
+      out.push('    "days": [');
+      days.forEach((d, di) => {
+        const {items, ...dr} = d, list = items || [];
+        out.push('      {' + Object.entries(dr).map(([k, v]) => JSON.stringify(k) + ': ' + JSON.stringify(v)).join(', ') + ',');
+        out.push('       "items": [');
+        list.forEach((it, ii) => out.push('        ' + JSON.stringify(it) + (ii < list.length - 1 ? ',' : '')));
+        out.push('       ]}' + (di < days.length - 1 ? ',' : ''));
+      });
+      out.push('    ]'); out.push('  }' + (ei < plan.length - 1 ? ',' : ''));
+    });
+    out.push(']'); return out.join('\n') + '\n';
+  }
+  /* Met à jour le titre / les dates du voyage dans trips/index.json (si ce fichier existe) */
+  async function indexFiles(patch){
+    if(!CUR) return [];
+    const idx = await readRepoJson('trips/index.json', null);
+    if(!idx || !Array.isArray(idx.trips)) return [];
+    const t = idx.trips.find(x => x.slug === CUR.slug);
+    if(!t) return [];
+    Object.assign(t, patch);
+    return [{path:'trips/index.json', text:toText(idx)}];
+  }
+
+  /* --- Connexion GitHub --- */
+  $('ghTest').addEventListener('click', async () => {
+    const g = ghFields();
+    if(!g.token){ say('ghStatus', 'Collez votre token GitHub.'); return; }
+    if(!g.owner || !g.repo){ say('ghStatus', 'Renseignez le compte GitHub et le dépôt.'); return; }
+    saveGh(); say('ghStatus', 'Test en cours…');
+    try{
+      const info = await gh('');
+      try{ await gh('git/ref/heads/' + g.branch); }
+      catch(e){
+        if(e.status === 404){ $('ghBranch').value = info.default_branch || g.branch; saveGh(); say('ghStatus', 'La branche « ' + g.branch + ' » n’existe pas : remplacée par la branche par défaut « ' + info.default_branch + ' ». Relancez le test.'); return; }
+        throw e;
+      }
+      const warn = info.permissions && info.permissions.push === false ? ' — ⚠️ ce token n’a pas le droit d’écrire dans ce dépôt' : '';
+      say('ghStatus', '✓ Connecté à ' + info.full_name + ' (branche ' + g.branch + ')' + warn);
+      $('ghBox').open = false;
+    }catch(err){
+      say('ghStatus', err.status === 401 ? 'Token refusé (401) : vérifiez-le ou régénérez-en un.' : err.status === 404 ? 'Dépôt introuvable (404) : vérifiez le compte et le nom du dépôt, et que le token y a accès.' : 'Erreur : ' + err.message);
+    }
+  });
+  $('ghForget').addEventListener('click', () => {
+    $('ghToken').value = '';
+    try{ localStorage.setItem('ghCfg', JSON.stringify(Object.assign(ghFields(), {token:''}))); localStorage.removeItem('ghPAT'); }catch(e){}
+    say('ghStatus', 'Token oublié sur cet appareil.'); $('ghBox').open = true;
+  });
+
+  /* --- Fuseaux horaires et préréglages (listes) --- */
+  const zones = (typeof Intl.supportedValuesOf === 'function') ? Intl.supportedValuesOf('timeZone') : ['Europe/Paris', 'Europe/Brussels', 'Europe/Rome', 'Europe/Madrid', 'Europe/London', 'America/New_York', 'America/Los_Angeles', 'Asia/Tokyo', 'Asia/Bangkok', 'Australia/Sydney', 'Africa/Casablanca', 'Pacific/Auckland'];
+  $('tzList').replaceChildren(...zones.map(z => el('option', {value:z})));
+  const presetOptions = () => Object.entries(PRESETS).map(([k, p]) => el('option', {value:k, text:p.label}));
+  $('setPreset').replaceChildren(...presetOptions()); $('ntPreset').replaceChildren(...presetOptions());
+
+  /* --- Nouveau voyage --- */
+  $('createTrip').addEventListener('click', async () => {
+    const st = 'ntStatus'; if(!needGh(st)) return;
+    const title = $('ntTitle').value.trim(), dest = $('ntDest').value.trim(), start = $('ntStart').value, end = $('ntEnd').value;
+    const tz = $('ntTz').value.trim(), home = $('ntHome').value.trim(), homeTz = $('ntHomeTz').value.trim(), preset = $('ntPreset').value;
+    if(!title){ say(st, 'Donnez un titre au voyage.'); return; }
+    if(!isIso(start) || !isIso(end) || end < start){ say(st, 'Choisissez un premier et un dernier jour valides (le dernier jour ne peut pas précéder le premier).'); return; }
+    const nDays = Math.round((Date.parse(end) - Date.parse(start)) / 864e5) + 1;
+    if(nDays > 120){ say(st, 'Un voyage est limité à 120 jours.'); return; }
+    if(tz && !validTz(tz)){ say(st, 'Fuseau horaire de la destination inconnu (exemple : Europe/Rome).'); return; }
+    if(homeTz && !validTz(homeTz)){ say(st, 'Fuseau horaire de départ inconnu (exemple : Europe/Brussels).'); return; }
+    try{
+      say(st, 'Création en cours…');
+      let idx = await readRepoJson('trips/index.json', null);
+      if(!idx || !Array.isArray(idx.trips)){
+        idx = {trips:[]};
+        const rootPlan = await readRepoJson('itinerary.json', null);
+        if(Array.isArray(rootPlan) && rootPlan.length){        /* ancien voyage à la racine : on le garde dans le menu */
+          const rootCfg = await readRepoJson('trip.json', {}), rd = rootPlan.flatMap(e => e.days);
+          idx.trips.push({slug:'principal', dir:'', title:rootCfg.title || 'Voyage précédent', destination:rootCfg.destinationLabel || '', start:rd[0].iso, end:rd[rd.length - 1].iso});
+        }
+      }
+      let slug = slugify(title) || 'voyage';
+      if(!/\d{4}/.test(slug)) slug += '-' + start.slice(0, 4);
+      const taken = new Set(idx.trips.map(t => t.slug)); let k = 2, base = slug;
+      while(taken.has(slug)) slug = base + '-' + k++;
+      const tripCfg = {preset, title, destinationLabel:dest || title, timezone:tz || undefined, map:{mode:'auto'}};
+      if(home || homeTz) tripCfg.home = {label:home || undefined, timezone:homeTz || undefined};
+      const days = Array.from({length:nDays}, (_, i) => ({iso:new Date(Date.parse(start) + i * 864e5).toISOString().slice(0, 10), title:'Jour ' + (i + 1), items:[]}));
+      const plan = [{etape:'Étape 1', short:dest || title, icon:'🧭', days}];
+      idx.trips.push({slug, title, destination:dest, start, end});
+      const dir = 'trips/' + slug + '/';
+      await commitFiles('Nouveau voyage : ' + title, [
+        {path:'trips/index.json', text:toText(idx)},
+        {path:dir + 'trip.json', text:toText(JSON.parse(JSON.stringify(tripCfg)))},
+        {path:dir + 'itinerary.json', text:formatPlan(plan)},
+        {path:dir + 'index.html', text:sharePageHtml(slug, title, dest, start, end)}
+      ]);
+      say(st, '✓ Voyage créé. Il sera en ligne dans ~1 min : ' + SITE_URL + '?trip=' + slug + '#admin');
+    }catch(err){ say(st, 'Erreur : ' + err.message + ' — rien n’a été créé, vous pouvez réessayer.'); }
+  });
+
+  /* Les sections qui suivent concernent le voyage affiché : absentes tant qu'il n'y en a pas */
+  $('adminTripLabel').textContent = planOk ? 'Voyage modifié : ' + (cfg.title || CUR.slug) + (DIR ? ' (dossier ' + DIR + ')' : ' (racine du dépôt)') : 'Aucun voyage pour l’instant : connectez GitHub puis créez-en un.';
+  $('newTripBox').open = !planOk;
+  if(!planOk) return;
+  $('tripAdmin').hidden = false;
+  $('photoDate').value = defaultDate();
+
+  /* --- Photos : nouvelles --- */
+  $('photoFiles').addEventListener('change', () => {
+    const all = [...$('photoFiles').files], files = all.slice(0, MAX_PHOTOS);
+    $('newCaps').replaceChildren(...files.map(f => el('input', {type:'text', class:'cap-input', maxlength:'140', placeholder:'Légende (optionnelle) — ' + f.name})));
+    $('capsBox').hidden = !files.length;
+    say('adminStatus', all.length > MAX_PHOTOS ? all.length + ' photos choisies : seules les ' + MAX_PHOTOS + ' premières seront envoyées, renvoyez les autres ensuite.' : '');
+  });
+  function loadImage(file){
+    return new Promise((ok, ko) => {
+      const fr = new FileReader();
+      fr.onerror = ko;
+      fr.onload = () => { const img = new Image(); img.onload = () => ok(img); img.onerror = ko; img.src = fr.result; };
+      fr.readAsDataURL(file);
+    });
+  }
+  function jpegBase64(img, maxSide, q){
+    const s = Math.min(1, maxSide / Math.max(img.width, img.height));
+    const c = document.createElement('canvas');
+    c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    const out = c.toDataURL('image/jpeg', q).split(',')[1];
+    c.width = c.height = 0;   /* libère la mémoire du canvas (important sur iPhone avec beaucoup de photos) */
+    return out;
+  }
+  const serialize = p => (p.thumb === p.src && !p.caption) ? p.src : Object.assign({src:p.src, thumb:p.thumb}, p.caption ? {caption:p.caption} : {});
+
+  $('publishPhotos').addEventListener('click', async () => {
+    const date = dateVal(), files = [...$('photoFiles').files].slice(0, MAX_PHOTOS);
+    if(!precheck('adminStatus')) return;
+    if(!files.length){ say('adminStatus', 'Choisissez au moins une photo.'); return; }
+    const caps = [...document.querySelectorAll('#newCaps .cap-input')].map(i => i.value.trim());
+    let lock = null;
+    try{ if(navigator.wakeLock) lock = await navigator.wakeLock.request('screen'); }catch(e){}
+    try{
+      const prepared = []; let failed = 0; const stamp = Date.now().toString(36);
+      for(let i = 0; i < files.length; i++){
+        say('adminStatus', 'Compression ' + (i + 1) + '/' + files.length + '…');
+        try{
+          const img = await loadImage(files[i]);
+          prepared.push({name:date + '-' + stamp + '-' + i + '.jpg', caption:caps[i] || '', full:jpegBase64(img, 1600, .8), thumb:jpegBase64(img, 480, .72)});
+        }catch(e){ failed++; }
+      }
+      if(!prepared.length) throw new Error("aucune photo n'a pu être lue.");
+      const map = await readRepoJson(P('photos.json'), {});
+      map[date] = [...(map[date] || []), ...prepared.map(p => serialize({src:'photos/' + p.name, thumb:'photos/thumbs/' + p.name, caption:p.caption}))];
+      const out = [];
+      prepared.forEach(p => out.push({path:P('photos/' + p.name), base64:p.full}, {path:P('photos/thumbs/' + p.name), base64:p.thumb}));
+      out.push({path:P('photos.json'), text:toText(map)});
+      await commitFiles('Photos du ' + date, out, (a, b) => say('adminStatus', 'Envoi ' + a + '/' + b + '…'));
+      say('adminStatus', '✓ ' + prepared.length + '/' + files.length + ' photo(s) publiée(s)' + (failed ? ' — ' + failed + ' illisible(s), à renvoyer.' : '.') + ' En ligne dans ~1 min.');
+      $('photoFiles').value = ''; $('newCaps').replaceChildren(); $('capsBox').hidden = true;
+      refreshExisting();
+    }catch(err){ say('adminStatus', 'Erreur : ' + err.message + ' — rien n’a été publié, vous pouvez réessayer.'); }
+    finally{ try{ if(lock) await lock.release(); }catch(e){} }
+  });
+
+  /* --- Photos : déjà publiées (légendes, suppression) --- */
+  async function refreshExisting(){
+    const date = dateVal(); let map = SITE_PHOTOS;
+    if(token()){ try{ map = await readRepoJson(P('photos.json'), {}); }catch(e){} }
+    const list = (map[date] || []).map(normPhoto);
+    const hint = (!token() && list.length) ? [el('p', {class:'meta', text:'Liste du site publié : collez le token ci-dessus pour afficher la version à jour et pouvoir modifier.'})] : [];
+    $('existing').replaceChildren(...hint, ...(list.length ? list.map(p => el('div', {class:'ex-row', 'data-src':p.src},
+      el('img', {src:abs(p.thumb), alt:'', onerror:e => e.target.replaceWith(el('span', {class:'ex-wait', title:'Pas encore en ligne : republication de GitHub Pages en cours', text:'⏳'}))}),
+      el('input', {type:'text', class:'ex-cap', maxlength:'140', value:p.caption, placeholder:'Légende'}),
+      el('label', {}, el('input', {type:'checkbox', class:'ex-del'}), ' Supprimer'))) : [el('p', {class:'meta', text:'Aucune photo pour cette date.'})]));
+  }
+  $('savePhotoEdits').addEventListener('click', async () => {
+    const date = dateVal(), rows = [...document.querySelectorAll('#existing .ex-row')];
+    if(!precheck('editStatus')) return;
+    if(!rows.length){ say('editStatus', 'Aucune photo à modifier pour cette date.'); return; }
+    const nDel = rows.filter(r => r.querySelector('.ex-del').checked).length;
+    if(nDel && !confirm('Supprimer définitivement ' + nDel + ' photo(s) ?')) return;
+    try{
+      const map = await readRepoJson(P('photos.json'), {});
+      const before = toText(map), kept = [], removals = [];
+      (map[date] || []).map(normPhoto).forEach(p => {
+        const row = rows.find(r => r.dataset.src === p.src);
+        if(row && row.querySelector('.ex-del').checked){ removals.push(P(p.src)); if(p.thumb !== p.src) removals.push(P(p.thumb)); return; }
+        if(row) p.caption = row.querySelector('.ex-cap').value.trim();
+        kept.push(p);
+      });
+      if(kept.length) map[date] = kept.map(serialize); else delete map[date];
+      if(!removals.length && toText(map) === before){ say('editStatus', 'Rien à modifier.'); return; }
+      say('editStatus', 'Envoi en cours…');
+      await commitFiles('Photos du ' + date + ' : modifications', [...removals.map(path => ({path, remove:true})), {path:P('photos.json'), text:toText(map)}]);
+      say('editStatus', '✓ Modifications publiées. Visibles dans ~1 min.');
+      refreshExisting();
+    }catch(err){ say('editStatus', 'Erreur : ' + err.message); }
+  });
+
+  /* --- Compte rendu --- */
+  let noteDirty = false, planDirty = false;
+  $('noteText').addEventListener('input', () => { noteDirty = true; });
+  $('planText').addEventListener('input', () => { planDirty = true; });
+  async function fillNote(){
+    $('shareNote').hidden = true;
+    const date = dateVal(); let map = NOTES;
+    if(token()){ try{ map = await readRepoJson(P('notes.json'), {}); }catch(e){} }
+    if(noteDirty || date !== dateVal()) return;      /* l'utilisateur a déjà tapé, ou changé de date entre-temps */
+    $('noteText').value = map[date] || '';
+  }
+  $('publishNote').addEventListener('click', async () => {
+    const date = dateVal(), text = $('noteText').value.trim();
+    if(!precheck('noteStatus')) return;
+    say('noteStatus', 'Envoi en cours…');
+    try{
+      const map = await readRepoJson(P('notes.json'), {});
+      if(!text){
+        if(!map[date]){ say('noteStatus', 'Rien à supprimer : aucun compte rendu pour cette date.'); return; }
+        if(!confirm('Supprimer le compte rendu de ce jour ?')){ say('noteStatus', 'Suppression annulée.'); return; }
+        delete map[date];
+      }else{
+        if(map[date] === text){ say('noteStatus', 'Ce compte rendu est déjà publié.'); return; }
+        map[date] = text;
+      }
+      await commitFiles('Compte rendu du ' + date, [{path:P('notes.json'), text:toText(map)}]);
+      NOTES = map;
+      say('noteStatus', text ? '✓ Compte rendu publié. En ligne dans ~1 min — attendez avant de partager le lien.' : '✓ Compte rendu supprimé. Il disparaît du site dans ~1 min.');
+      $('shareNote').hidden = !text;
+    }catch(err){ say('noteStatus', 'Erreur : ' + err.message); }
+  });
+  $('shareNote').addEventListener('click', async () => {
+    const date = dateVal(), day = allDays.find(d => d.iso === date);
+    const text = (day ? (day.date || dayLabel(date)) + (day.title ? ' — ' + day.title : '') : date) + '\n\n' + $('noteText').value.trim();
+    const url = shareUrl() + '#jour-' + date;
+    try{
+      if(navigator.share) await navigator.share({title:cfg.title || 'Carnet de voyage', text, url});
+      else{ await navigator.clipboard.writeText(text + '\n' + url); say('noteStatus', 'Texte et lien copiés ✓'); }
+    }catch(e){}
+  });
+
+  /* --- Planning du jour --- */
+  async function currentPlan(){
+    let plan = DATA;
+    if(token()){ try{ const p = await readRepoJson(P('itinerary.json'), null); if(Array.isArray(p)) plan = p; }catch(e){} }
+    return plan;
+  }
+  $('sharePageBtn').addEventListener('click', async () => {
+    if(!CUR || !DIR){ say('adminStatus', 'La page de partage concerne les voyages créés dans leur propre dossier (pas le voyage à la racine).'); return; }
+    try{
+      say('adminStatus', 'Création de la page…');
+      await commitFiles('Page de partage : ' + (cfg.title || CUR.slug), [{path:DIR + 'index.html', text:sharePageHtml(CUR.slug, cfg.title || CUR.title || CUR.slug, cfg.destinationLabel || '', CUR.start || '', CUR.end || '')}]);
+      say('adminStatus', '✓ Page créée (en ligne dans ~1 min). Lien à partager : ' + SITE_URL + DIR);
+    }catch(err){ say('adminStatus', 'Erreur : ' + err.message); }
+  });
+  /* Éditeur visuel : lit / écrit le JSON de #planText, que « Enregistrer le planning du jour » valide comme avant */
+  function buildPlanForm(){
+    const box = $('planForm'); if(!box) return;
+    let o; try{ o = JSON.parse($('planText').value); }catch(e){ box.replaceChildren(el('p', {class:'meta', text:'Le JSON ci-dessous est invalide : corrigez-le pour revoir le formulaire.'})); return; }
+    if(!o || typeof o !== 'object' || Array.isArray(o)){ box.replaceChildren(); return; }
+    if(!Array.isArray(o.items)) o.items = [];
+    const sync = (rebuild) => { $('planText').value = '{"title": ' + JSON.stringify(o.title || '') + ',\n "items": [\n' + o.items.map(i => '  ' + JSON.stringify(i)).join(',\n') + '\n ]}'; planDirty = true; if(rebuild) buildPlanForm(); };
+    const field = (label, node) => el('label', {}, label, node);
+    const txt = (obj, k, ph) => { const i = el('input', {value:obj[k] || '', placeholder:ph || '', autocomplete:'off'}); i.addEventListener('input', () => { if(i.value) obj[k] = i.value; else if(k !== 'title' && k !== 'text') delete obj[k]; else obj[k] = ''; sync(); }); return i; };
+    const cards = o.items.map((it, n) => {
+      const type = el('select', {}, Object.entries(TYPES).map(([k, t]) => el('option', {value:k, text:t.label || k, selected:k === it.type})));
+      type.addEventListener('change', () => { it.type = type.value; sync(); });
+      const info = el('textarea', {rows:2, placeholder:'Description (optionnel)'}); info.value = it.info || '';
+      info.addEventListener('input', () => { if(info.value) it.info = info.value; else delete it.info; sync(); });
+      const booked = el('input', {type:'checkbox', checked:it.booked === true});
+      booked.addEventListener('change', () => { if(booked.checked) it.booked = true; else delete it.booked; sync(); });
+      const mv = (d) => { const m = n + d; if(m < 0 || m >= o.items.length) return; [o.items[n], o.items[m]] = [o.items[m], o.items[n]]; sync(true); };
+      return el('div', {class:'pf-item'},
+        el('div', {class:'pf-row'}, txt(it, 'time', 'Heure (ex. 9h, Matin)'), type, txt(it, 'region', 'Lieu / ville')),
+        txt(it, 'text', 'Activité (obligatoire)'), info,
+        el('div', {class:'pf-row'}, el('label', {class:'ex-row'}, booked, 'Réservé'),
+          el('button', {class:'btn', type:'button', text:'↑', 'aria-label':'Monter', onclick:() => mv(-1)}),
+          el('button', {class:'btn', type:'button', text:'↓', 'aria-label':'Descendre', onclick:() => mv(1)}),
+          el('button', {class:'btn', type:'button', text:'✕ Supprimer', onclick:() => { o.items.splice(n, 1); sync(true); }})));
+    });
+    const add = el('button', {class:'btn', type:'button', text:'+ Ajouter une activité', onclick:() => { o.items.push({time:'', type:Object.keys(TYPES)[0], text:''}); sync(true); }});
+    box.replaceChildren(field('Titre de la journée', txt(o, 'title', 'Ex. Visite du centre')), ...cards, add);
+  }
+  $('planText').addEventListener('change', buildPlanForm);
+  async function fillPlan(){
+    const date = dateVal(), plan = await currentPlan();
+    if(planDirty || date !== dateVal()) return;
+    const day = plan.flatMap(e => e.days).find(d => d.iso === date);
+    $('planText').value = day ? '{"title": ' + JSON.stringify(day.title || '') + ',\n "items": [\n' + (day.items || []).map(i => '  ' + JSON.stringify(i)).join(',\n') + '\n ]}' : '';
+    buildPlanForm();
+  }
+  function validateItem(it, n){
+    if(!it || typeof it !== 'object' || Array.isArray(it)) return n + 'objet attendu.';
+    if(typeof it.text !== 'string' || !it.text.trim()) return n + '« text » manquant.';
+    if(!TYPES[it.type]) return n + '« type » doit être parmi ' + Object.keys(TYPES).join(', ') + '.';
+    if(it.region != null && typeof it.region !== 'string') return n + '« region » doit être du texte.';
+    for(const k of ['time', 'info', 'maps']) if(it[k] != null && typeof it[k] !== 'string') return n + '« ' + k + ' » doit être du texte.';
+    if(it.booked != null && typeof it.booked !== 'boolean') return n + '« booked » doit être true ou false.';
+    return null;
+  }
+  function validateDay(o){
+    if(!o || typeof o !== 'object' || Array.isArray(o)) return 'le contenu doit être un objet {"title": …, "items": […]}.';
+    if(typeof o.title !== 'string' || !o.title.trim()) return 'le titre est manquant.';
+    if(!Array.isArray(o.items) || o.items.length > 30) return '« items » doit être une liste (30 max).';
+    for(const [i, it] of o.items.entries()){ const bad = validateItem(it, 'activité ' + (i + 1) + ' : '); if(bad) return bad; }
+    return null;
+  }
+  $('savePlan').addEventListener('click', async () => {
+    const date = dateVal();
+    if(!precheck('planStatus')) return;
+    let obj; try{ obj = JSON.parse($('planText').value); }catch(e){ say('planStatus', 'JSON invalide : ' + e.message); return; }
+    const bad = validateDay(obj); if(bad){ say('planStatus', 'Refusé : ' + bad); return; }
+    say('planStatus', 'Envoi en cours…');
+    try{
+      const plan = await readRepoJson(P('itinerary.json'), null);
+      if(!Array.isArray(plan)) throw new Error('itinerary.json introuvable dans le dépôt.');
+      const day = plan.flatMap(e => e.days).find(d => d.iso === date);
+      if(!day) throw new Error("cette date n'est pas dans le planning.");
+      day.title = obj.title.trim(); day.items = obj.items;
+      await commitFiles('Planning du ' + date, [{path:P('itinerary.json'), text:formatPlan(plan)}]);
+      say('planStatus', '✓ Planning enregistré. En ligne dans ~1 min.');
+    }catch(err){ say('planStatus', 'Erreur : ' + err.message); }
+  });
+
+  /* --- Planning complet --- */
+  function validatePlan(plan){
+    if(!Array.isArray(plan) || !plan.length) return 'le planning doit être une liste non vide d’étapes.';
+    const seen = new Set(); let prev = '';
+    for(const [ei, e] of plan.entries()){
+      const n = 'étape ' + (ei + 1) + ' : ';
+      if(!e || typeof e !== 'object' || Array.isArray(e)) return n + 'objet attendu.';
+      if(typeof e.etape !== 'string' || !e.etape.trim()) return n + '« etape » (le titre) est manquant.';
+      if(!Array.isArray(e.days) || !e.days.length) return n + '« days » doit être une liste non vide.';
+      for(const [di, d] of e.days.entries()){
+        const m = n + 'jour ' + (di + 1) + ' : ';
+        if(!d || typeof d !== 'object' || Array.isArray(d)) return m + 'objet attendu.';
+        if(!isIso(d.iso)) return m + '« iso » doit être une date AAAA-MM-JJ valide.';
+        if(seen.has(d.iso)) return m + 'la date ' + d.iso + ' apparaît deux fois.';
+        if(d.iso < prev) return m + 'les jours doivent être dans l’ordre chronologique (' + d.iso + ').';
+        seen.add(d.iso); prev = d.iso;
+        if(d.title != null && typeof d.title !== 'string') return m + '« title » doit être du texte.';
+        if(d.items != null && !Array.isArray(d.items)) return m + '« items » doit être une liste.';
+        for(const [ii, it] of (d.items || []).entries()){ const bad = validateItem(it, m + 'activité ' + (ii + 1) + ' : '); if(bad) return bad; }
+      }
+    }
+    return null;
+  }
+  async function fillFullPlan(){ $('fullPlanText').value = formatPlan(await currentPlan()); }
+  $('saveFullPlan').addEventListener('click', async () => {
+    if(!needGh('fullPlanStatus')) return;
+    let plan; try{ plan = JSON.parse($('fullPlanText').value); }catch(e){ say('fullPlanStatus', 'JSON invalide : ' + e.message); return; }
+    const bad = validatePlan(plan); if(bad){ say('fullPlanStatus', 'Refusé : ' + bad); return; }
+    if(!confirm('Remplacer tout le planning de ce voyage ?')) return;
+    say('fullPlanStatus', 'Envoi en cours…');
+    try{
+      const ds = plan.flatMap(e => e.days);
+      const files = [{path:P('itinerary.json'), text:formatPlan(plan)}, ...(await indexFiles({start:ds[0].iso, end:ds[ds.length - 1].iso}))];
+      await commitFiles('Planning complet', files);
+      say('fullPlanStatus', '✓ Planning enregistré (' + ds.length + ' jours). En ligne dans ~1 min.');
+    }catch(err){ say('fullPlanStatus', 'Erreur : ' + err.message); }
+  });
+
+  /* --- Réglages du voyage --- */
+  async function fillSettings(){
+    let c = TRIP_RAW;
+    if(token()){ try{ c = await readRepoJson(P('trip.json'), TRIP_RAW) || {}; }catch(e){} }
+    $('setTitle').value = c.title || ''; $('setDest').value = c.destinationLabel || ''; $('setLead').value = c.lead || '';
+    $('setPreset').value = PRESETS[c.preset] ? c.preset : 'ville'; $('setTz').value = c.timezone || '';
+    $('setHomeLabel').value = (c.home && c.home.label) || ''; $('setHomeTz').value = (c.home && c.home.timezone) || '';
+    $('cfgJson').value = toText(c);
+  }
+  function validateConfig(c){
+    if(!c || typeof c !== 'object' || Array.isArray(c)) return 'la configuration doit être un objet JSON.';
+    if(c.preset != null && !PRESETS[c.preset]) return '« preset » doit être parmi ' + Object.keys(PRESETS).join(', ') + '.';
+    if(c.timezone != null && !validTz(c.timezone)) return '« timezone » inconnu (exemple : Europe/Rome).';
+    if(c.home != null && (typeof c.home !== 'object' || (c.home.timezone != null && !validTz(c.home.timezone)))) return '« home.timezone » inconnu.';
+    if(c.types != null){
+      if(typeof c.types !== 'object' || Array.isArray(c.types)) return '« types » doit être un objet.';
+      for(const [k, t] of Object.entries(c.types)) if(!t || typeof t.label !== 'string' || !isHex(t.color)) return 'type « ' + k + ' » : il faut un « label » et une « color » au format #RRGGBB.';
+    }
+    if(c.palette != null){
+      if(typeof c.palette !== 'object') return '« palette » doit être un objet.';
+      for(const [k, v] of Object.entries(c.palette)) if(k !== 'dark' && !isHex(v)) return 'palette « ' + k + ' » : couleur #RRGGBB attendue.';
+    }
+    if(c.map != null){
+      if(typeof c.map !== 'object' || !['auto', 'manual', 'none'].includes(c.map.mode || 'auto')) return '« map.mode » doit être auto, manual ou none.';
+      if(c.map.mode === 'manual' && (!Array.isArray(c.map.points) || c.map.points.some(p => !p || isNaN(+p.x) || isNaN(+p.y)))) return '« map.points » : une liste de {x, y, label} est attendue.';
+    }
+    return null;
+  }
+  async function saveConfig(obj, statusId){
+    const files = [{path:P('trip.json'), text:toText(obj)}, ...(await indexFiles({title:obj.title || CUR.slug, destination:obj.destinationLabel || ''}))];
+    await commitFiles('Réglages du voyage', files);
+    say(statusId, '✓ Réglages enregistrés. Visibles dans ~1 min.');
+  }
+  $('saveSettings').addEventListener('click', async () => {
+    if(!needGh('settingsStatus')) return;
+    const title = $('setTitle').value.trim(), tz = $('setTz').value.trim(), homeTz = $('setHomeTz').value.trim();
+    if(!title){ say('settingsStatus', 'Le titre est obligatoire.'); return; }
+    if(tz && !validTz(tz)){ say('settingsStatus', 'Fuseau horaire de la destination inconnu (exemple : Europe/Rome).'); return; }
+    if(homeTz && !validTz(homeTz)){ say('settingsStatus', 'Fuseau horaire de départ inconnu (exemple : Europe/Brussels).'); return; }
+    say('settingsStatus', 'Envoi en cours…');
+    try{
+      const cur = (await readRepoJson(P('trip.json'), {})) || {};
+      const next = Object.assign({}, cur, {title, destinationLabel:$('setDest').value.trim() || undefined, lead:$('setLead').value.trim() || undefined, preset:$('setPreset').value, timezone:tz || undefined});
+      const home = Object.assign({}, cur.home || {}, {label:$('setHomeLabel').value.trim() || undefined, timezone:homeTz || undefined});
+      if(home.label || home.timezone) next.home = home; else delete next.home;
+      await saveConfig(JSON.parse(JSON.stringify(next)), 'settingsStatus');
+      fillSettings();
+    }catch(err){ say('settingsStatus', 'Erreur : ' + err.message); }
+  });
+  $('saveCfgJson').addEventListener('click', async () => {
+    if(!needGh('cfgStatus')) return;
+    let obj; try{ obj = JSON.parse($('cfgJson').value); }catch(e){ say('cfgStatus', 'JSON invalide : ' + e.message); return; }
+    const bad = validateConfig(obj); if(bad){ say('cfgStatus', 'Refusé : ' + bad); return; }
+    say('cfgStatus', 'Envoi en cours…');
+    try{ await saveConfig(obj, 'cfgStatus'); }catch(err){ say('cfgStatus', 'Erreur : ' + err.message); }
+  });
+
+  $('photoDate').addEventListener('change', () => { noteDirty = planDirty = false; fillNote(); fillPlan(); refreshExisting(); });
+  $('ghToken').addEventListener('change', () => { fillNote(); fillPlan(); fillFullPlan(); fillSettings(); refreshExisting(); });
+  fillNote(); fillPlan(); fillFullPlan(); fillSettings(); refreshExisting();
+}
+if(location.hash === '#admin') initAdmin();
+})();
+</script>
+</body>
+</html>
