@@ -1,0 +1,9 @@
+{
+  "preset": "nature",
+  "title": "Etats-Unis 2025",
+  "destinationLabel": "Etats-Unis",
+  "timezone": "America/Los_Angeles",
+  "map": {
+    "mode": "auto"
+  }
+}

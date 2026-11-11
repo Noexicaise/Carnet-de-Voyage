@@ -1,0 +1,11 @@
+{
+  "trips": [
+    {
+      "slug": "etats-unis-2025",
+      "title": "Etats-Unis 2025",
+      "destination": "Etats-Unis",
+      "start": "2025-07-25",
+      "end": "2025-08-13"
+    }
+  ]
+}
