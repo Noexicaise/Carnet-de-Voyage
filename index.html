@@ -242,6 +242,7 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
 
     <details open>
       <summary>Photos</summary>
+      <label class="ex-row"><input type="checkbox" id="photoAuto" checked> Classer chaque photo selon sa date de prise de vue (sinon : date choisie ci-dessus)</label>
       <label for="photoFiles">Nouvelles photos (20 max par envoi, recompressées automatiquement)</label>
       <input type="file" id="photoFiles" accept="image/*" multiple>
       <details id="capsBox" hidden><summary>Légendes (optionnel)</summary><div id="newCaps"></div></details>
@@ -299,6 +300,11 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
     </details>
   </div>
 
+  <details id="tripsMgr">
+    <summary>Gérer mes voyages (renommer, ordre, supprimer)</summary>
+    <div id="tripsMgrList"></div>
+    <div id="tripsMgrStatus" class="meta" role="status"></div>
+  </details>
   <details id="newTripBox">
     <summary>Nouveau voyage</summary>
     <p class="meta">Crée un dossier de voyage dans ce dépôt. Les voyages existants restent consultables dans le menu « Voyage » en haut de page.</p>
@@ -349,12 +355,39 @@ const PRESETS = {
     types:{culture:{label:'Culture & visites', color:'#3C4A54'}, nature:{label:'Nature & plein air', color:'#7C8A6E'}, gastronomie:{label:'Gastronomie', color:'#A65A40'}, shopping:{label:'Shopping', color:'#C9A876'}, parc:{label:'Parc à thème', color:'#8E5B8F'}, transport:{label:'Transport', color:'#8C8577'}, detente:{label:'Détente & onsen', color:'#66928E'}}},
   mediterranee:{ label:'Méditerranée — soleil, mer', fonts:{head:'Playfair Display', body:'Nunito Sans'},
     palette:{paper:'#FAF6EE', paper2:'#F2EAD9', card:'#FFFCF6', ink:'#25303A', soft:'#5E6A72', line:'#E1D6BF', primary:'#1F5C7A', warm:'#B5532F', green:'#6F8F5A', sand:'#E0B25C'},
+    dark:{paper:'#14222B', paper2:'#1B2E3A', card:'#1F3441', ink:'#EDE6D6', soft:'#A9B6BD', line:'#2E4655'},
     types:{culture:{label:'Culture & visites', color:'#1F5C7A'}, plage:{label:'Plage & baignade', color:'#3A8FB0'}, balade:{label:'Balades & nature', color:'#6F8F5A'}, gastronomie:{label:'Gastronomie', color:'#B5532F'}, shopping:{label:'Marchés & boutiques', color:'#E0B25C'}, transport:{label:'Transport', color:'#8C8577'}, detente:{label:'Détente', color:'#8E5B8F'}}},
   nature:{ label:'Nature — randonnée, road trip', fonts:{head:'Merriweather', body:'Source Sans 3'},
     palette:{paper:'#F3F1EA', paper2:'#E8E5D9', card:'#FAF9F4', ink:'#232A22', soft:'#5C6558', line:'#D3CFBF', primary:'#2F5D4A', warm:'#A0542F', green:'#6B8E4E', sand:'#CDA45E'},
+    dark:{paper:'#151D17', paper2:'#1C2720', card:'#202D25', ink:'#E6EADB', soft:'#A3B09F', line:'#2F4034'},
     types:{randonnee:{label:'Randonnée', color:'#2F5D4A'}, paysage:{label:'Paysages & faune', color:'#6B8E4E'}, route:{label:'Route & transport', color:'#8C8577'}, bivouac:{label:'Bivouac & hébergement', color:'#A0542F'}, gastronomie:{label:'Repas', color:'#CDA45E'}, culture:{label:'Visites', color:'#3C4A54'}, detente:{label:'Détente', color:'#66928E'}}},
+  tropical:{ label:'Tropical — îles, plages, lagon', fonts:{head:'Lora', body:'Quicksand'},
+    palette:{paper:'#F4FAF7', paper2:'#E3F1EA', card:'#FFFFFF', ink:'#15312E', soft:'#4F6F6B', line:'#CFE3DA', primary:'#0E7C86', warm:'#E4572E', green:'#2E9E6B', sand:'#F2B84B'},
+    dark:{paper:'#0F2220', paper2:'#153030', card:'#193836', ink:'#E6F3EE', soft:'#9DBDB5', line:'#26504C'},
+    types:{plage:{label:'Plage & baignade', color:'#0E7C86'}, mer:{label:'Mer & activités', color:'#2E9E6B'}, balade:{label:'Balades & nature', color:'#6F8F5A'}, gastronomie:{label:'Gastronomie', color:'#E4572E'}, culture:{label:'Culture & visites', color:'#8E5B8F'}, transport:{label:'Transport', color:'#8C8577'}, detente:{label:'Détente', color:'#F2B84B'}}},
+  nordique:{ label:'Nordique — Scandinavie, Islande', fonts:{head:'Spectral', body:'Work Sans'},
+    palette:{paper:'#F2F5F7', paper2:'#E4EAEE', card:'#FBFCFD', ink:'#1C2630', soft:'#56636F', line:'#CBD5DC', primary:'#2C5A7A', warm:'#B4563C', green:'#5B8A7A', sand:'#C9B27C'},
+    dark:{paper:'#121A22', paper2:'#19242F', card:'#1D2A36', ink:'#E4EBF0', soft:'#9FB0BD', line:'#2C3E4E'},
+    types:{paysage:{label:'Paysages & aurores', color:'#2C5A7A'}, randonnee:{label:'Randonnée', color:'#5B8A7A'}, culture:{label:'Culture & visites', color:'#8E5B8F'}, gastronomie:{label:'Gastronomie', color:'#B4563C'}, route:{label:'Route & transport', color:'#8C8577'}, detente:{label:'Spa & sauna', color:'#C9B27C'}}},
+  desert:{ label:'Désert & Orient — Maroc, Égypte…', fonts:{head:'Cormorant Garamond', body:'Karla'},
+    palette:{paper:'#F8F0E3', paper2:'#F0E2CB', card:'#FFF9EF', ink:'#3A2418', soft:'#7A5E4B', line:'#E4D0B0', primary:'#7A3E2B', warm:'#C4572A', green:'#6E7F4E', sand:'#D9A441'},
+    dark:{paper:'#231812', paper2:'#2C1F17', card:'#32241B', ink:'#F4E6D2', soft:'#C2A98F', line:'#4A3626'},
+    types:{culture:{label:'Culture & monuments', color:'#7A3E2B'}, souk:{label:'Souks & artisanat', color:'#D9A441'}, gastronomie:{label:'Gastronomie', color:'#C4572A'}, desert:{label:'Désert & paysages', color:'#6E7F4E'}, detente:{label:'Hammam & détente', color:'#66928E'}, transport:{label:'Transport', color:'#8C8577'}}},
+  montagne:{ label:'Montagne — ski, lacs, alpinisme', fonts:{head:'Bitter', body:'Rubik'},
+    palette:{paper:'#F1F4F6', paper2:'#E1E8EC', card:'#FAFCFD', ink:'#17222B', soft:'#53626E', line:'#C8D3DA', primary:'#1E4E79', warm:'#D2542A', green:'#3F7D5A', sand:'#BFA46E'},
+    dark:{paper:'#11181F', paper2:'#17212A', card:'#1B2731', ink:'#E3EAF0', soft:'#9DAEBB', line:'#2A3B49'},
+    types:{ski:{label:'Ski & neige', color:'#1E4E79'}, randonnee:{label:'Randonnée', color:'#3F7D5A'}, paysage:{label:'Panoramas & lacs', color:'#66928E'}, gastronomie:{label:'Repas & refuges', color:'#D2542A'}, detente:{label:'Spa & détente', color:'#BFA46E'}, transport:{label:'Transport', color:'#8C8577'}}},
+  amerique:{ label:'Road trip — Amérique, grands espaces', fonts:{head:'Oswald', body:'Karla'},
+    palette:{paper:'#F7F1E8', paper2:'#EDE3D2', card:'#FFFBF3', ink:'#2A211B', soft:'#6E5F52', line:'#DCCDB4', primary:'#1D3B5A', warm:'#C8442F', green:'#5E7F4A', sand:'#E1A935'},
+    dark:{paper:'#1E1813', paper2:'#271F18', card:'#2C231B', ink:'#F2E8DA', soft:'#BBA992', line:'#43362A'},
+    types:{route:{label:'Route', color:'#1D3B5A'}, parc:{label:'Parcs nationaux', color:'#5E7F4A'}, ville:{label:'Villes', color:'#8E5B8F'}, gastronomie:{label:'Restos & diners', color:'#C8442F'}, culture:{label:'Culture & musées', color:'#E1A935'}, detente:{label:'Détente', color:'#66928E'}, transport:{label:'Transport', color:'#8C8577'}}},
+  famille:{ label:'Famille — enfants, parcs, vacances', fonts:{head:'Quicksand', body:'Nunito'},
+    palette:{paper:'#FFF8EF', paper2:'#FFEBD2', card:'#FFFFFF', ink:'#2B2340', soft:'#6A5F80', line:'#F0D9BA', primary:'#5B4BC4', warm:'#E0502A', green:'#1F8F67', sand:'#E3A71B'},
+    dark:{paper:'#1B1730', paper2:'#241F40', card:'#29234A', ink:'#F0ECFA', soft:'#B2A9D0', line:'#3B3463'},
+    types:{parc:{label:'Parcs & attractions', color:'#5B4BC4'}, nature:{label:'Nature & animaux', color:'#1F8F67'}, gastronomie:{label:'Repas & goûters', color:'#E0502A'}, culture:{label:'Visites', color:'#8E5B8F'}, detente:{label:'Détente & piscine', color:'#E3A71B'}, transport:{label:'Transport', color:'#8C8577'}}},
   ville:{ label:'Ville — city break', fonts:{head:'Libre Baskerville', body:'DM Sans'},
     palette:{paper:'#F5F4F1', paper2:'#EAE8E3', card:'#FFFFFF', ink:'#1E1E22', soft:'#62626B', line:'#D9D7D0', primary:'#2B2D42', warm:'#C2492F', green:'#4F7F6A', sand:'#D9A441'},
+    dark:{paper:'#17171B', paper2:'#1F1F25', card:'#24242B', ink:'#ECECEF', soft:'#A5A5B0', line:'#34343D'},
     types:{culture:{label:'Musées & monuments', color:'#2B2D42'}, gastronomie:{label:'Restos & cafés', color:'#C2492F'}, balade:{label:'Balades & parcs', color:'#4F7F6A'}, shopping:{label:'Shopping', color:'#D9A441'}, sortie:{label:'Soirées & sorties', color:'#8E5B8F'}, transport:{label:'Transport', color:'#8C8577'}}}
 };
 const MAX_PHOTOS = 20;   /* photos par envoi (le total par jour n'est pas limité) */
@@ -478,7 +511,7 @@ function applyTheme(cfg){
   const preset = PRESETS[cfg.preset] || PRESETS.ville;
   const pal = Object.assign({}, preset.palette, cfg.palette || {});
   Object.keys(pal).forEach(k => { if(typeof pal[k] === 'object' || !isHex(pal[k])) pal[k] = preset.palette[k]; });
-  const dark = Object.assign({}, DARK, (cfg.palette && typeof cfg.palette.dark === 'object') ? cfg.palette.dark : {});
+  const dark = Object.assign({}, DARK, preset.dark || {}, (cfg.palette && typeof cfg.palette.dark === 'object') ? cfg.palette.dark : {});
   Object.keys(dark).forEach(k => { if(!isHex(dark[k])) dark[k] = DARK[k]; });
   const fills = {primary:fillOk(pal.primary), warm:fillOk(pal.warm), green:fillOk(pal.green), sand:fillOk(pal.sand)};
   const lightBgs = [pal.paper, pal.paper2, pal.card], darkBgs = [dark.paper, dark.paper2, dark.card];
@@ -1083,12 +1116,46 @@ function initAdmin(){
   $('photoDate').value = defaultDate();
 
   /* --- Photos : nouvelles --- */
+  /* Date de prise de vue (EXIF) d'une photo JPEG : « AAAA-MM-JJ » ou '' si absente ou hors du voyage */
+  async function exifDay(file){
+    try{
+      const dv = new DataView(await file.slice(0, 131072).arrayBuffer());
+      if(dv.getUint16(0) !== 0xFFD8) return '';
+      let o = 2;
+      while(o + 4 < dv.byteLength){
+        const m = dv.getUint16(o), len = dv.getUint16(o + 2);
+        if(m === 0xFFE1 && dv.getUint32(o + 4) === 0x45786966){
+          const t = o + 10, le = dv.getUint16(t) === 0x4949, g16 = x => dv.getUint16(x, le), g32 = x => dv.getUint32(x, le);
+          const ifd = (off, tag) => { const n = g16(t + off); for(let i = 0; i < n; i++){ const e = t + off + 2 + i * 12; if(g16(e) === tag) return g32(e + 8); } return -1; };
+          const ex = ifd(g32(t + 4), 0x8769); if(ex < 0) return '';
+          let v = ifd(ex, 0x9003); if(v < 0) v = ifd(ex, 0x9004); if(v < 0) return '';
+          let str = ''; for(let i = 0; i < 10; i++) str += String.fromCharCode(dv.getUint8(t + v + i));
+          const d = str.replace(/:/g, '-'); return /^\d{4}-\d{2}-\d{2}$/.test(d) && d >= START_ISO && d <= END_ISO ? d : '';
+        }
+        if((m & 0xFF00) !== 0xFF00) break;
+        o += 2 + len;
+      }
+    }catch(e){}
+    return '';
+  }
+  let exifDays = [];
+  const photoDays = (files, fallback) => files.map((f, i) => ($('photoAuto').checked && exifDays[i]) || fallback);
+
   $('photoFiles').addEventListener('change', () => {
     const all = [...$('photoFiles').files], files = all.slice(0, MAX_PHOTOS);
     $('newCaps').replaceChildren(...files.map(f => el('input', {type:'text', class:'cap-input', maxlength:'140', placeholder:'Légende (optionnelle) — ' + f.name})));
     $('capsBox').hidden = !files.length;
     say('adminStatus', all.length > MAX_PHOTOS ? all.length + ' photos choisies : seules les ' + MAX_PHOTOS + ' premières seront envoyées, renvoyez les autres ensuite.' : '');
+    describeDays(files);
   });
+  async function describeDays(files){
+    exifDays = await Promise.all(files.map(exifDay));
+    if(!files.length || !$('photoAuto').checked){ if(files.length) say('adminStatus', 'Toutes les photos seront publiées le ' + longDate(dateVal()) + '.'); return; }
+    const days = photoDays(files, dateVal()), by = {}; days.forEach(d => { by[d] = (by[d] || 0) + 1; });
+    const none = exifDays.filter(d => !d).length;
+    say('adminStatus', 'Classement : ' + Object.keys(by).sort().map(d => by[d] + ' photo(s) le ' + longDate(d)).join(' · ') + (none ? ' (' + none + ' sans date lisible → ' + longDate(dateVal()) + ')' : '') + '.');
+  }
+  $('photoAuto').addEventListener('change', () => describeDays([...$('photoFiles').files].slice(0, MAX_PHOTOS)));
   function loadImage(file){
     return new Promise((ok, ko) => {
       const fr = new FileReader();
@@ -1109,7 +1176,7 @@ function initAdmin(){
   const serialize = p => (p.thumb === p.src && !p.caption) ? p.src : Object.assign({src:p.src, thumb:p.thumb}, p.caption ? {caption:p.caption} : {});
 
   $('publishPhotos').addEventListener('click', async () => {
-    const date = dateVal(), files = [...$('photoFiles').files].slice(0, MAX_PHOTOS);
+    const date = dateVal(), files = [...$('photoFiles').files].slice(0, MAX_PHOTOS), days = photoDays(files, date);
     if(!precheck('adminStatus')) return;
     if(!files.length){ say('adminStatus', 'Choisissez au moins une photo.'); return; }
     const caps = [...document.querySelectorAll('#newCaps .cap-input')].map(i => i.value.trim());
@@ -1121,16 +1188,16 @@ function initAdmin(){
         say('adminStatus', 'Compression ' + (i + 1) + '/' + files.length + '…');
         try{
           const img = await loadImage(files[i]);
-          prepared.push({name:date + '-' + stamp + '-' + i + '.jpg', caption:caps[i] || '', full:jpegBase64(img, 1600, .8), thumb:jpegBase64(img, 480, .72)});
+          prepared.push({day:days[i], name:days[i] + '-' + stamp + '-' + i + '.jpg', caption:caps[i] || '', full:jpegBase64(img, 1600, .8), thumb:jpegBase64(img, 480, .72)});
         }catch(e){ failed++; }
       }
       if(!prepared.length) throw new Error("aucune photo n'a pu être lue.");
       const map = await readRepoJson(P('photos.json'), {});
-      map[date] = [...(map[date] || []), ...prepared.map(p => serialize({src:'photos/' + p.name, thumb:'photos/thumbs/' + p.name, caption:p.caption}))];
+      prepared.forEach(p => { map[p.day] = [...(map[p.day] || []), serialize({src:'photos/' + p.name, thumb:'photos/thumbs/' + p.name, caption:p.caption})]; });
       const out = [];
       prepared.forEach(p => out.push({path:P('photos/' + p.name), base64:p.full}, {path:P('photos/thumbs/' + p.name), base64:p.thumb}));
       out.push({path:P('photos.json'), text:toText(map)});
-      await commitFiles('Photos du ' + date, out, (a, b) => say('adminStatus', 'Envoi ' + a + '/' + b + '…'));
+      await commitFiles('Photos du ' + [...new Set(prepared.map(p => p.day))].sort().join(', '), out, (a, b) => say('adminStatus', 'Envoi ' + a + '/' + b + '…'));
       say('adminStatus', '✓ ' + prepared.length + '/' + files.length + ' photo(s) publiée(s)' + (failed ? ' — ' + failed + ' illisible(s), à renvoyer.' : '.') + ' En ligne dans ~1 min.');
       $('photoFiles').value = ''; $('newCaps').replaceChildren(); $('capsBox').hidden = true;
       refreshExisting();
@@ -1220,6 +1287,41 @@ function initAdmin(){
     if(token()){ try{ const p = await readRepoJson(P('itinerary.json'), null); if(Array.isArray(p)) plan = p; }catch(e){} }
     return plan;
   }
+  /* Gérer les voyages : renommer, réordonner, supprimer (trips/index.json) */
+  (function(){
+    const box = $('tripsMgrList'), st = 'tripsMgrStatus';
+    async function load(){ const idx = await readRepoJson('trips/index.json', null); return (idx && Array.isArray(idx.trips)) ? idx : null; }
+    async function save(msg, idx, extra){
+      say(st, 'Enregistrement…');
+      try{ await commitFiles(msg, [{path:'trips/index.json', text:toText(idx)}].concat(extra || [])); say(st, '✓ Fait. Le site se met à jour en ~1 min.'); }
+      catch(err){ say(st, 'Erreur : ' + err.message); }
+      await render();
+    }
+    async function render(){
+      let idx; try{ idx = await load(); }catch(err){ say(st, 'Connectez GitHub d’abord (' + err.message + ').'); return; }
+      if(!idx || !idx.trips.length){ box.replaceChildren(el('p', {class:'meta', text:'Aucun voyage dans le menu pour l’instant.'})); return; }
+      box.replaceChildren(...idx.trips.map((t, n) => {
+        const name = el('input', {value:t.title || t.slug, 'aria-label':'Titre du voyage'});
+        name.addEventListener('change', async () => { const i = await load(); const x = i && i.trips.find(y => y.slug === t.slug); if(!x || !name.value.trim()) return; x.title = name.value.trim(); await save('Renommer : ' + x.title, i); });
+        const mv = d => async () => { const i = await load(); if(!i) return; const a = i.trips.findIndex(y => y.slug === t.slug), b = a + d; if(a < 0 || b < 0 || b >= i.trips.length) return; [i.trips[a], i.trips[b]] = [i.trips[b], i.trips[a]]; await save('Ordre des voyages', i); };
+        const del = async () => {
+          if(!t.dir && t.slug === 'principal'){ say(st, 'Le voyage à la racine du dépôt ne se supprime pas ici (supprimez ses fichiers sur GitHub si besoin).'); return; }
+          if(!confirm('Supprimer définitivement « ' + (t.title || t.slug) + ' » avec ses photos et comptes rendus ?')) return;
+          try{
+            const dir = (t.dir || ('trips/' + t.slug)).replace(/\/?$/, '/'), br = ghFields().branch;
+            const tree = (await gh('git/trees/' + encodeURIComponent(br) + '?recursive=1')).tree;
+            const i = await load(); i.trips = i.trips.filter(y => y.slug !== t.slug);
+            await save('Suppression : ' + (t.title || t.slug), i, tree.filter(f => f.type === 'blob' && f.path.startsWith(dir)).map(f => ({path:f.path, remove:true})));
+          }catch(err){ say(st, 'Erreur : ' + err.message); }
+        };
+        return el('div', {class:'pf-item'}, name, el('div', {class:'pf-row'},
+          el('button', {class:'btn', type:'button', text:'↑', 'aria-label':'Monter', onclick:mv(-1)}),
+          el('button', {class:'btn', type:'button', text:'↓', 'aria-label':'Descendre', onclick:mv(1)}),
+          el('button', {class:'btn', type:'button', text:'✕ Supprimer', onclick:del})));
+      }));
+    }
+    $('tripsMgr').addEventListener('toggle', () => { if($('tripsMgr').open) render(); });
+  })();
   $('sharePageBtn').addEventListener('click', async () => {
     if(!CUR || !DIR){ say('adminStatus', 'La page de partage concerne les voyages créés dans leur propre dossier (pas le voyage à la racine).'); return; }
     try{
