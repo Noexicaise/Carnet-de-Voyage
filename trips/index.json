@@ -6,6 +6,13 @@
       "destination": "Etats-Unis",
       "start": "2025-07-25",
       "end": "2025-08-13"
+    },
+    {
+      "slug": "italie-26-2026",
+      "title": "Italie '26",
+      "destination": "",
+      "start": "2026-12-03",
+      "end": "2026-12-31"
     }
   ]
 }
