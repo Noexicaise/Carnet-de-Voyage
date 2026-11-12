@@ -161,6 +161,15 @@ main.filtering .timeline.collapsed{display:block}
 .admin-panel .btn{align-self:flex-start}
 .btn-line{display:flex;gap:10px;flex-wrap:wrap}
 #tripAdmin{display:flex;flex-direction:column;gap:8px}
+.etape-head{border-bottom:var(--hr,1px solid var(--line))}
+h1,h2,h3,h4{text-transform:var(--hcase,none);letter-spacing:var(--hspace,0);font-weight:var(--hweight,700)}
+.item,.today-card,.empty,.day-note{border-radius:var(--r,10px);box-shadow:var(--shadow,none)}
+.btn,.chip,.countdown,.trip-switch select{border-radius:var(--rb,20px)}
+.tag,.badge{border-radius:calc(var(--rb,20px) * .6)}
+.day::before{border-radius:var(--dot,50%);transform:rotate(var(--dotrot,0deg))}
+.kicker::before{content:var(--orn,'')}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--primary);opacity:var(--patop,.06);-webkit-mask:var(--pattern,none);mask:var(--pattern,none)}
+@media print{body::before{display:none}}
 .pf-item{border:1px solid var(--line);border-radius:8px;padding:10px;margin-top:8px;display:flex;flex-direction:column;gap:6px;background:var(--paper2)}
 .pf-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.pf-row>*{flex:1 1 120px;width:auto}.pf-row .btn{flex:0 0 auto;padding:4px 12px;min-height:36px}
 .ex-row{display:flex;gap:8px;align-items:center}
@@ -352,43 +361,65 @@ const DARK = {paper:'#211F1B', paper2:'#2A2822', card:'#2A2822', ink:'#EDE7D9', 
 const PRESETS = {
   japan:{ label:'Japandi — Japon, Asie', fonts:{head:'Shippori Mincho', body:'Zen Maru Gothic'},
     palette:{paper:'#F6F2E9', paper2:'#EFE9DB', card:'#FBF9F4', ink:'#2B2A26', soft:'#6B6455', line:'#D9D0BC', primary:'#3C4A54', warm:'#A65A40', green:'#7C8A6E', sand:'#C9A876'},
+    look:{r:6, rb:8, shadow:'none', hcase:'none', hspace:'.02em', hweight:400, dot:'50%', hr:'1px solid var(--line)', orn:'❖ ', pat:'waves2', patop:.07},
     types:{culture:{label:'Culture & visites', color:'#3C4A54'}, nature:{label:'Nature & plein air', color:'#7C8A6E'}, gastronomie:{label:'Gastronomie', color:'#A65A40'}, shopping:{label:'Shopping', color:'#C9A876'}, parc:{label:'Parc à thème', color:'#8E5B8F'}, transport:{label:'Transport', color:'#8C8577'}, detente:{label:'Détente & onsen', color:'#66928E'}}},
   mediterranee:{ label:'Méditerranée — soleil, mer', fonts:{head:'Playfair Display', body:'Nunito Sans'},
     palette:{paper:'#FAF6EE', paper2:'#F2EAD9', card:'#FFFCF6', ink:'#25303A', soft:'#5E6A72', line:'#E1D6BF', primary:'#1F5C7A', warm:'#B5532F', green:'#6F8F5A', sand:'#E0B25C'},
     dark:{paper:'#14222B', paper2:'#1B2E3A', card:'#1F3441', ink:'#EDE6D6', soft:'#A9B6BD', line:'#2E4655'},
+    look:{r:18, rb:22, shadow:'0 8px 20px -12px rgba(31,92,122,.5)', hcase:'none', hspace:'0', hweight:700, dot:'50%', hr:'2px dotted var(--sand)', orn:'☀ ', pat:'waves', patop:.07},
     types:{culture:{label:'Culture & visites', color:'#1F5C7A'}, plage:{label:'Plage & baignade', color:'#3A8FB0'}, balade:{label:'Balades & nature', color:'#6F8F5A'}, gastronomie:{label:'Gastronomie', color:'#B5532F'}, shopping:{label:'Marchés & boutiques', color:'#E0B25C'}, transport:{label:'Transport', color:'#8C8577'}, detente:{label:'Détente', color:'#8E5B8F'}}},
   nature:{ label:'Nature — randonnée, road trip', fonts:{head:'Merriweather', body:'Source Sans 3'},
     palette:{paper:'#F3F1EA', paper2:'#E8E5D9', card:'#FAF9F4', ink:'#232A22', soft:'#5C6558', line:'#D3CFBF', primary:'#2F5D4A', warm:'#A0542F', green:'#6B8E4E', sand:'#CDA45E'},
     dark:{paper:'#151D17', paper2:'#1C2720', card:'#202D25', ink:'#E6EADB', soft:'#A3B09F', line:'#2F4034'},
+    look:{r:8, rb:8, shadow:'none', hcase:'none', hspace:'0', hweight:700, dot:'3px', hr:'1px solid var(--line)', orn:'🌲 ', pat:'pines', patop:.06},
     types:{randonnee:{label:'Randonnée', color:'#2F5D4A'}, paysage:{label:'Paysages & faune', color:'#6B8E4E'}, route:{label:'Route & transport', color:'#8C8577'}, bivouac:{label:'Bivouac & hébergement', color:'#A0542F'}, gastronomie:{label:'Repas', color:'#CDA45E'}, culture:{label:'Visites', color:'#3C4A54'}, detente:{label:'Détente', color:'#66928E'}}},
   tropical:{ label:'Tropical — îles, plages, lagon', fonts:{head:'Lora', body:'Quicksand'},
     palette:{paper:'#F4FAF7', paper2:'#E3F1EA', card:'#FFFFFF', ink:'#15312E', soft:'#4F6F6B', line:'#CFE3DA', primary:'#0E7C86', warm:'#E4572E', green:'#2E9E6B', sand:'#F2B84B'},
     dark:{paper:'#0F2220', paper2:'#153030', card:'#193836', ink:'#E6F3EE', soft:'#9DBDB5', line:'#26504C'},
+    look:{r:22, rb:24, shadow:'0 8px 20px -12px rgba(14,124,134,.55)', hcase:'none', hspace:'0', hweight:700, dot:'50%', hr:'3px dotted var(--sand)', orn:'🌴 ', pat:'leaves', patop:.08},
     types:{plage:{label:'Plage & baignade', color:'#0E7C86'}, mer:{label:'Mer & activités', color:'#2E9E6B'}, balade:{label:'Balades & nature', color:'#6F8F5A'}, gastronomie:{label:'Gastronomie', color:'#E4572E'}, culture:{label:'Culture & visites', color:'#8E5B8F'}, transport:{label:'Transport', color:'#8C8577'}, detente:{label:'Détente', color:'#F2B84B'}}},
   nordique:{ label:'Nordique — Scandinavie, Islande', fonts:{head:'Spectral', body:'Work Sans'},
     palette:{paper:'#F2F5F7', paper2:'#E4EAEE', card:'#FBFCFD', ink:'#1C2630', soft:'#56636F', line:'#CBD5DC', primary:'#2C5A7A', warm:'#B4563C', green:'#5B8A7A', sand:'#C9B27C'},
     dark:{paper:'#121A22', paper2:'#19242F', card:'#1D2A36', ink:'#E4EBF0', soft:'#9FB0BD', line:'#2C3E4E'},
+    look:{r:3, rb:3, shadow:'none', hcase:'none', hspace:'.03em', hweight:700, dot:'0', hr:'1px solid var(--line)', orn:'❄ ', pat:'lines', patop:.06},
     types:{paysage:{label:'Paysages & aurores', color:'#2C5A7A'}, randonnee:{label:'Randonnée', color:'#5B8A7A'}, culture:{label:'Culture & visites', color:'#8E5B8F'}, gastronomie:{label:'Gastronomie', color:'#B4563C'}, route:{label:'Route & transport', color:'#8C8577'}, detente:{label:'Spa & sauna', color:'#C9B27C'}}},
   desert:{ label:'Désert & Orient — Maroc, Égypte…', fonts:{head:'Cormorant Garamond', body:'Karla'},
     palette:{paper:'#F8F0E3', paper2:'#F0E2CB', card:'#FFF9EF', ink:'#3A2418', soft:'#7A5E4B', line:'#E4D0B0', primary:'#7A3E2B', warm:'#C4572A', green:'#6E7F4E', sand:'#D9A441'},
     dark:{paper:'#231812', paper2:'#2C1F17', card:'#32241B', ink:'#F4E6D2', soft:'#C2A98F', line:'#4A3626'},
+    look:{r:2, rb:2, shadow:'none', hcase:'none', hspace:'.03em', hweight:700, dot:'2px', dotrot:'45deg', hr:'4px double var(--line)', orn:'✦ ', pat:'diamonds', patop:.07},
     types:{culture:{label:'Culture & monuments', color:'#7A3E2B'}, souk:{label:'Souks & artisanat', color:'#D9A441'}, gastronomie:{label:'Gastronomie', color:'#C4572A'}, desert:{label:'Désert & paysages', color:'#6E7F4E'}, detente:{label:'Hammam & détente', color:'#66928E'}, transport:{label:'Transport', color:'#8C8577'}}},
   montagne:{ label:'Montagne — ski, lacs, alpinisme', fonts:{head:'Bitter', body:'Rubik'},
     palette:{paper:'#F1F4F6', paper2:'#E1E8EC', card:'#FAFCFD', ink:'#17222B', soft:'#53626E', line:'#C8D3DA', primary:'#1E4E79', warm:'#D2542A', green:'#3F7D5A', sand:'#BFA46E'},
     dark:{paper:'#11181F', paper2:'#17212A', card:'#1B2731', ink:'#E3EAF0', soft:'#9DAEBB', line:'#2A3B49'},
+    look:{r:6, rb:4, shadow:'0 2px 0 var(--line)', hcase:'uppercase', hspace:'.04em', hweight:700, dot:'0', hr:'2px solid var(--primary)', orn:'⛰ ', pat:'peaks', patop:.06},
     types:{ski:{label:'Ski & neige', color:'#1E4E79'}, randonnee:{label:'Randonnée', color:'#3F7D5A'}, paysage:{label:'Panoramas & lacs', color:'#66928E'}, gastronomie:{label:'Repas & refuges', color:'#D2542A'}, detente:{label:'Spa & détente', color:'#BFA46E'}, transport:{label:'Transport', color:'#8C8577'}}},
   amerique:{ label:'Road trip — Amérique, grands espaces', fonts:{head:'Oswald', body:'Karla'},
     palette:{paper:'#F7F1E8', paper2:'#EDE3D2', card:'#FFFBF3', ink:'#2A211B', soft:'#6E5F52', line:'#DCCDB4', primary:'#1D3B5A', warm:'#C8442F', green:'#5E7F4A', sand:'#E1A935'},
     dark:{paper:'#1E1813', paper2:'#271F18', card:'#2C231B', ink:'#F2E8DA', soft:'#BBA992', line:'#43362A'},
+    look:{r:4, rb:4, shadow:'none', hcase:'uppercase', hspace:'.05em', hweight:700, dot:'0', hr:'3px solid var(--warm)', orn:'★ ', pat:'stars', patop:.06},
     types:{route:{label:'Route', color:'#1D3B5A'}, parc:{label:'Parcs nationaux', color:'#5E7F4A'}, ville:{label:'Villes', color:'#8E5B8F'}, gastronomie:{label:'Restos & diners', color:'#C8442F'}, culture:{label:'Culture & musées', color:'#E1A935'}, detente:{label:'Détente', color:'#66928E'}, transport:{label:'Transport', color:'#8C8577'}}},
   famille:{ label:'Famille — enfants, parcs, vacances', fonts:{head:'Quicksand', body:'Nunito'},
     palette:{paper:'#FFF8EF', paper2:'#FFEBD2', card:'#FFFFFF', ink:'#2B2340', soft:'#6A5F80', line:'#F0D9BA', primary:'#5B4BC4', warm:'#E0502A', green:'#1F8F67', sand:'#E3A71B'},
     dark:{paper:'#1B1730', paper2:'#241F40', card:'#29234A', ink:'#F0ECFA', soft:'#B2A9D0', line:'#3B3463'},
+    look:{r:20, rb:24, shadow:'0 6px 0 -2px var(--line)', hcase:'none', hspace:'0', hweight:700, dot:'50%', hr:'3px dashed var(--sand)', orn:'🎈 ', pat:'confetti', patop:.09},
     types:{parc:{label:'Parcs & attractions', color:'#5B4BC4'}, nature:{label:'Nature & animaux', color:'#1F8F67'}, gastronomie:{label:'Repas & goûters', color:'#E0502A'}, culture:{label:'Visites', color:'#8E5B8F'}, detente:{label:'Détente & piscine', color:'#E3A71B'}, transport:{label:'Transport', color:'#8C8577'}}},
   ville:{ label:'Ville — city break', fonts:{head:'Libre Baskerville', body:'DM Sans'},
     palette:{paper:'#F5F4F1', paper2:'#EAE8E3', card:'#FFFFFF', ink:'#1E1E22', soft:'#62626B', line:'#D9D7D0', primary:'#2B2D42', warm:'#C2492F', green:'#4F7F6A', sand:'#D9A441'},
     dark:{paper:'#17171B', paper2:'#1F1F25', card:'#24242B', ink:'#ECECEF', soft:'#A5A5B0', line:'#34343D'},
+    look:{r:2, rb:2, shadow:'0 1px 0 var(--line)', hcase:'none', hspace:'-.01em', hweight:700, dot:'0', hr:'2px solid var(--ink)', orn:'', pat:'grid', patop:.05},
     types:{culture:{label:'Musées & monuments', color:'#2B2D42'}, gastronomie:{label:'Restos & cafés', color:'#C2492F'}, balade:{label:'Balades & parcs', color:'#4F7F6A'}, shopping:{label:'Shopping', color:'#D9A441'}, sortie:{label:'Soirées & sorties', color:'#8E5B8F'}, transport:{label:'Transport', color:'#8C8577'}}}
+};
+const PATTERNS = {
+  waves2:"<svg xmlns='http://www.w3.org/2000/svg' width='40' height='20'><g fill='none' stroke='#000' stroke-width='1.2'><circle cx='20' cy='20' r='18'/><circle cx='20' cy='20' r='12'/><circle cx='20' cy='20' r='6'/><circle cx='0' cy='10' r='10'/><circle cx='40' cy='10' r='10'/></g></svg>",
+  waves:"<svg xmlns='http://www.w3.org/2000/svg' width='60' height='18'><path d='M0 9 Q15 0 30 9 T60 9' fill='none' stroke='#000' stroke-width='1.4'/></svg>",
+  pines:"<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><path d='M24 6L34 24H14ZM24 20L38 42H10Z' fill='none' stroke='#000' stroke-width='1.2'/></svg>",
+  leaves:"<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><ellipse cx='12' cy='12' rx='9' ry='3' transform='rotate(-35 12 12)'/><ellipse cx='36' cy='34' rx='9' ry='3' transform='rotate(35 36 34)'/></svg>",
+  lines:"<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24'><path d='M0 24L24 0' stroke='#000' stroke-width='1'/></svg>",
+  diamonds:"<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36'><path d='M18 2L34 18L18 34L2 18Z' fill='none' stroke='#000' stroke-width='1.1'/></svg>",
+  peaks:"<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><path d='M0 40L16 12L26 28L34 18L48 40' fill='none' stroke='#000' stroke-width='1.2'/></svg>",
+  stars:"<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44'><path d='M22 6l3.5 9h9.5l-7.5 5.5 3 9-8.5-5.5-8.5 5.5 3-9L9 15h9.5z'/></svg>",
+  confetti:"<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44'><circle cx='8' cy='8' r='3'/><circle cx='32' cy='14' r='2'/><circle cx='18' cy='34' r='4'/><circle cx='40' cy='40' r='2'/></svg>",
+  grid:"<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><path d='M32 0H0V32' fill='none' stroke='#000' stroke-width='.8'/></svg>"
 };
 const MAX_PHOTOS = 20;   /* photos par envoi (le total par jour n'est pas limité) */
 
@@ -519,10 +550,16 @@ function applyTheme(cfg){
   const night = {paper:dark.paper, paper2:dark.paper2, card:dark.card, ink:inkOn(dark.ink, 1, darkBgs), soft:inkOn(dark.soft, 1, darkBgs), line:dark.line};
   const inks = (bgs, dir) => ({primary:inkOn(fills.primary, dir, bgs), warm:inkOn(fills.warm, dir, bgs), green:inkOn(fills.green, dir, bgs)});
   const set = (t, i) => `--paper:${t.paper};--paper2:${t.paper2};--card:${t.card};--ink:${t.ink};--ink-soft:${t.soft};--line:${t.line};--primary-ink:${i.primary};--warm-ink:${i.warm};--green-ink:${i.green};`;
+  const lk = Object.assign({}, preset.look || {}, (cfg.look && typeof cfg.look === 'object') ? cfg.look : {});
+  const safe = (v, d) => (typeof v === 'string' && /^[^;{}<>"'\\]{0,60}$/.test(v)) ? v : d;
+  const num = (v, d) => (typeof v === 'number' && v >= 0 && v <= 28) ? v : d;
+  const lookCss = `--r:${num(lk.r, 10)}px;--rb:${num(lk.rb, 20)}px;--shadow:${safe(lk.shadow, 'none')};--hcase:${safe(lk.hcase, 'none')};--hspace:${safe(lk.hspace, '0')};--hweight:${[400, 700].includes(lk.hweight) ? lk.hweight : 700};` +
+    `--dot:${safe(lk.dot, '50%')};--dotrot:${safe(lk.dotrot, '0deg')};--hr:${safe(lk.hr, '1px solid var(--line)')};--orn:"${safe(lk.orn, '')}";--patop:${typeof lk.patop === 'number' ? Math.min(Math.max(lk.patop, 0), .2) : .06};` +
+    `--pattern:${PATTERNS[lk.pat] ? 'url("data:image/svg+xml,' + encodeURIComponent(PATTERNS[lk.pat]) + '")' : 'none'};`;
   const fontOk = n => typeof n === 'string' && /^[A-Za-z0-9 \-]{2,40}$/.test(n);
   const head = fontOk(cfg.fonts && cfg.fonts.head) ? cfg.fonts.head : preset.fonts.head;
   const body = fontOk(cfg.fonts && cfg.fonts.body) ? cfg.fonts.body : preset.fonts.body;
-  const common = `--primary:${fills.primary};--warm:${fills.warm};--green:${fills.green};--sand:${fills.sand};` +
+  const common = lookCss + `--primary:${fills.primary};--warm:${fills.warm};--green:${fills.green};--sand:${fills.sand};` +
     `--on-primary:${textOn(fills.primary)};--on-warm:${textOn(fills.warm)};--on-green:${textOn(fills.green)};--on-sand:${textOn(fills.sand)};` +
     `--font-head:'${head}',Georgia,serif;--font-body:'${body}',system-ui,sans-serif;`;
   const css = `:root{color-scheme:light;${common}${set(light, inks(lightBgs, -1))}}\n` +
