@@ -13,6 +13,13 @@
       "destination": "",
       "start": "2026-12-03",
       "end": "2026-12-31"
+    },
+    {
+      "slug": "canada-27-2027",
+      "title": "Canada '27",
+      "destination": "Canada",
+      "start": "2027-06-01",
+      "end": "2027-06-15"
     }
   ]
 }

@@ -1,0 +1,54 @@
+[
+  {
+    "etape": "Étape 1",
+    "short": "Canada",
+    "icon": "🧭",
+    "days": [
+      {"iso": "2027-06-01", "title": "Jour 1",
+       "items": [
+       ]},
+      {"iso": "2027-06-02", "title": "Jour 2",
+       "items": [
+       ]},
+      {"iso": "2027-06-03", "title": "Jour 3",
+       "items": [
+       ]},
+      {"iso": "2027-06-04", "title": "Jour 4",
+       "items": [
+       ]},
+      {"iso": "2027-06-05", "title": "Jour 5",
+       "items": [
+       ]},
+      {"iso": "2027-06-06", "title": "Jour 6",
+       "items": [
+       ]},
+      {"iso": "2027-06-07", "title": "Jour 7",
+       "items": [
+       ]},
+      {"iso": "2027-06-08", "title": "Jour 8",
+       "items": [
+       ]},
+      {"iso": "2027-06-09", "title": "Jour 9",
+       "items": [
+       ]},
+      {"iso": "2027-06-10", "title": "Jour 10",
+       "items": [
+       ]},
+      {"iso": "2027-06-11", "title": "Jour 11",
+       "items": [
+       ]},
+      {"iso": "2027-06-12", "title": "Jour 12",
+       "items": [
+       ]},
+      {"iso": "2027-06-13", "title": "Jour 13",
+       "items": [
+       ]},
+      {"iso": "2027-06-14", "title": "Jour 14",
+       "items": [
+       ]},
+      {"iso": "2027-06-15", "title": "Jour 15",
+       "items": [
+       ]}
+    ]
+  }
+]

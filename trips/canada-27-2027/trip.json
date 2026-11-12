@@ -1,0 +1,9 @@
+{
+  "preset": "ville",
+  "title": "Canada '27",
+  "destinationLabel": "Canada",
+  "timezone": "America/Toronto",
+  "map": {
+    "mode": "auto"
+  }
+}
