@@ -6,6 +6,7 @@
     "days": [
       {"iso": "2027-06-01", "title": "Jour 1",
        "items": [
+        {"time":"","type":"culture","text":"Visite de Montréal","region":"Montréal","info":"Parcours à travers la ville"}
        ]},
       {"iso": "2027-06-02", "title": "Jour 2",
        "items": [
