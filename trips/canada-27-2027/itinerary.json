@@ -20,6 +20,7 @@
        ]},
       {"iso": "2027-06-05", "title": "Jour 5",
        "items": [
+        {"time":"","type":"bivouac","text":"Ottawa","region":"Ottawa"}
        ]},
       {"iso": "2027-06-06", "title": "Jour 6",
        "items": [
