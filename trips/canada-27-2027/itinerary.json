@@ -10,6 +10,7 @@
        ]},
       {"iso": "2027-06-02", "title": "Jour 2",
        "items": [
+        {"time":"","type":"paysage","text":"Direction Toronto","region":"Toronto"}
        ]},
       {"iso": "2027-06-03", "title": "Jour 3",
        "items": [
