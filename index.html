@@ -165,6 +165,45 @@ main.filtering .timeline.collapsed{display:block}
 .btn-line{display:flex;gap:10px;flex-wrap:wrap}
 #tripAdmin{display:flex;flex-direction:column;gap:8px}
 #cover{margin:0 0 16px;border-radius:var(--r,10px);overflow:hidden}#cover img{display:block;width:100%;height:clamp(140px,34vw,240px);object-fit:cover}
+.quick{max-width:520px;margin:0 auto;padding:24px 20px;display:flex;flex-direction:column;gap:12px}
+.quick input,.quick textarea{font:inherit;padding:12px;border:1px solid var(--line);border-radius:var(--r,10px);background:var(--card);color:var(--ink);box-sizing:border-box;width:100%}
+.qbtn{display:block;text-align:center;padding:28px 12px;border:2px dashed var(--primary);border-radius:var(--r,10px);font-size:1.2rem;font-weight:700;color:var(--primary-ink);cursor:pointer}
+.qgo{padding:16px;font-size:1.1rem;background:var(--primary);color:var(--on-primary,#fff)}
+body.quick-mode > :not(#quickPanel):not(script):not(dialog){display:none !important}
+.trips-dialog{border:1px solid var(--line);border-radius:var(--r,10px);background:var(--paper);color:var(--ink);max-width:min(760px,94vw);width:100%;padding:16px}
+.trips-dialog::backdrop{background:rgba(0,0,0,.5)}.trips-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.trips-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-top:12px}
+.trip-card{display:block;border:1px solid var(--line);border-radius:var(--r,10px);overflow:hidden;background:var(--card);color:inherit;text-decoration:none;box-shadow:var(--shadow,none)}
+.trip-card img,.trip-card-ph{display:flex;align-items:center;justify-content:center;width:100%;height:120px;object-fit:cover;background:var(--paper2);font-size:2rem}
+.tc-body{padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.tc-next{margin:8px 0 0;font-size:.95rem}.tc-next a{color:var(--primary-ink);white-space:nowrap}
+.ovl{position:fixed;inset:0;z-index:40;background:var(--paper);color:var(--ink);overflow:auto;padding:calc(env(safe-area-inset-top,0px) + 12px) 14px 24px}
+.ovl-head{display:flex;gap:8px;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--paper);padding:6px 0 10px;z-index:1}.ovl-head select{font:inherit;padding:8px;border-radius:var(--rb,20px);border:1px solid var(--line);background:var(--card);color:var(--ink);max-width:60%}
+.gal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px}.gal-item{position:relative;padding:0;border:0;background:var(--paper2);aspect-ratio:1;border-radius:calc(var(--r,10px) * .6);overflow:hidden;cursor:pointer}
+.gal-item img{width:100%;height:100%;object-fit:cover;display:block}.gal-star{position:absolute;top:4px;right:4px;font-size:.9rem;text-shadow:0 0 3px #000}
+.show{z-index:45;background:#111;color:#fff;padding:0;overflow:hidden}.show-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity .45s;background-color:#222}
+.show-txt{position:absolute;left:0;right:0;bottom:0;padding:70px 22px 84px;background:linear-gradient(transparent,rgba(0,0,0,.82));text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.show-txt h2{margin:0 0 6px;font-size:clamp(1.4rem,5vw,2.2rem);color:#fff;border:0}.show-sub{margin:0 0 6px;opacity:.92}.show-note{margin:0;font-style:italic;opacity:.9;max-width:60ch}
+.show-bar{position:absolute;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;display:flex;gap:8px}.show-bar .btn{background:rgba(0,0,0,.45);color:#fff;border-color:rgba(255,255,255,.4)}
+.show-prog{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,.2)}.show-prog i{display:block;height:100%;width:0;background:var(--warm,#e1a935)}
+.pack{list-style:none;padding:0;margin:6px 0}.pack li{display:flex;gap:8px;align-items:center;padding:3px 0}.pack label{flex:1}.pack button{border:0;background:none;cursor:pointer;color:var(--ink-soft)}
+#book{display:none}
+@media print{
+  body.book-mode > :not(#book):not(script){display:none !important}
+  body.book-mode #book{display:block}
+  body.book-mode::before{display:none}
+  .bk-page{break-after:page;padding:0}.bk-page:last-child{break-after:auto}
+  .bk-cover{display:flex;flex-direction:column;justify-content:center;min-height:240mm;text-align:center;gap:10mm}
+  .bk-cover img{width:100%;max-height:150mm;object-fit:cover;border-radius:var(--r,10px)}
+  .bk-cover h1{font-size:2.4rem;margin:0}.bk-sub{color:var(--ink-soft);font-size:1.1rem}
+  .bk-page h2{margin:0 0 4mm;border-bottom:var(--hr,1px solid var(--line));padding-bottom:2mm}
+  .bk-acts{margin:0 0 4mm;padding-left:5mm;font-size:.95rem}
+  .bk-page blockquote{margin:0 0 4mm;padding-left:4mm;border-left:3px solid var(--warm);font-style:italic}
+  .bk-photos{display:grid;gap:3mm}.bk-photos.n1{grid-template-columns:1fr}.bk-photos.n2{grid-template-columns:1fr}
+  .bk-photos.n3,.bk-photos.n4,.bk-photos.n5,.bk-photos.n6{grid-template-columns:1fr 1fr}
+  .bk-photos figure{margin:0;break-inside:avoid}.bk-photos img{width:100%;max-height:90mm;object-fit:cover;border-radius:var(--r,10px)}
+  .bk-photos.n1 img,.bk-photos.n2 img{max-height:105mm}.bk-photos figcaption{font-size:.8rem;color:var(--ink-soft)}
+}
 .tools{margin:14px 0;border:1px solid var(--line);border-radius:var(--r,10px);background:var(--card);padding:8px 14px;max-width:620px}.tools summary{cursor:pointer;font-weight:700}.tools h3{font-size:1rem;margin:10px 0 4px}.tools ul{margin:4px 0;padding-left:18px}.tools a{color:var(--primary-ink)}
 .search{width:100%;box-sizing:border-box;padding:8px 14px;border:1px solid var(--line);border-radius:var(--rb,20px);background:var(--card);color:var(--ink);font:inherit;margin-bottom:8px}
 .osm-pin.small{width:10px;height:10px;background:var(--warm);margin:3px 0 0 3px}
@@ -216,24 +255,44 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
   <div class="trip-switch" id="tripSwitch" hidden>
     <label for="tripSelect">Voyage</label>
     <select id="tripSelect"></select>
+    <button class="btn" id="allTripsBtn" type="button">🗂️ Tous les voyages</button>
   </div>
   <h1 id="title">Carnet de voyage</h1>
   <div class="trip-status" id="tripStatus"></div>
   <div class="clocks" id="clocks" aria-label="Heures locales" hidden></div>
   <div id="todayCard"></div>
+  <details class="tools" id="practice"><summary>Infos pratiques et valise</summary><div id="practiceBody"></div></details>
   <details class="tools" id="tools"><summary>Récapitulatif du voyage</summary><div id="toolsBody"></div></details>
   <p class="lead" id="lead"></p>
   <div class="btn-row">
     <button class="btn" id="shareBtn" type="button">Partager le lien ↗</button>
     <button class="btn" id="themeBtn" type="button">🌓 Thème : auto</button>
     <button class="btn" id="printBtn" type="button">🖨️ Version imprimable / PDF</button>
+    <button class="btn" id="bookBtn" type="button">📖 Livre souvenir (PDF)</button>
+    <button class="btn" id="galleryBtn" type="button">🖼️ Galerie</button>
+    <button class="btn" id="showBtn" type="button">▶️ Revoir le voyage</button>
     <select class="btn" id="langSelect" aria-label="Langue"><option value="fr">Français</option><option value="en">English</option><option value="nl">Nederlands</option></select>
   </div>
 </header>
 
+<section id="quickPanel" class="quick" hidden>
+  <h1>⚡ Publier vite</h1>
+  <p class="meta" id="qHint"></p>
+  <label class="qbtn" for="qFiles">📷 Ajouter des photos</label>
+  <input type="file" id="qFiles" accept="image/*" multiple hidden>
+  <p class="meta" id="qCount"></p>
+  <input id="qCap" placeholder="Légende (optionnel)" autocomplete="off">
+  <textarea id="qNote" rows="3" maxlength="800" placeholder="Un mot sur la journée (optionnel)"></textarea>
+  <button class="btn qgo" id="qGo" type="button">Publier</button>
+  <div id="qStatus" class="meta" role="status"></div>
+  <p><a href="#">← Retour au carnet</a> · <a href="#admin">Admin complet</a></p>
+</section>
+<dialog id="tripsDialog" class="trips-dialog"><div class="trips-head"><h2>🗂️ Mes voyages</h2><button class="btn" id="tripsClose" type="button">Fermer</button></div><div id="tripsGrid" class="trips-grid"></div></dialog>
 <section id="adminPanel" class="admin-panel" hidden>
   <h3>Admin</h3>
   <p class="meta" id="adminTripLabel"></p>
+  <p><a href="#quick">⚡ Publier vite (écran simplifié pour téléphone)</a></p>
+  <div id="onboard" class="tools" hidden><strong>Pour démarrer</strong><ol id="onboardList"></ol></div>
 
   <details id="ghBox" open>
     <summary>Connexion GitHub</summary>
@@ -315,8 +374,15 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
       <label for="setTz">Fuseau horaire de la destination</label><input id="setTz" list="tzList" autocapitalize="none" placeholder="Europe/Rome">
       <label for="setHomeLabel">Ville de départ</label><input id="setHomeLabel">
       <label for="setHomeTz">Fuseau horaire de départ</label><input id="setHomeTz" list="tzList" autocapitalize="none" placeholder="Europe/Brussels">
+      <details><summary>Infos pratiques affichées dans le carnet</summary>
+        <label for="infoPlug">Prises</label><input id="infoPlug" maxlength="100" placeholder="Ex. Type A/B, 100 V">
+        <label for="infoCur">Monnaie</label><input id="infoCur" maxlength="100" placeholder="Ex. Yen (JPY)">
+        <label for="infoLang">Langue</label><input id="infoLang" maxlength="100" placeholder="Ex. Japonais, peu d'anglais hors des villes">
+        <label for="infoSos">Numéros d'urgence</label><input id="infoSos" maxlength="100" placeholder="Ex. 110 police, 119 secours">
+      </details>
       <label for="setMapMode">Type de carte</label>
       <select id="setMapMode"><option value="schema">Schéma simplifié (un point par étape)</option><option value="osm">Carte OpenStreetMap (lieux placés sur une vraie carte)</option><option value="none">Aucune carte</option></select>
+      <p id="mapWarn" class="meta" role="alert" hidden></p>
       <div id="osmAdmin" hidden>
         <label for="osmQ">Ajouter un lieu à la carte</label>
         <div class="pf-row"><input id="osmQ" placeholder="Ex. Fushimi Inari, Kyoto" autocomplete="off"><select id="osmE" aria-label="Étape rattachée"></select><button class="btn" id="osmSearch" type="button">Rechercher</button></div>
@@ -344,6 +410,12 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
     </details>
   </div>
 
+  <details id="backupBox">
+    <summary>Sauvegarde du voyage</summary>
+    <p class="meta">Télécharge un fichier avec le planning, les comptes rendus, les réglages et la liste des photos (avec leurs adresses). Les photos elles-mêmes restent hébergées sur GitHub.</p>
+    <button class="btn" id="backupBtn" type="button">Télécharger la sauvegarde (.json)</button>
+    <div id="backupStatus" class="meta" role="status"></div>
+  </details>
   <details id="tripsMgr">
     <summary>Gérer mes voyages (renommer, ordre, supprimer)</summary>
     <div id="tripsMgrList"></div>
@@ -460,6 +532,7 @@ const PATTERNS = {
 };
 const MAX_PHOTOS = 20;   /* photos par envoi (le total par jour n'est pas limité) */
 
+const APP_VERSION = '2026.11.13-3';
 /* ---------- Langue de l'interface publique (fr / en / nl) ---------- */
 const UI_DICT = {
   en:{'Voyage':'Trip','Carnet de voyage':'Travel journal','Partager le lien ↗':'Share link ↗','Réinitialiser les filtres':'Reset filters',
@@ -468,14 +541,14 @@ const UI_DICT = {
     'Photo précédente':'Previous photo','Photo suivante':'Next photo','Photo':'Photo','Photo du voyage':'Trip photo','− réduire ⌃':'− collapse ⌃','+ d’infos ⌄':'+ details ⌄',
     '✅ Réservé':'✅ Booked','⏳ À réserver':'⏳ To book','Aller à l’étape ':'Go to stage ','Voyage terminé ✓':'Trip over ✓',"Aujourd'hui":'Today','· aujourd’hui':'· today',
     'Le carnet du jour':'Journal of the day','Destination':'Destination','Départ':'Home','🖨️ Version imprimable / PDF':'🖨️ Print / PDF version','Langue':'Language',
-    'J-{n} avant le départ':'{n} days to go','Jour {n} / {t}':'Day {n} / {t}','{n} photo(s)':'{n} photo(s)','{n} compte(s) rendu(s)':'{n} entry(ies)','Étape':'Stage','Récapitulatif du voyage':'Trip summary','À réserver':'To book','Rien à réserver pour le moment.':'Nothing left to book.','📅 Ajouter à mon agenda (.ics)':'📅 Add to my calendar (.ics)','jours':'days','étapes':'stages','lieux':'places','photos':'photos','comptes rendus':'entries','Rechercher…':'Search…','prévision':'forecast'},
+    'J-{n} avant le départ':'{n} days to go','Jour {n} / {t}':'Day {n} / {t}','{n} photo(s)':'{n} photo(s)','{n} compte(s) rendu(s)':'{n} entry(ies)','Étape':'Stage','Récapitulatif du voyage':'Trip summary','À réserver':'To book','Rien à réserver pour le moment.':'Nothing left to book.','📅 Ajouter à mon agenda (.ics)':'📅 Add to my calendar (.ics)','jours':'days','étapes':'stages','lieux':'places','photos':'photos','comptes rendus':'entries','Rechercher…':'Search…','À suivre :':'Next up:','🧭 Itinéraire':'🧭 Directions','entre les étapes':'between stages','🗂️ Tous les voyages':'🗂️ All trips','📖 Livre souvenir (PDF)':'📖 Keepsake book (PDF)','Fermer':'Close','▶️ Revoir le voyage':'▶️ Relive the trip','🖼️ Galerie':'🖼️ Gallery','Aucune photo pour l’instant.':'No photos yet.','Tous les jours':'All days','⭐ Photos du jour':'⭐ Photos of the day','Fin du voyage':'End of the trip','Infos pratiques et valise':'Practical info & packing','Prises':'Plugs','Monnaie':'Currency','Langue :':'Language:','Urgences':'Emergency','Ajouter':'Add','Réinitialiser':'Reset','Valise (enregistrée sur cet appareil)':'Packing list (saved on this device)','prévision':'forecast'},
   nl:{'Voyage':'Reis','Carnet de voyage':'Reisdagboek','Partager le lien ↗':'Link delen ↗','Réinitialiser les filtres':'Filters wissen',
     "Ce carnet de voyage a besoin de JavaScript pour s'afficher.":'Dit reisdagboek heeft JavaScript nodig om te worden weergegeven.','Carnet de voyage — mis à jour au fil du voyage.':'Reisdagboek — bijgewerkt tijdens de reis.',
     '🌓 Thème : auto':'🌓 Thema: auto','🌙 Thème : sombre':'🌙 Thema: donker','☀️ Thème : clair':'☀️ Thema: licht','Lien copié ✓':'Link gekopieerd ✓',
     'Photo précédente':'Vorige foto','Photo suivante':'Volgende foto','Photo':'Foto','Photo du voyage':'Reisfoto','− réduire ⌃':'− inklappen ⌃','+ d’infos ⌄':'+ meer info ⌄',
     '✅ Réservé':'✅ Geboekt','⏳ À réserver':'⏳ Nog te boeken','Aller à l’étape ':'Ga naar etappe ','Voyage terminé ✓':'Reis afgelopen ✓',"Aujourd'hui":'Vandaag','· aujourd’hui':'· vandaag',
     'Le carnet du jour':'Dagboek van de dag','Destination':'Bestemming','Départ':'Vertrek','🖨️ Version imprimable / PDF':'🖨️ Afdrukken / PDF','Langue':'Taal',
-    'J-{n} avant le départ':'Nog {n} dagen tot vertrek','Jour {n} / {t}':'Dag {n} / {t}','{n} photo(s)':'{n} foto(\'s)','{n} compte(s) rendu(s)':'{n} verslag(en)','Étape':'Etappe','Récapitulatif du voyage':'Reisoverzicht','À réserver':'Nog te boeken','Rien à réserver pour le moment.':'Niets meer te boeken.','📅 Ajouter à mon agenda (.ics)':'📅 Toevoegen aan mijn agenda (.ics)','jours':'dagen','étapes':'etappes','lieux':'plaatsen','photos':'foto\'s','comptes rendus':'verslagen','Rechercher…':'Zoeken…','prévision':'voorspelling'}
+    'J-{n} avant le départ':'Nog {n} dagen tot vertrek','Jour {n} / {t}':'Dag {n} / {t}','{n} photo(s)':'{n} foto(\'s)','{n} compte(s) rendu(s)':'{n} verslag(en)','Étape':'Etappe','Récapitulatif du voyage':'Reisoverzicht','À réserver':'Nog te boeken','Rien à réserver pour le moment.':'Niets meer te boeken.','📅 Ajouter à mon agenda (.ics)':'📅 Toevoegen aan mijn agenda (.ics)','jours':'dagen','étapes':'etappes','lieux':'plaatsen','photos':'foto\'s','comptes rendus':'verslagen','Rechercher…':'Zoeken…','À suivre :':'Straks:','🧭 Itinéraire':'🧭 Route','entre les étapes':'tussen de etappes','🗂️ Tous les voyages':'🗂️ Alle reizen','📖 Livre souvenir (PDF)':'📖 Herinneringsboek (PDF)','Fermer':'Sluiten','▶️ Revoir le voyage':'▶️ De reis herbeleven','🖼️ Galerie':'🖼️ Galerij','Aucune photo pour l’instant.':'Nog geen foto’s.','Tous les jours':'Alle dagen','⭐ Photos du jour':'⭐ Foto’s van de dag','Fin du voyage':'Einde van de reis','Infos pratiques et valise':'Praktisch & bagage','Prises':'Stekkers','Monnaie':'Munt','Langue :':'Taal:','Urgences':'Noodnummers','Ajouter':'Toevoegen','Réinitialiser':'Resetten','Valise (enregistrée sur cet appareil)':'Bagagelijst (op dit toestel bewaard)','prévision':'voorspelling'}
 };
 const LANGS = {fr:'fr-FR', en:'en-GB', nl:'nl-BE'};
 let LANG = 'fr';
@@ -527,7 +600,7 @@ const dayLabel = iso => new Date(iso + 'T12:00:00Z').toLocaleDateString(LOC, {da
 const dowLabel = iso => new Date(iso + 'T12:00:00Z').toLocaleDateString(LOC, {weekday:'short', timeZone:'UTC'}).replace('.', '');
 const longDate = iso => new Date(iso + 'T12:00:00Z').toLocaleDateString(LOC, {day:'numeric', month:'long', timeZone:'UTC'});
 const slugify = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
-function normPhoto(p){ return typeof p === 'string' ? {src:p, thumb:p, caption:''} : {src:p.src, thumb:p.thumb || p.src, caption:p.caption || ''}; }
+function normPhoto(p){ return typeof p === 'string' ? {src:p, thumb:p, caption:'', star:false} : {star:p.star === true, src:p.src, thumb:p.thumb || p.src, caption:p.caption || ''}; }
 
 /* ---------- Couleurs : contrastes garantis quelle que soit la palette ---------- */
 const hex2rgb = h => { const n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; };
@@ -631,7 +704,12 @@ themeBtn.addEventListener('click', () => {
 (function(){
   const setT = (sel, key) => { const e = document.querySelector(sel); if(e) e.textContent = tr(key); };
   setT('#tripSwitch label', 'Voyage'); setT('#shareBtn', 'Partager le lien ↗'); setT('#resetBtn', 'Réinitialiser les filtres');
-  setT('#printBtn', '🖨️ Version imprimable / PDF'); setT('#footer', 'Carnet de voyage — mis à jour au fil du voyage.');
+  setT('#printBtn', '🖨️ Version imprimable / PDF'); setT('#bookBtn', '📖 Livre souvenir (PDF)'); setT('#allTripsBtn', '🗂️ Tous les voyages'); setT('#tripsClose', 'Fermer');
+  setT('#galleryBtn', '🖼️ Galerie'); setT('#showBtn', '▶️ Revoir le voyage'); setT('#practice summary', 'Infos pratiques et valise'); setT('#galClose', 'Fermer');
+  $('galleryBtn').addEventListener('click', openGallery); $('showBtn').addEventListener('click', openShow); $('galClose').addEventListener('click', closeOverlays); $('showClose').addEventListener('click', closeOverlays);
+  $('showPrev').addEventListener('click', () => goShow(showI - 1)); $('showNext').addEventListener('click', () => goShow(showI + 1));
+  $('showPlay').addEventListener('click', () => { showPlaying = !showPlaying; $('showPlay').textContent = showPlaying ? '⏸' : '▶'; goShow(showI); });
+  $('bookBtn').addEventListener('click', () => printBook()); $('allTripsBtn').addEventListener('click', openTrips); $('tripsClose').addEventListener('click', () => $('tripsDialog').close()); setT('#footer', 'Carnet de voyage — mis à jour au fil du voyage.');
   if('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});
   setT('#tools summary', 'Récapitulatif du voyage'); $('searchBox').placeholder = tr('Rechercher…'); $('searchBox').setAttribute('aria-label', tr('Rechercher…')); $('searchBox').addEventListener('input', () => applyFilters());
   setT('noscript', "Ce carnet de voyage a besoin de JavaScript pour s'afficher.");
@@ -814,6 +892,107 @@ async function liveWeather(){
     }catch(err){}
   }
 }
+async function openTrips(){
+  const dlg = $('tripsDialog'), box = $('tripsGrid'), fmt = iso => iso ? new Date(iso + 'T12:00:00Z').toLocaleDateString(LOC, {day:'numeric', month:'short', year:'numeric', timeZone:'UTC'}) : '';
+  box.replaceChildren(el('p', {class:'meta', text:'…'})); if(!dlg.open) dlg.showModal();
+  box.replaceChildren(...await Promise.all(trips.map(async t => {
+    let cov = ''; try{ const r = await fetch((t.dir || '') + 'trip.json', {cache:'no-store'}); if(r.ok){ const c = await r.json(); if(typeof c.cover === 'string' && !c.cover.includes('..') && /^[\w\-\/.]+$/.test(c.cover)) cov = (t.dir || '') + c.cover; } }catch(e){}
+    return el('a', {class:'trip-card', href:'?trip=' + encodeURIComponent(t.slug)}, cov ? el('img', {src:cov, alt:'', loading:'lazy'}) : el('div', {class:'trip-card-ph', text:'🧳'}),
+      el('div', {class:'tc-body'}, el('strong', {text:t.title || t.slug}), el('span', {class:'meta', text:[t.destination, [fmt(t.start), fmt(t.end)].filter(Boolean).join(' → ')].filter(Boolean).join(' · ')})));
+  })));
+}
+const parseHour = t => { t = String(t || ''); const m = t.match(/(\d{1,2})\s*h/i); if(m) return +m[1]; if(/apr[eè]s-?midi|aprem/i.test(t)) return 14; if(/midi/i.test(t)) return 12; if(/matin/i.test(t)) return 9; if(/fin de journ/i.test(t)) return 18; if(/soir|19h/i.test(t)) return 19; return null; };
+function nextItem(day){
+  const items = day.items || [], hr = +new Date().toLocaleString('en-GB', {timeZone:TZ, hour:'2-digit', hour12:false}) % 24, timed = items.filter(i => parseHour(i.time) != null);
+  return timed.length ? timed.find(i => parseHour(i.time) >= hr) : items[0];
+}
+const mapsDir = it => 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(it.maps || (hasXY(it) ? it.lat + ',' + it.lon : it.text + ' ' + (it.region || '')));
+async function todayWeather(){
+  const w = $('todayWx'); if(!w || !todayDay) return;
+  const e = DATA[todayDay.ei], pl = ((cfg.map && cfg.map.places) || []).find(p => hasXY(p) && String(p.e) === String(todayDay.ei)), c = hasXY(e) ? e : pl; if(!c) return;
+  try{
+    const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + c.lat + '&longitude=' + c.lon + '&daily=temperature_2m_max,temperature_2m_min&timezone=auto&start_date=' + NOWISO + '&end_date=' + NOWISO);
+    if(!r.ok) return; const d = (await r.json()).daily; if(!d || !d.temperature_2m_max || !d.temperature_2m_max.length) return;
+    w.textContent = '🌤️ ' + Math.round(d.temperature_2m_min[0]) + '° – ' + Math.round(d.temperature_2m_max[0]) + '°C (' + tr('prévision') + ')'; w.hidden = false;
+  }catch(err){}
+}
+function routeKm(){
+  const rad = x => x * Math.PI / 180, pl = ((cfg.map && cfg.map.places) || []).filter(hasXY);
+  let pts = pl.length > 1 ? pl : DATA.filter(hasXY); if(pts.length < 2) return 0;
+  let km = 0; for(let i = 1; i < pts.length; i++){ const a = pts[i - 1], b = pts[i], dl = rad(b.lat - a.lat), dn = rad(b.lon - a.lon), h = Math.sin(dl / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dn / 2) ** 2; km += 12742 * Math.asin(Math.sqrt(h)); }
+  return Math.round(km);
+}
+const photosOf = iso => (SITE_PHOTOS[iso] || []).map(normPhoto);
+const starOf = iso => { const l = photosOf(iso); return l.find(p => p.star) || l[0]; };
+function closeOverlays(){ ['gallery', 'show'].forEach(i => { $(i).hidden = true; }); stopShow(); document.body.style.overflow = ''; }
+function openGallery(){
+  const sel = $('galFilter'), grid = $('galGrid'), days = Object.keys(SITE_PHOTOS).filter(d => (SITE_PHOTOS[d] || []).length).sort();
+  sel.replaceChildren(el('option', {value:'all', text:tr('Tous les jours')}), el('option', {value:'star', text:tr('⭐ Photos du jour')}), ...days.map(d => el('option', {value:d, text:dayLabel(d)})));
+  const draw = () => {
+    const v = sel.value; let list = days.flatMap(d => photosOf(d).map(p => Object.assign(p, {iso:d})));
+    if(v === 'star') list = list.filter(p => p.star); else if(v !== 'all') list = list.filter(p => p.iso === v);
+    grid.replaceChildren(...(list.length ? list.map((p, i) => el('button', {class:'gal-item', type:'button', 'aria-label':p.caption || dayLabel(p.iso), onclick:() => lbOpen(list, i)}, el('img', {src:abs(p.thumb), alt:p.caption || '', loading:'lazy'}), p.star ? el('span', {class:'gal-star', text:'⭐'}) : null)) : [el('p', {class:'meta', text:tr('Aucune photo pour l’instant.')})]));
+  };
+  sel.onchange = draw; draw(); $('gallery').hidden = false; document.body.style.overflow = 'hidden';
+}
+let showTimer = null, showI = 0, showSlides = [], showPlaying = true;
+function stopShow(){ clearTimeout(showTimer); showTimer = null; }
+function openShow(){
+  const fmt = iso => new Date(iso + 'T12:00:00Z').toLocaleDateString(LOC, {day:'numeric', month:'long', year:'numeric', timeZone:'UTC'}), cv = cfg.cover, cover = (typeof cv === 'string' && !cv.includes('..') && /^[\w\-\/.]+$/.test(cv)) ? abs(cv) : null;
+  const nPh = Object.values(SITE_PHOTOS).reduce((a, l) => a + (l || []).length, 0), km = routeKm();
+  showSlides = [{img:cover, h:cfg.title || 'Carnet de voyage', sub:[cfg.destinationLabel, allDays.length ? fmt(allDays[0].iso) + ' → ' + fmt(allDays[allDays.length - 1].iso) : ''].filter(Boolean).join(' · ')}];
+  allDays.forEach(d => {
+    const ph = starOf(d.iso), n = NOTES[d.iso], note = typeof n === 'string' ? n : ((n && n.text) || ''); if(!ph && !note) return;
+    const places = [...new Set((d.items || []).map(i => i.region).filter(Boolean))].slice(0, 3).join(' · ');
+    showSlides.push({img:ph ? abs(ph.src) : null, h:(d.date || dayLabel(d.iso)) + (d.title ? ' — ' + d.title : ''), sub:(ph && ph.caption) || places, txt:note.length > 170 ? note.slice(0, 167) + '…' : note});
+  });
+  showSlides.push({img:cover, h:tr('Fin du voyage'), sub:[allDays.length + ' ' + tr('jours'), nPh + ' ' + tr('photos'), km ? '≈ ' + km + ' km' : ''].filter(Boolean).join(' · ')});
+  showI = 0; showPlaying = true; $('showPlay').textContent = '⏸'; $('show').hidden = false; document.body.style.overflow = 'hidden'; goShow(0);
+}
+function goShow(k){
+  stopShow(); showI = Math.max(0, Math.min(showSlides.length - 1, k)); const sl = showSlides[showI], bg = $('showBg');
+  bg.style.opacity = 0; setTimeout(() => { bg.style.backgroundImage = sl.img ? 'url("' + sl.img + '")' : 'none'; bg.style.opacity = 1; }, 220);
+  $('showH').textContent = sl.h; $('showSub').textContent = sl.sub || ''; $('showTxt').textContent = sl.txt || '';
+  const nx = showSlides[showI + 1]; if(nx && nx.img) new Image().src = nx.img;
+  const bar = $('showProg'); bar.style.transition = 'none'; bar.style.width = '0'; void bar.offsetWidth;
+  if(showPlaying && showI < showSlides.length - 1){ bar.style.transition = 'width 5.2s linear'; bar.style.width = '100%'; showTimer = setTimeout(() => goShow(showI + 1), 5200); }
+}
+function renderPractice(){
+  const box = $('practiceBody'); if(!box) return; const key = 'pack:' + ((CUR && CUR.slug) || 'voyage'), inf = cfg.info || {};
+  const DEF = ['Passeports / pièces d’identité', 'Billets et réservations', 'Cartes bancaires et espèces', 'Chargeurs et batterie externe', 'Adaptateur de prise', 'Vêtements adaptés à la météo', 'Trousse de toilette', 'Appareil photo et cartes mémoire'];
+  let list; try{ list = JSON.parse(localStorage.getItem(key)); }catch(e){} if(!Array.isArray(list)) list = DEF.map(t => ({t, d:false}));
+  const save = () => { try{ localStorage.setItem(key, JSON.stringify(list)); }catch(e){} };
+  const lines = [['🔌', 'Prises', inf.plug], ['💶', 'Monnaie', inf.currency], ['🗣️', 'Langue :', inf.language], ['🚨', 'Urgences', inf.emergency]].filter(x => x[2]).map(x => el('li', {}, x[0] + ' ' + tr(x[1]) + (x[1].endsWith(':') ? ' ' : ' : ') + x[2]));
+  const inp = el('input', {placeholder:'…', 'aria-label':tr('Ajouter')});
+  const draw = () => box.replaceChildren(...(lines.length ? [el('ul', {class:'pack'}, ...lines)] : []), el('h3', {text:tr('Valise (enregistrée sur cet appareil)')}),
+    el('ul', {class:'pack'}, ...list.map((x, n) => el('li', {}, el('label', {}, el('input', {type:'checkbox', checked:x.d, onchange:function(){ x.d = this.checked; save(); }}), ' ' + x.t), el('button', {type:'button', 'aria-label':'Retirer', text:'✕', onclick:() => { list.splice(n, 1); save(); draw(); }})))),
+    el('div', {class:'pf-row'}, inp, el('button', {class:'btn', type:'button', text:tr('Ajouter'), onclick:() => { const v = inp.value.trim(); if(v){ list.push({t:v, d:false}); save(); draw(); } }}),
+      el('button', {class:'btn', type:'button', text:tr('Réinitialiser'), onclick:() => { list = DEF.map(t => ({t, d:false})); save(); draw(); }})));
+  draw();
+}
+document.addEventListener('keydown', e => { if(!lb.hidden) return; if(e.key === 'Escape') closeOverlays(); if(!$('show').hidden){ if(e.key === 'ArrowRight') goShow(showI + 1); if(e.key === 'ArrowLeft') goShow(showI - 1); } });
+function buildBook(){
+  const fmt = iso => new Date(iso + 'T12:00:00Z').toLocaleDateString(LOC, {day:'numeric', month:'long', year:'numeric', timeZone:'UTC'});
+  const cv = cfg.cover, cover = (typeof cv === 'string' && !cv.includes('..') && /^[\w\-\/.]+$/.test(cv)) ? abs(cv) : null;
+  const grid = (ph) => el('div', {class:'bk-photos n' + Math.min(ph.length, 6)}, ph.map(p => el('figure', {}, el('img', {src:abs(p.src), alt:p.caption || ''}), p.caption ? el('figcaption', {text:p.caption}) : null)));
+  const pages = [el('section', {class:'bk-page bk-cover'}, cover ? el('img', {src:cover, alt:''}) : null, el('h1', {text:cfg.title || 'Carnet de voyage'}),
+    el('p', {class:'bk-sub', text:[cfg.destinationLabel, allDays.length ? fmt(allDays[0].iso) + ' → ' + fmt(allDays[allDays.length - 1].iso) : ''].filter(Boolean).join(' · ')}))];
+  allDays.forEach(d => {
+    const ph = (SITE_PHOTOS[d.iso] || []).map(normPhoto).sort((a, b) => (b.star ? 1 : 0) - (a.star ? 1 : 0)), n = NOTES[d.iso], note = typeof n === 'string' ? n : ((n && n.text) || ''), head = (d.date || dayLabel(d.iso)) + (d.title ? ' — ' + d.title : '');
+    pages.push(el('section', {class:'bk-page'}, el('h2', {text:head}),
+      el('ul', {class:'bk-acts'}, (d.items || []).map(it => el('li', {}, it.time ? el('strong', {text:it.time + ' '}) : null, it.text, it.region ? ' (' + it.region + ')' : ''))),
+      note ? el('blockquote', {text:note}) : null, ph.length ? grid(ph.slice(0, 6)) : null));
+    for(let i = 6; i < ph.length; i += 6) pages.push(el('section', {class:'bk-page'}, el('h2', {text:head + ' (' + tr('photos') + ')'}), grid(ph.slice(i, i + 6))));
+  });
+  $('book').replaceChildren(...pages);
+}
+async function printBook(){
+  buildBook(); document.body.classList.add('book-mode');
+  const imgs = [...document.querySelectorAll('#book img')]; imgs.forEach(i => { i.loading = 'eager'; });
+  await Promise.race([Promise.all(imgs.map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; }))), new Promise(r => setTimeout(r, 8000))]);
+  window.print();
+}
+window.addEventListener('afterprint', () => document.body.classList.remove('book-mode'));
 function renderTools(){
   const box = $('toolsBody'); if(!box || !allDays.length) return;
   const items = allDays.flatMap(d => (d.items || []).map(it => ({d, it}))), todo = items.filter(x => x.it.booked === false), done = items.filter(x => x.it.booked === true);
@@ -821,7 +1000,8 @@ function renderTools(){
   const ph = Object.values(SITE_PHOTOS || {}).reduce((a, l) => a + (l || []).length, 0) + allDays.reduce((a, d) => a + (d.photos || []).length, 0);
   const nt = Object.values(NOTES || {}).filter(Boolean).length;
   box.replaceChildren(
-    el('p', {class:'meta', text:[TOTAL + ' ' + tr('jours'), DATA.length + ' ' + tr('étapes'), places.size + ' ' + tr('lieux'), ph + ' ' + tr('photos'), nt + ' ' + tr('comptes rendus')].join(' · ')}),
+    el('p', {class:'meta', text:[TOTAL + ' ' + tr('jours'), DATA.length + ' ' + tr('étapes'), places.size + ' ' + tr('lieux'), ph + ' ' + tr('photos'), nt + ' ' + tr('comptes rendus')].concat(routeKm() ? ['≈ ' + routeKm() + ' km ' + tr('entre les étapes')] : []).join(' · ')}),
+    el('button', {class:'btn', type:'button', text:tr('📖 Livre souvenir (PDF)'), onclick:printBook}),
     el('h3', {text:tr('À réserver') + ' (' + todo.length + ')'}),
     todo.length ? el('ul', {}, ...todo.map(x => el('li', {}, el('a', {href:'#jour-' + x.d.iso, text:(x.d.date || x.d.iso) + ' · ' + x.it.text})))) : el('p', {class:'meta', text:tr('Rien à réserver pour le moment.')}),
     el('p', {class:'meta', text:tr('✅ Réservé') + ' : ' + done.length}),
@@ -832,8 +1012,8 @@ function renderTools(){
 let LEAFLET = null, OSM = null, lastKey = null;
 function loadLeaflet(){
   return LEAFLET || (LEAFLET = new Promise((ok, ko) => {
-    const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css'; document.head.append(l);
-    const sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js'; sc.onload = ok; sc.onerror = () => { LEAFLET = null; ko(new Error('Leaflet')); }; document.head.append(sc);
+    const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css'; l.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY='; l.crossOrigin = 'anonymous'; document.head.append(l);
+    const sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js'; sc.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo='; sc.crossOrigin = 'anonymous'; sc.onload = ok; sc.onerror = () => { LEAFLET = null; ko(new Error('Leaflet')); }; document.head.append(sc);
   }));
 }
 function renderOsm(currentKey){
@@ -941,7 +1121,9 @@ function renderTrip(){
     $('todayCard').append(el('div', {class:'today-card'},
       el('div', {class:'tc-label', text:tr("Aujourd'hui")}),
       el('h3', {text:(todayDay.date || dayLabel(todayDay.iso)) + ' — ' + (todayDay.title || '')}),
-      el('ul', {}, (todayDay.items || []).map(it => el('li', {}, it.time ? el('strong', {text:it.time}) : null, (it.time ? ' — ' : '') + it.text)))));
+      el('ul', {}, (todayDay.items || []).map(it => el('li', {}, it.time ? el('strong', {text:it.time}) : null, (it.time ? ' — ' : '') + it.text))),
+      (() => { const nx = nextItem(todayDay); return nx ? el('p', {class:'tc-next'}, '👉 ' + tr('À suivre :') + ' ', el('strong', {text:((nx.time ? nx.time + ' ' : '') + nx.text)}), nx.region ? ' (' + nx.region + ') ' : ' ', el('a', {href:mapsDir(nx), target:'_blank', rel:'noopener', text:tr('🧭 Itinéraire')})) : null; })(),
+      el('p', {class:'meta', id:'todayWx', hidden:true})));
   }
 
   /* Planning */
@@ -988,7 +1170,7 @@ function renderTrip(){
     $('searchBox').value = '';
     applyFilters();
   };
-  renderTools(); liveWeather();
+  renderTools(); renderPractice(); liveWeather(); todayWeather();
   $('footer').textContent = (cfg.title || 'Carnet de voyage') + ' — mis à jour au fil du voyage.';
 }
 function applyFilters(){
@@ -1065,7 +1247,35 @@ if(planOk){
     : el('p', {}, 'Aucun voyage pour l’instant. Ouvrez l’administration (', el('a', {href:'#admin', text:'ajoutez #admin à l’adresse'}), '), connectez GitHub puis créez votre premier voyage.');
   $('main').append(el('div', {class:'empty'}, msg));
 }
-window.addEventListener('hashchange', () => { goToHash(); if(location.hash === '#admin') initAdmin(); });
+window.addEventListener('hashchange', () => { goToHash(); if(location.hash === '#admin') initAdmin(); showQuick(); });
+/* ---------- Publier vite (#quick) : réutilise les formulaires de l'Admin ---------- */
+let quickReady = false;
+function showQuick(){
+  const on = location.hash === '#quick'; document.body.classList.toggle('quick-mode', on); $('quickPanel').hidden = !on;
+  if(!on) return; initAdmin(); $('adminPanel').hidden = true;
+  const ok = !!($('ghOwner').value && $('ghRepo').value && $('ghToken').value);
+  $('qHint').textContent = ok ? (CUR ? CUR.title || '' : '') : 'GitHub n’est pas configuré sur cet appareil : ouvrez l’Admin complet pour saisir le token.';
+  if(quickReady) return; quickReady = true;
+  const waitDone = id => new Promise(res => { const t0 = Date.now(), tick = () => { const v = $(id).textContent; if(/^(✓|Erreur|⏳|Hors|Choisissez|Aucun|Renseignez)/.test(v) || Date.now() - t0 > 90000) res(v); else setTimeout(tick, 400); }; setTimeout(tick, 600); });
+  $('qFiles').addEventListener('change', () => { const n = $('qFiles').files.length; $('qCount').textContent = n ? '✓ ' + n + ' photo(s) prête(s)' : ''; });
+  $('qGo').addEventListener('click', async () => {
+    const files = $('qFiles').files, note = $('qNote').value.trim(), cap = $('qCap').value.trim(), st = $('qStatus');
+    if(!files.length && !note){ st.textContent = 'Ajoutez une photo ou un mot.'; return; }
+    $('qGo').disabled = true;
+    const date = NOWISO < START_ISO ? START_ISO : (NOWISO > END_ISO ? END_ISO : NOWISO); $('photoDate').value = date; $('photoDate').dispatchEvent(new Event('change'));
+    try{
+      if(files.length){
+        st.textContent = 'Envoi des photos…'; const dt = new DataTransfer(); [...files].forEach(f => dt.items.add(f)); $('photoFiles').files = dt.files; $('photoFiles').dispatchEvent(new Event('change'));
+        await new Promise(r => setTimeout(r, 700)); if(cap) document.querySelectorAll('#newCaps input').forEach(i => { i.value = cap; });
+        $('adminStatus').textContent = ''; $('publishPhotos').click(); st.textContent = await waitDone('adminStatus');
+      }
+      if(note){ $('noteText').value = note; $('noteText').dispatchEvent(new Event('input')); $('noteStatus').textContent = ''; $('publishNote').click(); st.textContent = await waitDone('noteStatus'); }
+      if(/^✓|⏳/.test(st.textContent)){ $('qFiles').value = ''; $('qNote').value = ''; $('qCap').value = ''; $('qCount').textContent = ''; }
+    }catch(err){ st.textContent = 'Erreur : ' + err.message; }
+    $('qGo').disabled = false;
+  });
+}
+
 
 /* ======================================================================
    ADMIN (#admin) : connexion GitHub, photos, comptes rendus, planning,
@@ -1363,7 +1573,7 @@ function initAdmin(){
     c.width = c.height = 0;   /* libère la mémoire du canvas (important sur iPhone avec beaucoup de photos) */
     return out;
   }
-  const serialize = p => (p.thumb === p.src && !p.caption) ? p.src : Object.assign({src:p.src, thumb:p.thumb}, p.caption ? {caption:p.caption} : {});
+  const serialize = p => (p.thumb === p.src && !p.caption && !p.star) ? p.src : Object.assign({src:p.src, thumb:p.thumb}, p.caption ? {caption:p.caption} : {}, p.star ? {star:true} : {});
 
   $('publishPhotos').addEventListener('click', async () => {
     const date = dateVal(), files = [...$('photoFiles').files].slice(0, MAX_PHOTOS), days = photoDays(files, date);
@@ -1409,6 +1619,7 @@ function initAdmin(){
     $('existing').replaceChildren(...hint, ...(list.length ? list.map(p => el('div', {class:'ex-row', 'data-src':p.src},
       el('img', {src:abs(p.thumb), alt:'', onerror:e => e.target.replaceWith(el('span', {class:'ex-wait', title:'Pas encore en ligne : republication de GitHub Pages en cours', text:'⏳'}))}),
       el('input', {type:'text', class:'ex-cap', maxlength:'140', value:p.caption, placeholder:'Légende'}),
+      el('label', {}, el('input', {type:'checkbox', class:'ex-star', checked:p.star}), ' ⭐ Photo du jour '),
       el('label', {}, el('input', {type:'checkbox', class:'ex-del'}), ' Supprimer'))) : [el('p', {class:'meta', text:'Aucune photo pour cette date.'})]));
   }
   $('savePhotoEdits').addEventListener('click', async () => {
@@ -1423,9 +1634,10 @@ function initAdmin(){
       (map[date] || []).map(normPhoto).forEach(p => {
         const row = rows.find(r => r.dataset.src === p.src);
         if(row && row.querySelector('.ex-del').checked){ removals.push(P(p.src)); if(p.thumb !== p.src) removals.push(P(p.thumb)); return; }
-        if(row) p.caption = row.querySelector('.ex-cap').value.trim();
+        if(row){ p.caption = row.querySelector('.ex-cap').value.trim(); p.star = row.querySelector('.ex-star').checked; }
         kept.push(p);
       });
+      let seen = false; kept.forEach(p => { if(p.star && seen) p.star = false; if(p.star) seen = true; });
       if(kept.length) map[date] = kept.map(serialize); else delete map[date];
       if(!removals.length && toText(map) === before){ say('editStatus', 'Rien à modifier.'); return; }
       say('editStatus', 'Envoi en cours…');
@@ -1564,6 +1776,8 @@ function initAdmin(){
   function previewMap(){ try{ const m = Object.assign({}, cfg.map || {}); m.mode = mapMode() === 'osm' ? 'osm' : (mapMode() === 'none' ? 'none' : ((cfg.map && cfg.map.mode === 'manual') ? 'manual' : 'auto')); m.places = PLACES; cfg.map = m; renderMap(lastKey); }catch(e){} }
   function renderPlaces(){
     $('osmAdmin').hidden = mapMode() !== 'osm';
+    const mm = cfg.map || {}, bad = mapMode() === 'schema' && mm.mode === 'manual' && (!Array.isArray(mm.points) || mm.points.length !== DATA.length);
+    $('mapWarn').hidden = !bad; if(bad) $('mapWarn').textContent = '⚠ Carte manuelle : ' + (mm.points || []).length + ' point(s) pour ' + DATA.length + ' étape(s). Il en faut un par étape, sinon le schéma s’affiche en mode automatique. Corrigez « map.points » dans le JSON des réglages (bloc avancé), ou choisissez la carte OpenStreetMap.';
     $('osmList').replaceChildren(...PLACES.map((p, n) => {
       const name = el('input', {value:p.label || '', 'aria-label':'Nom du lieu'}); name.addEventListener('input', () => { p.label = name.value; });
       const et = el('select', {'aria-label':'Étape'}, etapeOpts()); et.value = (p.e === undefined || p.e === null) ? '' : String(p.e); et.addEventListener('change', () => { if(et.value === '') delete p.e; else p.e = +et.value; previewMap(); });
@@ -1773,6 +1987,7 @@ function initAdmin(){
     $('setHomeLabel').value = (c.home && c.home.label) || ''; $('setHomeTz').value = (c.home && c.home.timezone) || '';
     $('cfgJson').value = toText(c);
     loadTheme(c); loadMap(c);
+    const inf = c.info || {}; $('infoPlug').value = inf.plug || ''; $('infoCur').value = inf.currency || ''; $('infoLang').value = inf.language || ''; $('infoSos').value = inf.emergency || '';
   }
   function validateConfig(c){
     if(!c || typeof c !== 'object' || Array.isArray(c)) return 'la configuration doit être un objet JSON.';
@@ -1796,6 +2011,7 @@ function initAdmin(){
   }
   async function saveConfig(obj, statusId){
     const files = [{path:P('trip.json'), text:toText(obj)}, ...(await indexFiles({title:obj.title || CUR.slug, destination:obj.destinationLabel || ''}))];
+    if(DIR) files.push({path:DIR + 'index.html', text:sharePageHtml(CUR.slug, obj.title || CUR.slug, obj.destinationLabel || '', CUR.start || '', CUR.end || '', obj.cover)});
     await commitFiles('Réglages du voyage', files);
     say(statusId, '✓ Réglages enregistrés. Visibles dans ~1 min.');
   }
@@ -1812,6 +2028,8 @@ function initAdmin(){
       const home = Object.assign({}, cur.home || {}, {label:$('setHomeLabel').value.trim() || undefined, timezone:homeTz || undefined});
       if(home.label || home.timezone) next.home = home; else delete next.home;
       themeInto(cur, next); mapInto(cur, next);
+      const info = {plug:$('infoPlug').value.trim(), currency:$('infoCur').value.trim(), language:$('infoLang').value.trim(), emergency:$('infoSos').value.trim()}; Object.keys(info).forEach(k => { if(!info[k]) delete info[k]; });
+      if(Object.keys(info).length) next.info = info; else delete next.info;
       await saveConfig(JSON.parse(JSON.stringify(next)), 'settingsStatus');
       fillSettings();
     }catch(err){ say('settingsStatus', 'Erreur : ' + err.message); }
@@ -1827,9 +2045,36 @@ function initAdmin(){
   $('photoDate').addEventListener('change', () => { noteDirty = planDirty = false; fillNote(); fillPlan(); refreshExisting(); });
   $('ghToken').addEventListener('change', () => { fillNote(); fillPlan(); fillFullPlan(); fillSettings(); refreshExisting(); });
   fillNote(); fillPlan(); fillFullPlan(); fillSettings(); refreshExisting();
+  /* Sauvegarde du voyage */
+  $('backupBtn').addEventListener('click', async () => {
+    say('backupStatus', 'Préparation…');
+    try{
+      const live = !!token(), plan = await currentPlan();
+      const conf = live ? ((await readRepoJson(P('trip.json'), {})) || {}) : cfg, notes = live ? await readRepoJson(P('notes.json'), {}) : NOTES, photos = live ? await readRepoJson(P('photos.json'), {}) : SITE_PHOTOS;
+      const ph = Object.fromEntries(Object.entries(photos || {}).map(([d, l]) => [d, (l || []).map(normPhoto).map(x => Object.assign({}, x, {url:new URL(abs(x.src), location.href).href}))]));
+      const out = {app:'carnet-de-voyage', version:APP_VERSION, exportedAt:new Date().toISOString(), trip:{slug:CUR.slug, title:conf.title || cfg.title}, config:conf, plan, notes, photos:ph};
+      const a = el('a', {href:URL.createObjectURL(new Blob([JSON.stringify(out, null, 2)], {type:'application/json'})), download:'sauvegarde-' + (CUR.slug || 'voyage') + '-' + new Date().toISOString().slice(0, 10) + '.json'});
+      document.body.append(a); a.click(); a.remove(); say('backupStatus', '✓ Sauvegarde téléchargée. Les photos restent hébergées sur GitHub (leurs adresses sont dans le fichier).');
+    }catch(err){ say('backupStatus', 'Erreur : ' + err.message); }
+  });
+  /* Guide de démarrage */
+  function renderOnboard(){
+    const f = ghFields(), steps = [
+      [!!(f.owner && f.repo && f.token), 'Connexion GitHub : renseignez compte, dépôt et token, puis « Enregistrer et tester ».'],
+      [trips.length > 0, 'Créez votre premier voyage (section « Nouveau voyage »), puis rechargez la page.'],
+      [allDays.some(d => (d.items || []).length), 'Ajoutez le planning : étapes, jours et activités (Planning du jour ou Planning complet).']];
+    $('onboard').hidden = steps.every(x => x[0]);
+    $('onboardList').replaceChildren(...steps.map(x => el('li', {text:(x[0] ? '✓ ' : '○ ') + x[1]})));
+  }
+  $('adminTripLabel').insertAdjacentElement('afterend', el('p', {class:'meta', id:'appVersion', text:'Carnet de voyage · version ' + APP_VERSION}));
+  renderOnboard(); $('adminPanel').addEventListener('input', renderOnboard); $('adminPanel').addEventListener('click', () => setTimeout(renderOnboard, 1200));
 }
 if(location.hash === '#admin') initAdmin();
+showQuick();
 })();
 </script>
+<div id="gallery" class="ovl" hidden role="dialog" aria-modal="true" aria-label="Galerie"><div class="ovl-head"><select id="galFilter" aria-label="Filtrer"></select><button class="btn" id="galClose" type="button">Fermer</button></div><div id="galGrid" class="gal-grid"></div></div>
+<div id="show" class="ovl show" hidden role="dialog" aria-modal="true" aria-label="Revoir le voyage"><div class="show-bg" id="showBg"></div><div class="show-txt"><h2 id="showH"></h2><p class="show-sub" id="showSub"></p><p class="show-note" id="showTxt"></p></div><div class="show-bar"><button class="btn" id="showPrev" type="button" aria-label="Précédent">‹</button><button class="btn" id="showPlay" type="button" aria-label="Pause">⏸</button><button class="btn" id="showNext" type="button" aria-label="Suivant">›</button><button class="btn" id="showClose" type="button" aria-label="Fermer">✕</button></div><div class="show-prog"><i id="showProg"></i></div></div>
+<div id="book" aria-hidden="true"></div>
 </body>
 </html>
