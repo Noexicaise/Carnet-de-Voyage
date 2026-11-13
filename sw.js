@@ -6,6 +6,7 @@ self.addEventListener('fetch', e => {
   const r = e.request, u = new URL(r.url);
   if(r.method !== 'GET' || u.hostname === 'api.github.com') return;
   const same = u.origin === location.origin, key = same ? u.origin + u.pathname : r;
+  if(!same && !u.hostname.startsWith('fonts.g')) return;  /* tuiles, cartes, recherche : gérés directement par le navigateur */
   e.respondWith(fetch(r).then(res => {
     if(res.ok && res.status === 200 && (same || u.hostname.startsWith('fonts.g'))){ const cp = res.clone(); caches.open(C).then(c => c.put(key, cp)); }
     return res;

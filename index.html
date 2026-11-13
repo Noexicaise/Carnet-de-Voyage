@@ -69,6 +69,9 @@ header.hero p.lead{color:var(--ink-soft);max-width:52ch;margin:14px 0 0}
 /* Carte schématique */
 .route-wrap{max-width:760px;margin:0 auto 10px;padding:0 24px}
 .route-svg{width:100%;height:auto;overflow:visible}
+#osmMap{height:clamp(240px,52vw,380px);border-radius:var(--r,10px);overflow:hidden;border:1px solid var(--line);position:relative;z-index:0;isolation:isolate;background:var(--paper2)}
+.osm-pin{display:block;width:16px;height:16px;border-radius:50%;background:var(--primary);border:2px solid var(--paper);box-shadow:0 0 0 1px var(--ink-soft)}
+.osm-pin.current{background:var(--green);width:20px;height:20px;margin:-2px 0 0 -2px}
 .route-svg circle{fill:var(--warm);cursor:pointer}
 .route-svg .stop:hover circle{fill:var(--primary-ink)}
 .route-svg text{font-family:var(--font-body);font-size:11px;fill:var(--ink-soft);text-anchor:middle;cursor:pointer}
@@ -161,6 +164,10 @@ main.filtering .timeline.collapsed{display:block}
 .admin-panel .btn{align-self:flex-start}
 .btn-line{display:flex;gap:10px;flex-wrap:wrap}
 #tripAdmin{display:flex;flex-direction:column;gap:8px}
+#cover{margin:0 0 16px;border-radius:var(--r,10px);overflow:hidden}#cover img{display:block;width:100%;height:clamp(140px,34vw,240px);object-fit:cover}
+.tools{margin:14px 0;border:1px solid var(--line);border-radius:var(--r,10px);background:var(--card);padding:8px 14px;max-width:620px}.tools summary{cursor:pointer;font-weight:700}.tools h3{font-size:1rem;margin:10px 0 4px}.tools ul{margin:4px 0;padding-left:18px}.tools a{color:var(--primary-ink)}
+.search{width:100%;box-sizing:border-box;padding:8px 14px;border:1px solid var(--line);border-radius:var(--rb,20px);background:var(--card);color:var(--ink);font:inherit;margin-bottom:8px}
+.osm-pin.small{width:10px;height:10px;background:var(--warm);margin:3px 0 0 3px}
 .etape-head{border-bottom:var(--hr,1px solid var(--line))}
 h1,h2,h3,h4{text-transform:var(--hcase,none);letter-spacing:var(--hspace,0);font-weight:var(--hweight,700)}
 .item,.today-card,.empty,.day-note{border-radius:var(--r,10px);box-shadow:var(--shadow,none)}
@@ -204,6 +211,7 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
 </head>
 <body>
 <header class="hero">
+  <div id="cover" hidden><img alt=""></div>
   <div class="kicker" id="kicker"></div>
   <div class="trip-switch" id="tripSwitch" hidden>
     <label for="tripSelect">Voyage</label>
@@ -213,6 +221,7 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
   <div class="trip-status" id="tripStatus"></div>
   <div class="clocks" id="clocks" aria-label="Heures locales" hidden></div>
   <div id="todayCard"></div>
+  <details class="tools" id="tools"><summary>Récapitulatif du voyage</summary><div id="toolsBody"></div></details>
   <p class="lead" id="lead"></p>
   <div class="btn-row">
     <button class="btn" id="shareBtn" type="button">Partager le lien ↗</button>
@@ -245,6 +254,7 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
     <div id="ghStatus" class="meta" role="status"></div>
   </details>
 
+  <div id="queueBar" class="meta" role="status" hidden></div>
   <div id="tripAdmin" hidden>
     <label for="photoDate">Date du jour concerné</label>
     <input type="date" id="photoDate">
@@ -282,6 +292,12 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
       <div id="planStatus" class="meta" role="status"></div>
     </details>
 
+    <details id="stagesBox">
+      <summary>Étapes et jours du voyage</summary>
+      <p class="meta">Renommez les étapes, ajoutez ou retirez des jours et des étapes, puis enregistrez. Les activités déjà saisies sont conservées. « Ajouter un jour » décale d'un jour les étapes suivantes.</p>
+      <div id="stageForm"></div>
+      <div id="stageStatus" class="meta" role="status"></div>
+    </details>
     <details>
       <summary>Planning complet du voyage (avancé)</summary>
       <p class="meta">Tout l'itinéraire au format JSON : étapes, jours (« iso » obligatoire, « date » et « dow » facultatifs), activités. Idéal pour coller un planning préparé à l'avance.</p>
@@ -299,6 +315,25 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
       <label for="setTz">Fuseau horaire de la destination</label><input id="setTz" list="tzList" autocapitalize="none" placeholder="Europe/Rome">
       <label for="setHomeLabel">Ville de départ</label><input id="setHomeLabel">
       <label for="setHomeTz">Fuseau horaire de départ</label><input id="setHomeTz" list="tzList" autocapitalize="none" placeholder="Europe/Brussels">
+      <label for="setMapMode">Type de carte</label>
+      <select id="setMapMode"><option value="schema">Schéma simplifié (un point par étape)</option><option value="osm">Carte OpenStreetMap (lieux placés sur une vraie carte)</option><option value="none">Aucune carte</option></select>
+      <div id="osmAdmin" hidden>
+        <label for="osmQ">Ajouter un lieu à la carte</label>
+        <div class="pf-row"><input id="osmQ" placeholder="Ex. Fushimi Inari, Kyoto" autocomplete="off"><select id="osmE" aria-label="Étape rattachée"></select><button class="btn" id="osmSearch" type="button">Rechercher</button></div>
+        <div id="osmRes"></div><div id="osmList"></div>
+        <p class="meta">Les lieux sont reliés dans l'ordre de la liste. Rattacher un lieu à une étape le met en évidence quand on lit cette étape. Recherche par OpenStreetMap (Nominatim).</p>
+      </div>
+      <label for="setCover">Photo de couverture (bandeau en haut du carnet et aperçu du lien)</label><select id="setCover"></select>
+      <details id="themeCustom"><summary>Personnaliser le thème (couleurs, polices, motif)</summary>
+        <p class="meta">Aperçu en direct sur cette page. Rien n'est publié avant « Enregistrer les réglages ».</p>
+        <div class="pf-row"><label>Couleur principale <input type="color" id="thPrimary"></label><label>Accent <input type="color" id="thWarm"></label><label>Secondaire <input type="color" id="thGreen"></label><label>Fond <input type="color" id="thPaper"></label></div>
+        <label for="thHead">Police des titres</label><select id="thHead"></select>
+        <label for="thBody">Police du texte</label><select id="thBody"></select>
+        <label for="thPat">Motif de fond</label><select id="thPat"></select>
+        <label for="thCorners">Forme des cartes et boutons</label><select id="thCorners"><option value="">Selon le préréglage</option><option value="2">Anguleux</option><option value="10">Arrondis</option><option value="22">Très arrondis</option></select>
+        <label for="thOrn">Symbole devant la date (ex. ✈ ou ★)</label><input id="thOrn" maxlength="4">
+        <button class="btn" id="thReset" type="button">Revenir au préréglage</button>
+      </details>
       <button class="btn" id="sharePageBtn" type="button">Créer / mettre à jour la page de partage (aperçu du lien)</button>
       <button class="btn" id="saveSettings" type="button">Enregistrer les réglages</button>
       <div id="settingsStatus" class="meta" role="status"></div>
@@ -333,10 +368,12 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
 
 <div class="route-wrap" id="routeWrap" hidden>
   <svg class="route-svg" id="routeSvg" viewBox="0 0 600 200" role="group" aria-label="Schéma du trajet"></svg>
+  <div id="osmMap" hidden role="region" aria-label="Carte du voyage"></div>
 </div>
 
 <div class="filters" id="filters" hidden>
   <div class="filters-inner">
+    <input id="searchBox" class="search" type="search" placeholder="Rechercher…" aria-label="Rechercher…" autocomplete="off">
     <div class="filter-row" id="typeRow"></div>
     <div class="filter-row" id="regionRow"></div>
     <button class="reset" id="resetBtn" type="button">Réinitialiser les filtres</button>
@@ -431,14 +468,14 @@ const UI_DICT = {
     'Photo précédente':'Previous photo','Photo suivante':'Next photo','Photo':'Photo','Photo du voyage':'Trip photo','− réduire ⌃':'− collapse ⌃','+ d’infos ⌄':'+ details ⌄',
     '✅ Réservé':'✅ Booked','⏳ À réserver':'⏳ To book','Aller à l’étape ':'Go to stage ','Voyage terminé ✓':'Trip over ✓',"Aujourd'hui":'Today','· aujourd’hui':'· today',
     'Le carnet du jour':'Journal of the day','Destination':'Destination','Départ':'Home','🖨️ Version imprimable / PDF':'🖨️ Print / PDF version','Langue':'Language',
-    'J-{n} avant le départ':'{n} days to go','Jour {n} / {t}':'Day {n} / {t}','{n} photo(s)':'{n} photo(s)','{n} compte(s) rendu(s)':'{n} entry(ies)','Étape':'Stage'},
+    'J-{n} avant le départ':'{n} days to go','Jour {n} / {t}':'Day {n} / {t}','{n} photo(s)':'{n} photo(s)','{n} compte(s) rendu(s)':'{n} entry(ies)','Étape':'Stage','Récapitulatif du voyage':'Trip summary','À réserver':'To book','Rien à réserver pour le moment.':'Nothing left to book.','📅 Ajouter à mon agenda (.ics)':'📅 Add to my calendar (.ics)','jours':'days','étapes':'stages','lieux':'places','photos':'photos','comptes rendus':'entries','Rechercher…':'Search…','prévision':'forecast'},
   nl:{'Voyage':'Reis','Carnet de voyage':'Reisdagboek','Partager le lien ↗':'Link delen ↗','Réinitialiser les filtres':'Filters wissen',
     "Ce carnet de voyage a besoin de JavaScript pour s'afficher.":'Dit reisdagboek heeft JavaScript nodig om te worden weergegeven.','Carnet de voyage — mis à jour au fil du voyage.':'Reisdagboek — bijgewerkt tijdens de reis.',
     '🌓 Thème : auto':'🌓 Thema: auto','🌙 Thème : sombre':'🌙 Thema: donker','☀️ Thème : clair':'☀️ Thema: licht','Lien copié ✓':'Link gekopieerd ✓',
     'Photo précédente':'Vorige foto','Photo suivante':'Volgende foto','Photo':'Foto','Photo du voyage':'Reisfoto','− réduire ⌃':'− inklappen ⌃','+ d’infos ⌄':'+ meer info ⌄',
     '✅ Réservé':'✅ Geboekt','⏳ À réserver':'⏳ Nog te boeken','Aller à l’étape ':'Ga naar etappe ','Voyage terminé ✓':'Reis afgelopen ✓',"Aujourd'hui":'Vandaag','· aujourd’hui':'· vandaag',
     'Le carnet du jour':'Dagboek van de dag','Destination':'Bestemming','Départ':'Vertrek','🖨️ Version imprimable / PDF':'🖨️ Afdrukken / PDF','Langue':'Taal',
-    'J-{n} avant le départ':'Nog {n} dagen tot vertrek','Jour {n} / {t}':'Dag {n} / {t}','{n} photo(s)':'{n} foto(\'s)','{n} compte(s) rendu(s)':'{n} verslag(en)','Étape':'Etappe'}
+    'J-{n} avant le départ':'Nog {n} dagen tot vertrek','Jour {n} / {t}':'Dag {n} / {t}','{n} photo(s)':'{n} foto(\'s)','{n} compte(s) rendu(s)':'{n} verslag(en)','Étape':'Etappe','Récapitulatif du voyage':'Reisoverzicht','À réserver':'Nog te boeken','Rien à réserver pour le moment.':'Niets meer te boeken.','📅 Ajouter à mon agenda (.ics)':'📅 Toevoegen aan mijn agenda (.ics)','jours':'dagen','étapes':'etappes','lieux':'plaatsen','photos':'foto\'s','comptes rendus':'verslagen','Rechercher…':'Zoeken…','prévision':'voorspelling'}
 };
 const LANGS = {fr:'fr-FR', en:'en-GB', nl:'nl-BE'};
 let LANG = 'fr';
@@ -596,6 +633,7 @@ themeBtn.addEventListener('click', () => {
   setT('#tripSwitch label', 'Voyage'); setT('#shareBtn', 'Partager le lien ↗'); setT('#resetBtn', 'Réinitialiser les filtres');
   setT('#printBtn', '🖨️ Version imprimable / PDF'); setT('#footer', 'Carnet de voyage — mis à jour au fil du voyage.');
   if('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});
+  setT('#tools summary', 'Récapitulatif du voyage'); $('searchBox').placeholder = tr('Rechercher…'); $('searchBox').setAttribute('aria-label', tr('Rechercher…')); $('searchBox').addEventListener('input', () => applyFilters());
   setT('noscript', "Ce carnet de voyage a besoin de JavaScript pour s'afficher.");
   $('langSelect').value = LANG; $('langSelect').setAttribute('aria-label', tr('Langue'));
   $('langSelect').addEventListener('change', () => { try{ localStorage.setItem('lang', $('langSelect').value); }catch(e){} const u = new URL(location.href); u.searchParams.delete('lang'); location.href = u.toString(); });
@@ -717,7 +755,7 @@ function buildItem(it){
   const row = el('div', {class:'item', 'data-type':it.type, 'data-region':it.region || ''});
   if(it.time) row.append(el('div', {class:'time', text:it.time}));
   row.append(el('div', {class:'text', text:it.text}));
-  const q = encodeURIComponent(it.maps || (it.text + ' ' + (it.region || '')));
+  const q = encodeURIComponent(it.maps || (hasXY(it) ? it.lat + ',' + it.lon : it.text + ' ' + (it.region || '')));
   const tags = el('div', {class:'tags'},
     el('span', {class:'tag', style:'background:' + bg + ';color:' + textOn(bg), text:t.label}),
     it.region ? el('span', {class:'tag', style:'background:' + grey + ';color:' + textOn(grey), text:it.region}) : null,
@@ -748,11 +786,89 @@ function goToEtape(key){
   if(sec){ setEtape(sec, true); sec.scrollIntoView({behavior:smooth(), block:'start'}); }
 }
 
+const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const hasXY = o => !!o && o.lat != null && o.lon != null && isFinite(+o.lat) && isFinite(+o.lon);
+function exportIcs(){
+  const esc = t => String(t).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
+  const d8 = iso => iso.replace(/-/g, ''), next = iso => d8(new Date(Date.parse(iso) + 864e5).toISOString().slice(0, 10)), stamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z', slug = (CUR && CUR.slug) || 'voyage';
+  const L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Carnet de voyage//FR', 'CALSCALE:GREGORIAN'];
+  allDays.forEach(d => L.push('BEGIN:VEVENT', 'UID:' + d.iso + '-' + slug + '@carnet', 'DTSTAMP:' + stamp, 'DTSTART;VALUE=DATE:' + d8(d.iso), 'DTEND;VALUE=DATE:' + next(d.iso),
+    'SUMMARY:' + esc((cfg.title || 'Voyage') + (d.title ? ' — ' + d.title : '')), 'DESCRIPTION:' + esc((d.items || []).map(i => [i.time, i.text, i.region ? '(' + i.region + ')' : ''].filter(Boolean).join(' ')).join('\n')), 'END:VEVENT'));
+  L.push('END:VCALENDAR');
+  const a = el('a', {href:URL.createObjectURL(new Blob([L.join('\r\n')], {type:'text/calendar'})), download:slug + '.ics'}); document.body.append(a); a.click(); a.remove();
+}
+async function liveWeather(){
+  const addD = (iso, n) => new Date(Date.parse(iso) + n * 864e5).toISOString().slice(0, 10), limit = addD(NOWISO, 15);
+  for(const [i, e] of DATA.entries()){
+    const pl = ((cfg.map && cfg.map.places) || []).find(p => hasXY(p) && String(p.e) === String(i)), c = hasXY(e) ? e : pl;
+    if(!c || !e.days || !e.days.length) continue;
+    const a = e.days[0].iso, b = e.days[e.days.length - 1].iso; if(b < NOWISO || a > limit) continue;
+    const from = a < NOWISO ? NOWISO : a, to = b > limit ? limit : b;
+    try{
+      const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + c.lat + '&longitude=' + c.lon + '&daily=temperature_2m_max,temperature_2m_min&timezone=auto&start_date=' + from + '&end_date=' + to);
+      if(!r.ok) continue;
+      const j = await r.json(), mx = (j.daily || {}).temperature_2m_max, mn = (j.daily || {}).temperature_2m_min; if(!mx || !mx.length) continue;
+      const head = document.querySelector('.etape[data-etape="' + i + '"] .etape-head'); if(!head) continue;
+      let w = head.querySelector('.weather'); if(!w){ w = el('span', {class:'meta weather'}); head.append(w); }
+      w.textContent = '🌤️ ~' + Math.round(Math.max(...mx)) + '°C / ' + Math.round(Math.min(...mn)) + '°C (' + tr('prévision') + ')';
+    }catch(err){}
+  }
+}
+function renderTools(){
+  const box = $('toolsBody'); if(!box || !allDays.length) return;
+  const items = allDays.flatMap(d => (d.items || []).map(it => ({d, it}))), todo = items.filter(x => x.it.booked === false), done = items.filter(x => x.it.booked === true);
+  const places = new Set(items.map(x => x.it.region).filter(Boolean));
+  const ph = Object.values(SITE_PHOTOS || {}).reduce((a, l) => a + (l || []).length, 0) + allDays.reduce((a, d) => a + (d.photos || []).length, 0);
+  const nt = Object.values(NOTES || {}).filter(Boolean).length;
+  box.replaceChildren(
+    el('p', {class:'meta', text:[TOTAL + ' ' + tr('jours'), DATA.length + ' ' + tr('étapes'), places.size + ' ' + tr('lieux'), ph + ' ' + tr('photos'), nt + ' ' + tr('comptes rendus')].join(' · ')}),
+    el('h3', {text:tr('À réserver') + ' (' + todo.length + ')'}),
+    todo.length ? el('ul', {}, ...todo.map(x => el('li', {}, el('a', {href:'#jour-' + x.d.iso, text:(x.d.date || x.d.iso) + ' · ' + x.it.text})))) : el('p', {class:'meta', text:tr('Rien à réserver pour le moment.')}),
+    el('p', {class:'meta', text:tr('✅ Réservé') + ' : ' + done.length}),
+    el('button', {class:'btn', type:'button', text:tr('📅 Ajouter à mon agenda (.ics)'), onclick:exportIcs}));
+}
+
+/* ---------- Carte OpenStreetMap (Leaflet chargé à la demande) ---------- */
+let LEAFLET = null, OSM = null, lastKey = null;
+function loadLeaflet(){
+  return LEAFLET || (LEAFLET = new Promise((ok, ko) => {
+    const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css'; document.head.append(l);
+    const sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js'; sc.onload = ok; sc.onerror = () => { LEAFLET = null; ko(new Error('Leaflet')); }; document.head.append(sc);
+  }));
+}
+function renderOsm(currentKey){
+  const pts = ((cfg.map && cfg.map.places) || []).filter(p => p && isFinite(+p.lat) && isFinite(+p.lon));
+  const ipts = allDays.flatMap(d => (d.items || []).filter(hasXY).map(it => ({it, iso:d.iso})));
+  if(!pts.length && !ipts.length) return false;
+  if(!window.L){ loadLeaflet().then(() => renderMap(lastKey)).catch(() => {}); return false; }
+  const box = $('osmMap'); $('routeSvg').style.display = 'none'; box.hidden = false;
+  if(!OSM){
+    OSM = L.map(box, {scrollWheelZoom:false}); OSM.layer = L.layerGroup().addTo(OSM);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:18, attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}).addTo(OSM);
+  }
+  OSM.layer.clearLayers();
+  const ll = pts.map(p => [+p.lat, +p.lon]), il = ipts.map(x => [+x.it.lat, +x.it.lon]), sig = JSON.stringify(ll.concat(il));
+  if(ll.length > 1) L.polyline(ll, {color:'#888', weight:2, dashArray:'5,6', opacity:.8}).addTo(OSM.layer);
+  pts.forEach((p, i) => {
+    const hasE = p.e !== undefined && p.e !== null && p.e !== '', cur = hasE && String(p.e) === currentKey;
+    const mk = L.marker(ll[i], {icon:L.divIcon({className:'', html:'<span class="osm-pin' + (cur ? ' current' : '') + '"></span>', iconSize:[18, 18]}), title:p.label || ''}).addTo(OSM.layer);
+    if(p.label) mk.bindTooltip(String(p.label), {direction:'top'});
+    if(hasE && DATA[+p.e]) mk.on('click', () => goToEtape(+p.e));
+  });
+  ipts.forEach((x, i) => { const mk = L.marker(il[i], {icon:L.divIcon({className:'', html:'<span class="osm-pin small"></span>', iconSize:[16, 16]}), title:x.it.text}).addTo(OSM.layer); mk.bindTooltip(String(x.it.text), {direction:'top'}); mk.on('click', () => { const d = $('jour-' + x.iso); if(d) d.scrollIntoView({behavior:smooth(), block:'center'}); }); });
+  OSM.invalidateSize();
+  if(OSM.sig !== sig){ OSM.sig = sig; OSM.fitBounds(L.latLngBounds(ll.concat(il)), {padding:[30, 30], maxZoom:12}); }
+  return true;
+}
+
 function renderMap(currentKey){
+  lastKey = currentKey;
   const wrap = $('routeWrap'), map = $('routeSvg'), m = cfg.map || {};
   map.replaceChildren();
   if(m.mode === 'none'){ wrap.hidden = true; return; }
   wrap.hidden = false;
+  if(m.mode === 'osm' && renderOsm(currentKey)) return;
+  $('osmMap').hidden = true; map.style.display = '';
   const n = DATA.length; let pts, home = null;
   if(m.mode === 'manual' && Array.isArray(m.points) && m.points.length === n){
     pts = m.points.map((p, i) => ({x:+p.x, y:+p.y, label:p.label || shortName(DATA[i]), pos:p.pos || 'below'}));
@@ -788,6 +904,8 @@ function renderTrip(){
   todayDay = allDays.find(d => d.iso === NOWISO) || null;
 
   applyTheme(cfg);
+  const cv = $('cover'), cvSrc = cfg.cover;
+  if(typeof cvSrc === 'string' && !cvSrc.includes('..') && /^[\w\-\/.]+\.(jpe?g|png|webp)$/i.test(cvSrc)){ cv.firstElementChild.src = abs(cvSrc); cv.hidden = false; } else cv.hidden = true;
   document.title = cfg.title || 'Carnet de voyage';
   $('title').textContent = cfg.title || 'Carnet de voyage';
   $('kicker').textContent = cfg.kicker || (longDate(START_ISO) + (START_ISO === END_ISO ? '' : ' — ' + longDate(END_ISO)));
@@ -867,21 +985,23 @@ function renderTrip(){
   $('filters').hidden = !(used.size || regions.length);
   $('resetBtn').onclick = () => {
     document.querySelectorAll('.chip.active').forEach(c => { c.classList.remove('active'); c.setAttribute('aria-pressed', 'false'); });
+    $('searchBox').value = '';
     applyFilters();
   };
+  renderTools(); liveWeather();
   $('footer').textContent = (cfg.title || 'Carnet de voyage') + ' — mis à jour au fil du voyage.';
 }
 function applyFilters(){
-  const main = $('main');
+  const main = $('main'), q = norm($('searchBox').value.trim());
   const types = [...document.querySelectorAll('.chip[data-cat="type"].active')].map(c => c.dataset.key);
   const regs = [...document.querySelectorAll('.chip[data-cat="region"].active')].map(c => c.dataset.key);
-  main.classList.toggle('filtering', types.length > 0 || regs.length > 0);
+  main.classList.toggle('filtering', types.length > 0 || regs.length > 0 || !!q);
   document.querySelectorAll('.etape').forEach(sec => {
     let secVisible = false;
     sec.querySelectorAll('.day').forEach(day => {
       let dayVisible = false;
       day.querySelectorAll('.item').forEach(it => {
-        const show = (!types.length || types.includes(it.dataset.type)) && (!regs.length || regs.includes(it.dataset.region));
+        const show = (!types.length || types.includes(it.dataset.type)) && (!regs.length || regs.includes(it.dataset.region)) && (!q || norm(it.textContent + ' ' + it.dataset.region).includes(q));
         it.classList.toggle('hide', !show);
         if(show) dayVisible = true;
       });
@@ -894,6 +1014,7 @@ function applyFilters(){
 
 /* ---------- Photos et comptes rendus ---------- */
 function renderExtras(){
+  renderTools();
   const tally = DATA.map(() => ({p:0, n:0}));
   allDays.forEach(day => {
     const dayEl = $('jour-' + day.iso);
@@ -1018,7 +1139,7 @@ function initAdmin(){
     }
   }
   /* Un seul commit pour tout (photos, miniatures, JSON) : une seule republication de GitHub Pages */
-  async function commitFiles(message, files, progress){
+  async function commitNow(message, files, progress){
     const branch = ghFields().branch;
     const head = (await gh('git/ref/heads/' + branch)).object.sha;
     const base = (await gh('git/commits/' + head)).tree.sha;
@@ -1035,12 +1156,44 @@ function initAdmin(){
     const commit = await withRetry(() => gh('git/commits', {method:'POST', body:{message, tree:tree.sha, parents:[head]}}));
     await withRetry(() => gh('git/refs/heads/' + branch, {method:'PATCH', body:{sha:commit.sha}}));
   }
+  /* Envois mis en attente quand le réseau manque (IndexedDB), republiés au retour de la connexion */
+  const QDB = () => new Promise((ok, ko) => { const r = indexedDB.open('carnetQueue', 1); r.onupgradeneeded = () => r.result.createObjectStore('q', {autoIncrement:true}); r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
+  const qList = async () => { const db = await QDB(); return new Promise((ok, ko) => { const st = db.transaction('q').objectStore('q'), k = st.getAllKeys(), v = st.getAll(); v.onsuccess = () => ok(v.result.map((x, i) => ({key:k.result[i], v:x}))); v.onerror = () => ko(v.error); }); };
+  const qDo = async fn => { const db = await QDB(); return new Promise((ok, ko) => { const tx = db.transaction('q', 'readwrite'); fn(tx.objectStore('q')); tx.oncomplete = ok; tx.onerror = () => ko(tx.error); }); };
+  const isNet = e => !navigator.onLine || e instanceof TypeError || /failed to fetch|networkerror|load failed|network request/i.test((e && e.message) || '');
+  async function showQueue(msg){ const n = (await qList().catch(() => [])).length, bar = $('queueBar'); bar.textContent = msg || (n ? '⏳ ' + n + ' envoi(s) en attente : ils partiront automatiquement au retour du réseau.' : ''); bar.hidden = !bar.textContent; }
+  async function queueIt(message, files){
+    try{ await qDo(st => st.add({message, files, t:Date.now()})); }catch(e){ throw new Error('Hors ligne, et la mise en attente est impossible sur ce navigateur.'); }
+    await showQueue(); throw new Error('Hors ligne : envoi mis en attente, il partira automatiquement au retour du réseau (gardez cette page ouverte ou rouvrez-la).');
+  }
+  async function commitFiles(message, files, progress){
+    if(!navigator.onLine) return queueIt(message, files);
+    try{ return await commitNow(message, files, progress); }catch(err){ if(isNet(err)) return queueIt(message, files); throw err; }
+  }
+  async function queueOp(op){ await qDo(st => st.add(Object.assign({t:Date.now()}, op))); await showQueue(); }
+  async function runQueued(v){
+    if(v.kind === 'photos'){
+      const map = await readRepoJson(v.pfx + 'photos.json', {}), out = [];
+      v.items.forEach(p => { map[p.day] = [...(map[p.day] || []), serialize({src:'photos/' + p.name, thumb:'photos/thumbs/' + p.name, caption:p.caption})]; out.push({path:v.pfx + 'photos/' + p.name, base64:p.full}, {path:v.pfx + 'photos/thumbs/' + p.name, base64:p.thumb}); });
+      out.push({path:v.pfx + 'photos.json', text:toText(map)}); await commitNow(v.message, out);
+    }else if(v.kind === 'note'){
+      const map = await readRepoJson(v.pfx + 'notes.json', {}); if(v.text) map[v.date] = v.text; else delete map[v.date];
+      await commitNow(v.message, [{path:v.pfx + 'notes.json', text:toText(map)}]);
+    }else await commitNow(v.message, v.files);
+  }
+  let flushing = false;
+  async function flushQueue(){
+    if(flushing || !navigator.onLine || !token()) return; flushing = true; let sent = 0;
+    try{ for(const it of await qList()){ try{ await runQueued(it.v); await qDo(st => st.delete(it.key)); sent++; }catch(err){ break; } } }catch(e){}
+    flushing = false; await showQueue(sent ? '✓ ' + sent + ' envoi(s) en attente publié(s). En ligne dans ~1 min.' : undefined);
+  }
+  window.addEventListener('online', flushQueue); showQueue().then(flushQueue);
   const toText = obj => JSON.stringify(obj, null, 2) + '\n';
   /* Petite page par voyage : aperçu de lien (titre, dates, image) puis redirection vers le carnet */
-  function sharePageHtml(slug, title, dest, start, end){
+  function sharePageHtml(slug, title, dest, start, end, cover){
     const base = SITE_URL.replace(/[^/]*$/, ''), url = base + '?trip=' + encodeURIComponent(slug), desc = (dest ? dest + ' · ' : '') + start + ' → ' + end;
     const x = v => String(v).replace(/[&<>"]/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;'}[c]));
-    return '<!DOCTYPE html>\n<html lang="fr"><head><meta charset="UTF-8"><title>' + x(title) + '</title>\n<meta name="robots" content="noindex, nofollow">\n<meta property="og:type" content="website"><meta property="og:title" content="' + x(title) + '"><meta property="og:description" content="' + x(desc) + '">\n<meta property="og:image" content="' + x(base + 'og.png') + '"><meta property="og:url" content="' + x(url) + '"><meta name="twitter:card" content="summary_large_image">\n<meta http-equiv="refresh" content="0;url=' + x(url) + '"></head>\n<body><script>location.replace(' + JSON.stringify(url) + ');<\/script><a href="' + x(url) + '">' + x(title) + '</a></body></html>\n';
+    return '<!DOCTYPE html>\n<html lang="fr"><head><meta charset="UTF-8"><title>' + x(title) + '</title>\n<meta name="robots" content="noindex, nofollow">\n<meta property="og:type" content="website"><meta property="og:title" content="' + x(title) + '"><meta property="og:description" content="' + x(desc) + '">\n<meta property="og:image" content="' + x(cover && DIR && /^[\w\-\/.]+$/.test(cover) ? base + DIR + cover : base + 'og.png') + '"><meta property="og:url" content="' + x(url) + '"><meta name="twitter:card" content="summary_large_image">\n<meta http-equiv="refresh" content="0;url=' + x(url) + '"></head>\n<body><script>location.replace(' + JSON.stringify(url) + ');<\/script><a href="' + x(url) + '">' + x(title) + '</a></body></html>\n';
   }
   function formatPlan(plan){
     const out = ['['];
@@ -1229,6 +1382,11 @@ function initAdmin(){
         }catch(e){ failed++; }
       }
       if(!prepared.length) throw new Error("aucune photo n'a pu être lue.");
+      if(!navigator.onLine){
+        await queueOp({kind:'photos', pfx:P(''), message:'Photos du ' + [...new Set(prepared.map(p => p.day))].sort().join(', '), items:prepared});
+        say('adminStatus', '⏳ Hors ligne : ' + prepared.length + ' photo(s) mise(s) en attente, publication automatique au retour du réseau (gardez cette page ouverte ou rouvrez-la).');
+        $('photoFiles').value = ''; $('newCaps').replaceChildren(); $('capsBox').hidden = true; return;
+      }
       const map = await readRepoJson(P('photos.json'), {});
       prepared.forEach(p => { map[p.day] = [...(map[p.day] || []), serialize({src:'photos/' + p.name, thumb:'photos/thumbs/' + p.name, caption:p.caption})]; });
       const out = [];
@@ -1291,6 +1449,9 @@ function initAdmin(){
   $('publishNote').addEventListener('click', async () => {
     const date = dateVal(), text = $('noteText').value.trim();
     if(!precheck('noteStatus')) return;
+    if(!navigator.onLine){
+      await queueOp({kind:'note', pfx:P(''), message:'Compte rendu du ' + date, date, text}); say('noteStatus', '⏳ Hors ligne : compte rendu mis en attente, publication automatique au retour du réseau.'); return;
+    }
     say('noteStatus', 'Envoi en cours…');
     try{
       const map = await readRepoJson(P('notes.json'), {});
@@ -1359,11 +1520,92 @@ function initAdmin(){
     }
     $('tripsMgr').addEventListener('toggle', () => { if($('tripsMgr').open) render(); });
   })();
+  /* Personnalisation du thème, aperçu en direct et photo de couverture */
+  const TH_FONTS = ['Shippori Mincho','Zen Maru Gothic','Playfair Display','Lora','Merriweather','Libre Baskerville','Spectral','Cormorant Garamond','Bitter','Oswald','Quicksand','Nunito','Karla','Work Sans','Rubik','Inter','Poppins','Montserrat','Raleway','Josefin Sans'];
+  const TH_PAL = {thPrimary:'primary', thWarm:'warm', thGreen:'green', thPaper:'paper'};
+  let TH = {palette:{}, fonts:{}, look:{}};
+  const opts = (arr, first) => [el('option', {value:'', text:first})].concat(arr.map(v => el('option', {value:v[0], text:v[1]})));
+  $('thHead').replaceChildren(...opts(TH_FONTS.map(f => [f, f]), 'Selon le préréglage')); $('thBody').replaceChildren(...opts(TH_FONTS.map(f => [f, f]), 'Selon le préréglage'));
+  $('thPat').replaceChildren(...opts([['none', 'Aucun']].concat(Object.keys(PATTERNS).map(k => [k, k])), 'Selon le préréglage'));
+  const draft = () => Object.assign({}, cfg, {preset:$('setPreset').value || cfg.preset, palette:Object.assign({}, cfg.palette || {}, TH.palette), fonts:Object.assign({}, cfg.fonts || {}, TH.fonts), look:Object.assign({}, cfg.look || {}, TH.look)});
+  const preview = () => { try{ applyTheme(draft()); }catch(e){} };
+  const syncColors = () => { const pr = PRESETS[$('setPreset').value] || PRESETS.ville; Object.keys(TH_PAL).forEach(id => { $(id).value = TH.palette[TH_PAL[id]] || pr.palette[TH_PAL[id]]; }); };
+  Object.keys(TH_PAL).forEach(id => $(id).addEventListener('input', () => { TH.palette[TH_PAL[id]] = $(id).value; preview(); }));
+  const bind = (id, grp, key) => $(id).addEventListener('change', () => { const v = $(id).value; if(v === '') delete TH[grp][key]; else TH[grp][key] = v; preview(); });
+  bind('thHead', 'fonts', 'head'); bind('thBody', 'fonts', 'body'); bind('thPat', 'look', 'pat');
+  $('thOrn').addEventListener('input', () => { const v = $('thOrn').value.trim(); if(v) TH.look.orn = v + ' '; else delete TH.look.orn; preview(); });
+  $('thCorners').addEventListener('change', () => { const v = +$('thCorners').value; if(!v){ delete TH.look.r; delete TH.look.rb; } else { TH.look.r = v; TH.look.rb = v === 2 ? 2 : (v === 10 ? 20 : 24); } preview(); });
+  $('setPreset').addEventListener('change', () => { syncColors(); preview(); });
+  $('ntPreset').addEventListener('change', () => { try{ applyTheme({preset:$('ntPreset').value}); }catch(e){} });
+  $('thReset').addEventListener('click', () => { TH = {palette:{}, fonts:{}, look:{}}; ['thHead', 'thBody', 'thPat', 'thCorners'].forEach(i => { $(i).value = ''; }); $('thOrn').value = ''; syncColors(); preview(); });
+  function loadTheme(c){
+    TH = {palette:{}, fonts:{}, look:{}};
+    Object.values(TH_PAL).forEach(k => { if(c.palette && typeof c.palette[k] === 'string') TH.palette[k] = c.palette[k]; });
+    ['head', 'body'].forEach(k => { if(c.fonts && c.fonts[k]) TH.fonts[k] = c.fonts[k]; });
+    ['pat', 'orn', 'r', 'rb'].forEach(k => { if(c.look && c.look[k] !== undefined) TH.look[k] = c.look[k]; });
+    syncColors(); $('thHead').value = TH.fonts.head || ''; $('thBody').value = TH.fonts.body || ''; $('thPat').value = TH.look.pat || '';
+    $('thCorners').value = [2, 10, 22].includes(TH.look.r) ? String(TH.look.r) : ''; $('thOrn').value = (TH.look.orn || '').trim();
+    const all = Object.keys(SITE_PHOTOS || {}).sort().flatMap(d => (SITE_PHOTOS[d] || []).map(normPhoto).map(ph => [ph.src, d + ' · ' + (ph.caption || ph.src.split('/').pop())])).slice(0, 300);
+    $('setCover').replaceChildren(...opts(all, all.length ? 'Aucune couverture' : 'Aucune couverture (publiez d’abord des photos)')); $('setCover').value = (c.cover && all.some(a => a[0] === c.cover)) ? c.cover : '';
+  }
+  function themeInto(cur, next){
+    const pal = Object.assign({}, cur.palette || {}); Object.values(TH_PAL).forEach(k => { if(TH.palette[k]) pal[k] = TH.palette[k]; else delete pal[k]; });
+    if(Object.keys(pal).length) next.palette = pal; else delete next.palette;
+    const fonts = Object.assign({}, cur.fonts || {}); ['head', 'body'].forEach(k => { if(TH.fonts[k]) fonts[k] = TH.fonts[k]; else delete fonts[k]; });
+    if(Object.keys(fonts).length) next.fonts = fonts; else delete next.fonts;
+    const look = Object.assign({}, cur.look || {}); ['pat', 'orn', 'r', 'rb'].forEach(k => { if(TH.look[k] !== undefined) look[k] = TH.look[k]; else delete look[k]; });
+    if(Object.keys(look).length) next.look = look; else delete next.look;
+    const cvr = $('setCover').value; if(cvr) next.cover = cvr; else delete next.cover;
+  }
+  /* Carte : choix du type et lieux OpenStreetMap */
+  let PLACES = [];
+  const etapeOpts = () => [el('option', {value:'', text:'Sans étape'})].concat(DATA.map((e, i) => el('option', {value:String(i), text:shortName(e) || ('Étape ' + (i + 1))})));
+  const mapMode = () => $('setMapMode').value;
+  function previewMap(){ try{ const m = Object.assign({}, cfg.map || {}); m.mode = mapMode() === 'osm' ? 'osm' : (mapMode() === 'none' ? 'none' : ((cfg.map && cfg.map.mode === 'manual') ? 'manual' : 'auto')); m.places = PLACES; cfg.map = m; renderMap(lastKey); }catch(e){} }
+  function renderPlaces(){
+    $('osmAdmin').hidden = mapMode() !== 'osm';
+    $('osmList').replaceChildren(...PLACES.map((p, n) => {
+      const name = el('input', {value:p.label || '', 'aria-label':'Nom du lieu'}); name.addEventListener('input', () => { p.label = name.value; });
+      const et = el('select', {'aria-label':'Étape'}, etapeOpts()); et.value = (p.e === undefined || p.e === null) ? '' : String(p.e); et.addEventListener('change', () => { if(et.value === '') delete p.e; else p.e = +et.value; previewMap(); });
+      const mv = d => () => { const m = n + d; if(m < 0 || m >= PLACES.length) return; [PLACES[n], PLACES[m]] = [PLACES[m], PLACES[n]]; renderPlaces(); previewMap(); };
+      return el('div', {class:'pf-item'}, el('div', {class:'pf-row'}, name, et),
+        el('div', {class:'pf-row'}, el('span', {class:'meta', text:p.lat + ', ' + p.lon}),
+          el('button', {class:'btn', type:'button', text:'↑', 'aria-label':'Monter', onclick:mv(-1)}), el('button', {class:'btn', type:'button', text:'↓', 'aria-label':'Descendre', onclick:mv(1)}),
+          el('button', {class:'btn', type:'button', text:'✕', 'aria-label':'Retirer', onclick:() => { PLACES.splice(n, 1); renderPlaces(); previewMap(); }})));
+    }));
+    if(mapMode() === 'osm' && !PLACES.length) $('osmList').replaceChildren(el('p', {class:'meta', text:'Ajoutez au moins un lieu : sans lieu, le schéma simplifié reste affiché.'}));
+  }
+  async function osmSearch(){
+    const q = $('osmQ').value.trim(); if(!q) return;
+    $('osmRes').replaceChildren(el('p', {class:'meta', text:'Recherche…'}));
+    try{
+      const r = await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&accept-language=fr&q=' + encodeURIComponent(q));
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      $('osmRes').replaceChildren(...(j.length ? j.map(it => el('button', {class:'btn', type:'button', text:it.display_name.slice(0, 90), onclick:() => {
+        const pl = {label:it.name || it.display_name.split(',')[0], lat:+(+it.lat).toFixed(5), lon:+(+it.lon).toFixed(5)}; if($('osmE').value !== '') pl.e = +$('osmE').value;
+        PLACES.push(pl); $('osmRes').replaceChildren(); $('osmQ').value = ''; renderPlaces(); previewMap();
+      }})) : [el('p', {class:'meta', text:'Aucun résultat : essayez un nom plus précis (lieu, ville, pays).'})]));
+    }catch(err){ $('osmRes').replaceChildren(el('p', {class:'meta', text:'Recherche impossible (' + err.message + ').'})); }
+  }
+  $('osmSearch').addEventListener('click', osmSearch);
+  $('osmQ').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); osmSearch(); } });
+  $('setMapMode').addEventListener('change', () => { renderPlaces(); previewMap(); });
+  function loadMap(c){
+    const m = c.map || {}; PLACES = (Array.isArray(m.places) ? m.places : []).filter(p => p && isFinite(+p.lat) && isFinite(+p.lon)).map(p => Object.assign({}, p, {lat:+p.lat, lon:+p.lon}));
+    $('osmE').replaceChildren(...etapeOpts()); $('setMapMode').value = m.mode === 'osm' ? 'osm' : (m.mode === 'none' ? 'none' : 'schema'); renderPlaces();
+  }
+  function mapInto(cur, next){
+    const base = Object.assign({}, cur.map || {}), mode = mapMode();
+    base.mode = mode === 'osm' ? 'osm' : (mode === 'none' ? 'none' : ((cur.map && cur.map.mode === 'manual') ? 'manual' : 'auto'));
+    if(PLACES.length) base.places = PLACES.map(p => { const o = {label:p.label || '', lat:p.lat, lon:p.lon}; if(p.e !== undefined) o.e = p.e; return o; }); else delete base.places;
+    next.map = base;
+  }
   $('sharePageBtn').addEventListener('click', async () => {
     if(!CUR || !DIR){ say('adminStatus', 'La page de partage concerne les voyages créés dans leur propre dossier (pas le voyage à la racine).'); return; }
     try{
       say('adminStatus', 'Création de la page…');
-      await commitFiles('Page de partage : ' + (cfg.title || CUR.slug), [{path:DIR + 'index.html', text:sharePageHtml(CUR.slug, cfg.title || CUR.title || CUR.slug, cfg.destinationLabel || '', CUR.start || '', CUR.end || '')}]);
+      await commitFiles('Page de partage : ' + (cfg.title || CUR.slug), [{path:DIR + 'index.html', text:sharePageHtml(CUR.slug, cfg.title || CUR.title || CUR.slug, cfg.destinationLabel || '', CUR.start || '', CUR.end || '', cfg.cover)}]);
       say('adminStatus', '✓ Page créée (en ligne dans ~1 min). Lien à partager : ' + SITE_URL + DIR);
     }catch(err){ say('adminStatus', 'Erreur : ' + err.message); }
   });
@@ -1381,13 +1623,24 @@ function initAdmin(){
       type.addEventListener('change', () => { it.type = type.value; sync(); });
       const info = el('textarea', {rows:2, placeholder:'Description (optionnel)'}); info.value = it.info || '';
       info.addEventListener('input', () => { if(info.value) it.info = info.value; else delete it.info; sync(); });
-      const booked = el('input', {type:'checkbox', checked:it.booked === true});
-      booked.addEventListener('change', () => { if(booked.checked) it.booked = true; else delete it.booked; sync(); });
+      const booked = el('select', {'aria-label':'Réservation'}, [['', 'Pas de suivi'], ['no', '⏳ À réserver'], ['yes', '✅ Réservé']].map(o => el('option', {value:o[0], text:o[1]})));
+      booked.value = it.booked === true ? 'yes' : (it.booked === false ? 'no' : '');
+      booked.addEventListener('change', () => { if(booked.value === 'yes') it.booked = true; else if(booked.value === 'no') it.booked = false; else delete it.booked; sync(); });
+      const hasLoc = hasXY(it);
+      const locBtn = el('button', {class:'btn', type:'button', text:hasLoc ? '✕ Retirer du plan de la carte' : '📍 Placer sur la carte OpenStreetMap', onclick:async () => {
+        if(hasLoc){ delete it.lat; delete it.lon; sync(true); return; }
+        locBtn.textContent = 'Recherche…';
+        try{
+          const r = await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=fr&q=' + encodeURIComponent(((it.text || '') + ' ' + (it.region || '')).trim())), j = await r.json();
+          if(j[0]){ it.lat = +(+j[0].lat).toFixed(5); it.lon = +(+j[0].lon).toFixed(5); sync(true); } else locBtn.textContent = 'Lieu introuvable : précisez le texte ou le lieu';
+        }catch(err){ locBtn.textContent = 'Recherche impossible'; }
+      }});
+      const locRow = el('div', {class:'pf-row'}, locBtn, hasLoc ? el('span', {class:'meta', text:it.lat + ', ' + it.lon}) : null);
       const mv = (d) => { const m = n + d; if(m < 0 || m >= o.items.length) return; [o.items[n], o.items[m]] = [o.items[m], o.items[n]]; sync(true); };
       return el('div', {class:'pf-item'},
         el('div', {class:'pf-row'}, txt(it, 'time', 'Heure (ex. 9h, Matin)'), type, txt(it, 'region', 'Lieu / ville')),
-        txt(it, 'text', 'Activité (obligatoire)'), info,
-        el('div', {class:'pf-row'}, el('label', {class:'ex-row'}, booked, 'Réservé'),
+        txt(it, 'text', 'Activité (obligatoire)'), info, locRow,
+        el('div', {class:'pf-row'}, el('label', {class:'ex-row'}, 'Réservation ', booked),
           el('button', {class:'btn', type:'button', text:'↑', 'aria-label':'Monter', onclick:() => mv(-1)}),
           el('button', {class:'btn', type:'button', text:'↓', 'aria-label':'Descendre', onclick:() => mv(1)}),
           el('button', {class:'btn', type:'button', text:'✕ Supprimer', onclick:() => { o.items.splice(n, 1); sync(true); }})));
@@ -1408,6 +1661,7 @@ function initAdmin(){
     if(typeof it.text !== 'string' || !it.text.trim()) return n + '« text » manquant.';
     if(!TYPES[it.type]) return n + '« type » doit être parmi ' + Object.keys(TYPES).join(', ') + '.';
     if(it.region != null && typeof it.region !== 'string') return n + '« region » doit être du texte.';
+    if((it.lat != null || it.lon != null) && !hasXY(it)) return n + '« lat » et « lon » doivent être des nombres.';
     for(const k of ['time', 'info', 'maps']) if(it[k] != null && typeof it[k] !== 'string') return n + '« ' + k + ' » doit être du texte.';
     if(it.booked != null && typeof it.booked !== 'boolean') return n + '« booked » doit être true ou false.';
     return null;
@@ -1444,6 +1698,7 @@ function initAdmin(){
       const n = 'étape ' + (ei + 1) + ' : ';
       if(!e || typeof e !== 'object' || Array.isArray(e)) return n + 'objet attendu.';
       if(typeof e.etape !== 'string' || !e.etape.trim()) return n + '« etape » (le titre) est manquant.';
+      if((e.lat != null || e.lon != null) && !hasXY(e)) return n + '« lat » et « lon » doivent être des nombres.';
       if(!Array.isArray(e.days) || !e.days.length) return n + '« days » doit être une liste non vide.';
       for(const [di, d] of e.days.entries()){
         const m = n + 'jour ' + (di + 1) + ' : ';
@@ -1459,12 +1714,47 @@ function initAdmin(){
     }
     return null;
   }
-  async function fillFullPlan(){ $('fullPlanText').value = formatPlan(await currentPlan()); }
+  /* Éditeur d'étapes : édite le JSON de #fullPlanText, enregistré par « Enregistrer le planning complet » */
+  function buildStageForm(){
+    const box = $('stageForm'); if(!box) return;
+    let plan; try{ plan = JSON.parse($('fullPlanText').value); }catch(e){ box.replaceChildren(el('p', {class:'meta', text:'Le JSON du planning complet est invalide : corrigez-le dans le bloc avancé.'})); return; }
+    if(!Array.isArray(plan)){ box.replaceChildren(); return; }
+    const sync = rebuild => { $('fullPlanText').value = formatPlan(plan); if(rebuild) buildStageForm(); };
+    const addD = (iso, n) => new Date(Date.parse(iso) + n * 864e5).toISOString().slice(0, 10);
+    const inp = (o, k, ph) => { const i = el('input', {value:o[k] || '', placeholder:ph || '', autocomplete:'off'}); i.addEventListener('input', () => { if(i.value) o[k] = i.value; else delete o[k]; sync(); }); return i; };
+    const reorder = () => { plan.forEach(e => e.days.sort((a, b) => a.iso.localeCompare(b.iso))); plan.sort((a, b) => String((a.days[0] || {}).iso).localeCompare(String((b.days[0] || {}).iso))); };
+    const cards = plan.map((e, n) => {
+      if(!Array.isArray(e.days)) e.days = [];
+      const days = e.days.map((d, di) => {
+        const date = el('input', {type:'date', value:d.iso || '', 'aria-label':'Date'});
+        date.addEventListener('change', () => { if(!date.value) return; d.iso = date.value; delete d.date; delete d.dow; reorder(); sync(true); });
+        return el('div', {class:'pf-row'}, date, inp(d, 'title', 'Titre du jour'),
+          el('button', {class:'btn', type:'button', text:'✕', 'aria-label':'Retirer ce jour', onclick:() => { if(e.days.length < 2 || !confirm('Retirer ce jour et ses activités ?')) return; e.days.splice(di, 1); sync(true); }}));
+      });
+      const has = hasXY(e);
+      const loc = el('button', {class:'btn', type:'button', text:has ? '✕ Retirer la position' : '📍 Localiser (météo en direct)', onclick:async function(){
+        if(has){ delete e.lat; delete e.lon; sync(true); return; }
+        this.textContent = 'Recherche…';
+        try{ const r = await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=fr&q=' + encodeURIComponent(shortName(e) || e.etape)), j = await r.json();
+          if(j[0]){ e.lat = +(+j[0].lat).toFixed(5); e.lon = +(+j[0].lon).toFixed(5); sync(true); } else this.textContent = 'Introuvable : précisez le titre'; }catch(err){ this.textContent = 'Recherche impossible'; }
+      }});
+      return el('div', {class:'pf-item'}, el('div', {class:'pf-row'}, inp(e, 'icon', 'Icône'), inp(e, 'etape', 'Titre de l’étape (obligatoire)')), inp(e, 'meta', 'Dates · hébergement'),
+        el('div', {class:'pf-row'}, inp(e, 'weather', 'Météo (ex. ~23°C / 15°C)'), inp(e, 'transit', 'Transport pour y arriver')), ...days,
+        el('div', {class:'pf-row'}, el('button', {class:'btn', type:'button', text:'+ Ajouter un jour', onclick:() => { const last = e.days.length ? e.days[e.days.length - 1].iso : new Date().toISOString().slice(0, 10); plan.slice(n + 1).forEach(x => (x.days || []).forEach(d => { d.iso = addD(d.iso, 1); delete d.date; delete d.dow; })); e.days.push({iso:addD(last, 1), title:'', items:[]}); sync(true); }}),
+          loc, el('button', {class:'btn', type:'button', text:'✕ Supprimer l’étape', onclick:() => { if(plan.length < 2 || !confirm('Supprimer cette étape, ses jours et leurs activités ?')) return; plan.splice(n, 1); sync(true); }}),
+          has ? el('span', {class:'meta', text:e.lat + ', ' + e.lon}) : null));
+    });
+    const addE = el('button', {class:'btn', type:'button', text:'+ Ajouter une étape', onclick:() => { const ds = plan.flatMap(x => x.days || []), last = ds.length ? ds[ds.length - 1].iso : new Date().toISOString().slice(0, 10); plan.push({etape:'Étape ' + (plan.length + 1) + ' — Nouvelle destination', icon:'📍', days:[{iso:addD(last, 1), title:'', items:[]}]}); sync(true); }});
+    box.replaceChildren(...cards, addE, el('button', {class:'btn', type:'button', text:'Enregistrer les étapes', onclick:() => $('saveFullPlan').click()}));
+  }
+  $('fullPlanText').addEventListener('change', buildStageForm);
+  new MutationObserver(() => { $('stageStatus').textContent = $('fullPlanStatus').textContent; }).observe($('fullPlanStatus'), {childList:true, characterData:true, subtree:true});
+  async function fillFullPlan(){ $('fullPlanText').value = formatPlan(await currentPlan()); buildStageForm(); }
   $('saveFullPlan').addEventListener('click', async () => {
     if(!needGh('fullPlanStatus')) return;
     let plan; try{ plan = JSON.parse($('fullPlanText').value); }catch(e){ say('fullPlanStatus', 'JSON invalide : ' + e.message); return; }
     const bad = validatePlan(plan); if(bad){ say('fullPlanStatus', 'Refusé : ' + bad); return; }
-    if(!confirm('Remplacer tout le planning de ce voyage ?')) return;
+    if(!confirm('Enregistrer ce planning ? Il remplace la version actuelle du voyage.')) return;
     say('fullPlanStatus', 'Envoi en cours…');
     try{
       const ds = plan.flatMap(e => e.days);
@@ -1482,6 +1772,7 @@ function initAdmin(){
     $('setPreset').value = PRESETS[c.preset] ? c.preset : 'ville'; $('setTz').value = c.timezone || '';
     $('setHomeLabel').value = (c.home && c.home.label) || ''; $('setHomeTz').value = (c.home && c.home.timezone) || '';
     $('cfgJson').value = toText(c);
+    loadTheme(c); loadMap(c);
   }
   function validateConfig(c){
     if(!c || typeof c !== 'object' || Array.isArray(c)) return 'la configuration doit être un objet JSON.';
@@ -1497,8 +1788,9 @@ function initAdmin(){
       for(const [k, v] of Object.entries(c.palette)) if(k !== 'dark' && !isHex(v)) return 'palette « ' + k + ' » : couleur #RRGGBB attendue.';
     }
     if(c.map != null){
-      if(typeof c.map !== 'object' || !['auto', 'manual', 'none'].includes(c.map.mode || 'auto')) return '« map.mode » doit être auto, manual ou none.';
+      if(typeof c.map !== 'object' || !['auto', 'manual', 'none', 'osm'].includes(c.map.mode || 'auto')) return '« map.mode » doit être auto, manual ou none.';
       if(c.map.mode === 'manual' && (!Array.isArray(c.map.points) || c.map.points.some(p => !p || isNaN(+p.x) || isNaN(+p.y)))) return '« map.points » : une liste de {x, y, label} est attendue.';
+      if(c.map.places !== undefined && (!Array.isArray(c.map.places) || c.map.places.some(p => !p || isNaN(+p.lat) || isNaN(+p.lon)))) return '« map.places » : une liste de {label, lat, lon} est attendue.';
     }
     return null;
   }
@@ -1519,6 +1811,7 @@ function initAdmin(){
       const next = Object.assign({}, cur, {title, destinationLabel:$('setDest').value.trim() || undefined, lead:$('setLead').value.trim() || undefined, preset:$('setPreset').value, timezone:tz || undefined});
       const home = Object.assign({}, cur.home || {}, {label:$('setHomeLabel').value.trim() || undefined, timezone:homeTz || undefined});
       if(home.label || home.timezone) next.home = home; else delete next.home;
+      themeInto(cur, next); mapInto(cur, next);
       await saveConfig(JSON.parse(JSON.stringify(next)), 'settingsStatus');
       fillSettings();
     }catch(err){ say('settingsStatus', 'Erreur : ' + err.message); }
