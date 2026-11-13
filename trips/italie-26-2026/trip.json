@@ -3,6 +3,26 @@
   "title": "Italie '26",
   "destinationLabel": "Italie '26",
   "map": {
-    "mode": "auto"
+    "mode": "osm",
+    "places": [
+      {
+        "label": "Bruxelles",
+        "lat": 50.84674,
+        "lon": 4.35249,
+        "e": 0
+      },
+      {
+        "label": "Rome",
+        "lat": 41.89332,
+        "lon": 12.48293,
+        "e": 0
+      },
+      {
+        "label": "Côme",
+        "lat": 45.93959,
+        "lon": 9.14936,
+        "e": 0
+      }
+    ]
   }
 }
