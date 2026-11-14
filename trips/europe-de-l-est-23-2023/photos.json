@@ -206,7 +206,8 @@
     },
     {
       "src": "photos/2023-08-03-mwgczbov-3.jpg",
-      "thumb": "photos/thumbs/2023-08-03-mwgczbov-3.jpg"
+      "thumb": "photos/thumbs/2023-08-03-mwgczbov-3.jpg",
+      "star": true
     },
     {
       "src": "photos/2023-08-03-mwgczbov-4.jpg",
