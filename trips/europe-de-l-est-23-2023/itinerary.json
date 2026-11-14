@@ -3,44 +3,54 @@
     "etape": "Étape 1",
     "short": "Croatie",
     "icon": "🧭 Allemagne",
+    "transit": "Voiture",
+    "lat": 45.36584,
+    "lon": 15.65752,
     "days": [
-      {"iso": "2023-07-29", "title": "Jour 1",
+      {"iso": "2023-07-29", "title": "Heidelberg",
        "items": [
        ]},
-      {"iso": "2023-07-30", "title": "Jour 2",
+      {"iso": "2023-07-30", "title": "Heidelberg",
        "items": [
        ]}
     ]
   },
   {
-    "etape": "Étape 2 — Nouvelle destination",
+    "etape": "Étape 2",
     "icon": "📍 Autriche",
+    "transit": "Voiture",
     "days": [
-      {"iso": "2023-07-31", "title": "",
+      {"iso": "2023-07-31", "title": "Salzbourg",
        "items": [
        ]}
     ]
   },
   {
-    "etape": "Étape 3 — Nouvelle destination",
+    "etape": "Étape 3",
     "icon": "📍Slovenie",
+    "transit": "Voiture",
+    "lat": 47.36477,
+    "lon": 0.84127,
     "days": [
-      {"iso": "2023-08-01", "title": "",
+      {"iso": "2023-08-01", "title": "Bled",
        "items": [
        ]},
-      {"iso": "2023-08-02", "title": "",
+      {"iso": "2023-08-02", "title": "Ljubiana",
        "items": [
        ]}
     ]
   },
   {
-    "etape": "Étape 4 — Nouvelle destination",
+    "etape": "Étape 4 ",
     "icon": "📍Croatie",
+    "transit": "Voiture",
+    "lat": 47.36431,
+    "lon": 0.84074,
     "days": [
-      {"iso": "2023-08-03", "title": "",
+      {"iso": "2023-08-03", "title": "Plitvice",
        "items": [
        ]},
-      {"iso": "2023-08-04", "title": "",
+      {"iso": "2023-08-04", "title": "Rastoke",
        "items": [
        ]},
       {"iso": "2023-08-05", "title": "",
@@ -58,31 +68,40 @@
     ]
   },
   {
-    "etape": "Étape 5 — Nouvelle destination",
+    "etape": "Étape 5 ",
     "icon": "📍Italie",
+    "transit": "Voiture",
+    "lat": 47.36446,
+    "lon": 0.83955,
     "days": [
-      {"iso": "2023-08-10", "title": "",
+      {"iso": "2023-08-10", "title": "Verona",
        "items": [
        ]}
     ]
   },
   {
-    "etape": "Étape 6 — Nouvelle destination",
+    "etape": "Étape 6",
     "icon": "📍Liechtenstein",
+    "transit": "Voiture",
+    "lat": 47.36445,
+    "lon": 0.83971,
     "days": [
-      {"iso": "2023-08-11", "title": "",
+      {"iso": "2023-08-11", "title": "Vaduz",
        "items": [
        ]},
-      {"iso": "2023-08-12", "title": "",
+      {"iso": "2023-08-12", "title": "Vaduz",
        "items": [
        ]}
     ]
   },
   {
-    "etape": "Étape 7 — Nouvelle destination",
+    "etape": "Étape 7",
     "icon": "📍Allemagne",
+    "transit": "Voiture",
+    "lat": 46.6682,
+    "lon": 6.50098,
     "days": [
-      {"iso": "2023-08-13", "title": "",
+      {"iso": "2023-08-13", "title": "Baden-Baden",
        "items": [
        ]}
     ]
