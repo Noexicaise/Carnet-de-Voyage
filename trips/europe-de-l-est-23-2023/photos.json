@@ -241,5 +241,23 @@
       "src": "photos/2023-08-03-mwgczbov-6.jpg",
       "thumb": "photos/thumbs/2023-08-03-mwgczbov-6.jpg"
     }
+  ],
+  "2023-08-01": [
+    {
+      "src": "photos/2023-08-01-mwgde1zz-0.jpg",
+      "thumb": "photos/thumbs/2023-08-01-mwgde1zz-0.jpg"
+    },
+    {
+      "src": "photos/2023-08-01-mwgde1zz-1.jpg",
+      "thumb": "photos/thumbs/2023-08-01-mwgde1zz-1.jpg"
+    },
+    {
+      "src": "photos/2023-08-01-mwgde1zz-2.jpg",
+      "thumb": "photos/thumbs/2023-08-01-mwgde1zz-2.jpg"
+    },
+    {
+      "src": "photos/2023-08-01-mwgde1zz-3.jpg",
+      "thumb": "photos/thumbs/2023-08-01-mwgde1zz-3.jpg"
+    }
   ]
 }
