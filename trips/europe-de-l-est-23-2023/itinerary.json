@@ -19,6 +19,8 @@
     "etape": "Étape 2",
     "icon": "📍 Autriche",
     "transit": "Voiture",
+    "lat": 46.66979,
+    "lon": 6.49955,
     "days": [
       {"iso": "2023-07-31", "title": "Salzbourg",
        "items": [
