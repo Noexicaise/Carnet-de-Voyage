@@ -282,7 +282,7 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
   <input type="file" id="qFiles" accept="image/*" multiple hidden>
   <p class="meta" id="qCount"></p>
   <input id="qCap" placeholder="Légende (optionnel)" autocomplete="off">
-  <textarea id="qNote" rows="3" maxlength="800" placeholder="Un mot sur la journée (optionnel)"></textarea>
+  <textarea id="qNote" rows="4" maxlength="5000" placeholder="Un mot sur la journée (optionnel)"></textarea>
   <button class="btn qgo" id="qGo" type="button">Publier</button>
   <div id="qStatus" class="meta" role="status"></div>
   <p><a href="#">← Retour au carnet</a> · <a href="#admin">Admin complet</a></p>
@@ -291,7 +291,7 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
 <section id="adminPanel" class="admin-panel" hidden>
   <h3>Admin</h3>
   <p class="meta" id="adminTripLabel"></p>
-  <p><a href="#quick">⚡ Publier vite (écran simplifié pour téléphone)</a></p>
+  <p><a href="#quick">⚡ Publier vite (écran simplifié pour téléphone)</a> · <a href="#newTrip" id="goNewTrip">➕ Nouveau voyage</a></p>
   <div id="onboard" class="tools" hidden><strong>Pour démarrer</strong><ol id="onboardList"></ol></div>
 
   <details id="ghBox" open>
@@ -313,6 +313,21 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
     <div id="ghStatus" class="meta" role="status"></div>
   </details>
 
+  <details id="newTripBox">
+    <summary>➕ Nouveau voyage</summary>
+    <p class="meta">Crée un dossier de voyage dans ce dépôt. Les voyages existants restent consultables dans le menu « Voyage » en haut de page.</p>
+    <label for="ntTitle">Titre</label><input id="ntTitle" placeholder="Italie 2027">
+    <label for="ntDest">Destination (pour l'horloge)</label><input id="ntDest" placeholder="Italie">
+    <label for="ntStart">Premier jour</label><input type="date" id="ntStart">
+    <label for="ntEnd">Dernier jour</label><input type="date" id="ntEnd">
+    <label for="ntTz">Fuseau horaire de la destination</label><input id="ntTz" list="tzList" autocapitalize="none" placeholder="Europe/Rome">
+    <label for="ntHome">Ville de départ</label><input id="ntHome" placeholder="Bruxelles">
+    <label for="ntHomeTz">Fuseau horaire de départ</label><input id="ntHomeTz" list="tzList" autocapitalize="none" placeholder="Europe/Brussels">
+    <label for="ntPreset">Préréglage</label><select id="ntPreset"></select>
+    <label for="ntIcon">Icône du voyage (emoji, facultatif)</label><input id="ntIcon" maxlength="4" placeholder="🧳"><div class="pf-row" id="ntIconPicks"></div>
+    <button class="btn" id="createTrip" type="button">Créer le voyage</button>
+    <div id="ntStatus" class="meta" role="status"></div>
+  </details>
   <div id="queueBar" class="meta" role="status" hidden></div>
   <div id="tripAdmin" hidden>
     <label for="photoDate">Date du jour concerné</label>
@@ -335,7 +350,8 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
     <details open>
       <summary>Compte rendu</summary>
       <label for="noteText">Quelques lignes (optionnel ; vide + publier = supprimer)</label>
-      <textarea id="noteText" rows="4" maxlength="800" placeholder="Ce qu'on a vu, mangé, aimé aujourd'hui..."></textarea>
+      <textarea id="noteText" rows="7" maxlength="5000" placeholder="Ce qu'on a vu, mangé, aimé aujourd'hui..."></textarea>
+      <div id="noteCount" class="meta" aria-live="polite"></div>
       <button class="btn" id="publishNote" type="button">Publier le compte rendu</button>
       <button class="btn" id="shareNote" type="button" hidden>Partager ce compte rendu ↗</button>
       <div id="noteStatus" class="meta" role="status"></div>
@@ -371,6 +387,7 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
       <label for="setDest">Destination (pour l'horloge, ex. « Italie »)</label><input id="setDest">
       <label for="setLead">Texte d'introduction</label><textarea id="setLead" rows="3"></textarea>
       <label for="setPreset">Préréglage (thème, polices, catégories)</label><select id="setPreset"></select>
+      <label for="setIcon">Icône du voyage (emoji, affichée dans « Tous les voyages » sans photo de couverture)</label><input id="setIcon" maxlength="4" placeholder="🧳"><div class="pf-row" id="setIconPicks"></div>
       <label for="setTz">Fuseau horaire de la destination</label><input id="setTz" list="tzList" autocapitalize="none" placeholder="Europe/Rome">
       <label for="setHomeLabel">Ville de départ</label><input id="setHomeLabel">
       <label for="setHomeTz">Fuseau horaire de départ</label><input id="setHomeTz" list="tzList" autocapitalize="none" placeholder="Europe/Brussels">
@@ -379,6 +396,8 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
         <label for="infoCur">Monnaie</label><input id="infoCur" maxlength="100" placeholder="Ex. Yen (JPY)">
         <label for="infoLang">Langue</label><input id="infoLang" maxlength="100" placeholder="Ex. Japonais, peu d'anglais hors des villes">
         <label for="infoSos">Numéros d'urgence</label><input id="infoSos" maxlength="100" placeholder="Ex. 110 police, 119 secours">
+        <button class="btn" id="saveInfo" type="button">Enregistrer les infos pratiques</button>
+        <div id="infoStatus" class="meta" role="status"></div>
       </details>
       <label for="setMapMode">Type de carte</label>
       <select id="setMapMode"><option value="schema">Schéma simplifié (un point par étape)</option><option value="osm">Carte OpenStreetMap (lieux placés sur une vraie carte)</option><option value="none">Aucune carte</option></select>
@@ -420,20 +439,6 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
     <summary>Gérer mes voyages (renommer, ordre, supprimer)</summary>
     <div id="tripsMgrList"></div>
     <div id="tripsMgrStatus" class="meta" role="status"></div>
-  </details>
-  <details id="newTripBox">
-    <summary>Nouveau voyage</summary>
-    <p class="meta">Crée un dossier de voyage dans ce dépôt. Les voyages existants restent consultables dans le menu « Voyage » en haut de page.</p>
-    <label for="ntTitle">Titre</label><input id="ntTitle" placeholder="Italie 2027">
-    <label for="ntDest">Destination (pour l'horloge)</label><input id="ntDest" placeholder="Italie">
-    <label for="ntStart">Premier jour</label><input type="date" id="ntStart">
-    <label for="ntEnd">Dernier jour</label><input type="date" id="ntEnd">
-    <label for="ntTz">Fuseau horaire de la destination</label><input id="ntTz" list="tzList" autocapitalize="none" placeholder="Europe/Rome">
-    <label for="ntHome">Ville de départ</label><input id="ntHome" placeholder="Bruxelles">
-    <label for="ntHomeTz">Fuseau horaire de départ</label><input id="ntHomeTz" list="tzList" autocapitalize="none" placeholder="Europe/Brussels">
-    <label for="ntPreset">Préréglage</label><select id="ntPreset"></select>
-    <button class="btn" id="createTrip" type="button">Créer le voyage</button>
-    <div id="ntStatus" class="meta" role="status"></div>
   </details>
   <datalist id="tzList"></datalist>
 </section>
@@ -532,9 +537,10 @@ const PATTERNS = {
   confetti:"<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44'><circle cx='8' cy='8' r='3'/><circle cx='32' cy='14' r='2'/><circle cx='18' cy='34' r='4'/><circle cx='40' cy='40' r='2'/></svg>",
   grid:"<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><path d='M32 0H0V32' fill='none' stroke='#000' stroke-width='.8'/></svg>"
 };
+const PRESET_ICON = {japan:'⛩️', mediterranee:'⛱️', nature:'🌲', ville:'🏙️', tropical:'🌴', nordique:'❄️', desert:'🐪', montagne:'⛰️', amerique:'🚗', famille:'🎈'};
 const MAX_PHOTOS = 20;   /* photos par envoi (le total par jour n'est pas limité) */
 
-const APP_VERSION = '2026.11.13-4';
+const APP_VERSION = '2026.11.13-6';
 /* ---------- Langue de l'interface publique (fr / en / nl) ---------- */
 const UI_DICT = {
   en:{'Voyage':'Trip','Carnet de voyage':'Travel journal','Partager le lien ↗':'Share link ↗','Réinitialiser les filtres':'Reset filters',
@@ -898,10 +904,12 @@ async function openTrips(){
   const dlg = $('tripsDialog'), box = $('tripsGrid'), fmt = iso => iso ? new Date(iso + 'T12:00:00Z').toLocaleDateString(LOC, {day:'numeric', month:'short', year:'numeric', timeZone:'UTC'}) : '';
   box.replaceChildren(el('p', {class:'meta', text:'…'})); if(!dlg.open) dlg.showModal();
   box.replaceChildren(...await Promise.all(trips.map(async t => {
-    let cov = ''; try{ const r = await fetch((t.dir || '') + 'trip.json', {cache:'no-store'}); if(r.ok){ const c = await r.json(); if(typeof c.cover === 'string' && !c.cover.includes('..') && /^[\w\-\/.]+$/.test(c.cover)) cov = (t.dir || '') + c.cover; } }catch(e){}
-    return el('a', {class:'trip-card', href:'?trip=' + encodeURIComponent(t.slug)}, cov ? el('img', {src:cov, alt:'', loading:'lazy'}) : el('div', {class:'trip-card-ph', text:'🧳'}),
+    let cov = '', ic = ''; try{ const r = await fetch((t.dir || '') + 'trip.json', {cache:'no-store'}); if(r.ok){ const c = await r.json(); ic = (typeof c.icon === 'string' && c.icon) || PRESET_ICON[c.preset] || ''; if(typeof c.cover === 'string' && !c.cover.includes('..') && /^[\w\-\/.]+$/.test(c.cover)) cov = (t.dir || '') + c.cover; } }catch(e){}
+    return el('a', {class:'trip-card', href:'?trip=' + encodeURIComponent(t.slug)}, cov ? el('img', {src:cov, alt:'', loading:'lazy'}) : el('div', {class:'trip-card-ph', text:ic || '🧳'}),
       el('div', {class:'tc-body'}, el('strong', {text:t.title || t.slug}), el('span', {class:'meta', text:[t.destination, [fmt(t.start), fmt(t.end)].filter(Boolean).join(' → ')].filter(Boolean).join(' · ')})));
-  })));
+  })).then(cards => { let cfgd = false; try{ const g = JSON.parse(localStorage.getItem('ghCfg') || '{}'); cfgd = !!(g.owner && g.repo); }catch(e){}
+    if(cfgd) cards.push(el('a', {class:'trip-card', href:'#admin', onclick:() => { dlg.close(); setTimeout(() => { if(window.openNewTrip) window.openNewTrip(); }, 500); }}, el('div', {class:'trip-card-ph', text:'➕'}), el('div', {class:'tc-body'}, el('strong', {text:'Nouveau voyage'}))));
+    return cards; }));
 }
 const parseHour = t => { t = String(t || ''); const m = t.match(/(\d{1,2})\s*h/i); if(m) return +m[1]; if(/apr[eè]s-?midi|aprem/i.test(t)) return 14; if(/midi/i.test(t)) return 12; if(/matin/i.test(t)) return 9; if(/fin de journ/i.test(t)) return 18; if(/soir|19h/i.test(t)) return 19; return null; };
 function nextItem(day){
@@ -1210,7 +1218,7 @@ function renderExtras(){
         el('span', {class:'note-label', text:tr('Le carnet du jour')}), el('p', {text:note})));
       if(day.iso === NOWISO){
         const tc = document.querySelector('#todayCard .today-card');
-        if(tc && !tc.querySelector('.tc-note')) tc.append(el('p', {class:'tc-note', text:note}));
+        if(tc && !tc.querySelector('.tc-note')) tc.append(el('p', {class:'tc-note', text:note.length > 280 ? note.slice(0, 277) + '…' : note}));
       }
     }
     const list = [...(day.photos || []), ...(SITE_PHOTOS[day.iso] || [])].map(normPhoto);
@@ -1494,7 +1502,7 @@ function initAdmin(){
       if(!/\d{4}/.test(slug)) slug += '-' + start.slice(0, 4);
       const taken = new Set(idx.trips.map(t => t.slug)); let k = 2, base = slug;
       while(taken.has(slug)) slug = base + '-' + k++;
-      const tripCfg = {preset, title, destinationLabel:dest || title, timezone:tz || undefined, map:{mode:'auto'}};
+      const tripCfg = {preset, title, destinationLabel:dest || title, icon:$('ntIcon').value.trim() || undefined, timezone:tz || undefined, map:{mode:'auto'}};
       if(home || homeTz) tripCfg.home = {label:home || undefined, timezone:homeTz || undefined};
       const days = Array.from({length:nDays}, (_, i) => ({iso:new Date(Date.parse(start) + i * 864e5).toISOString().slice(0, 10), title:'Jour ' + (i + 1), items:[]}));
       const plan = [{etape:'Étape 1', short:dest || title, icon:'🧭', days}];
@@ -1658,8 +1666,9 @@ function initAdmin(){
     const date = dateVal(); let map = NOTES;
     if(token()){ try{ map = await readRepoJson(P('notes.json'), {}); }catch(e){} }
     if(noteDirty || date !== dateVal()) return;      /* l'utilisateur a déjà tapé, ou changé de date entre-temps */
-    $('noteText').value = map[date] || '';
+    $('noteText').value = map[date] || ''; $('noteText').dispatchEvent(new Event('input'));
   }
+  $('noteText').addEventListener('input', () => { const n = $('noteText').value.length; $('noteCount').textContent = n ? n + ' / 5000 caractères' : ''; });
   $('publishNote').addEventListener('click', async () => {
     const date = dateVal(), text = $('noteText').value.trim();
     if(!precheck('noteStatus')) return;
@@ -1753,6 +1762,7 @@ function initAdmin(){
   $('ntPreset').addEventListener('change', () => { try{ applyTheme({preset:$('ntPreset').value}); }catch(e){} });
   $('thReset').addEventListener('click', () => { TH = {palette:{}, fonts:{}, look:{}}; ['thHead', 'thBody', 'thPat', 'thCorners'].forEach(i => { $(i).value = ''; }); $('thOrn').value = ''; syncColors(); preview(); });
   function loadTheme(c){
+    $('setIcon').value = c.icon || '';
     TH = {palette:{}, fonts:{}, look:{}};
     Object.values(TH_PAL).forEach(k => { if(c.palette && typeof c.palette[k] === 'string') TH.palette[k] = c.palette[k]; });
     ['head', 'body'].forEach(k => { if(c.fonts && c.fonts[k]) TH.fonts[k] = c.fonts[k]; });
@@ -1993,6 +2003,7 @@ function initAdmin(){
   }
   function validateConfig(c){
     if(!c || typeof c !== 'object' || Array.isArray(c)) return 'la configuration doit être un objet JSON.';
+    if(c.icon !== undefined && (typeof c.icon !== 'string' || c.icon.length > 8)) return '« icon » doit être un court texte (un emoji).';
     if(c.preset != null && !PRESETS[c.preset]) return '« preset » doit être parmi ' + Object.keys(PRESETS).join(', ') + '.';
     if(c.timezone != null && !validTz(c.timezone)) return '« timezone » inconnu (exemple : Europe/Rome).';
     if(c.home != null && (typeof c.home !== 'object' || (c.home.timezone != null && !validTz(c.home.timezone)))) return '« home.timezone » inconnu.';
@@ -2030,6 +2041,7 @@ function initAdmin(){
       const home = Object.assign({}, cur.home || {}, {label:$('setHomeLabel').value.trim() || undefined, timezone:homeTz || undefined});
       if(home.label || home.timezone) next.home = home; else delete next.home;
       themeInto(cur, next); mapInto(cur, next);
+      { const ic = $('setIcon').value.trim(); if(ic) next.icon = ic; else delete next.icon; }
       const info = {plug:$('infoPlug').value.trim(), currency:$('infoCur').value.trim(), language:$('infoLang').value.trim(), emergency:$('infoSos').value.trim()}; Object.keys(info).forEach(k => { if(!info[k]) delete info[k]; });
       if(Object.keys(info).length) next.info = info; else delete next.info;
       await saveConfig(JSON.parse(JSON.stringify(next)), 'settingsStatus');
@@ -2047,6 +2059,14 @@ function initAdmin(){
   $('photoDate').addEventListener('change', () => { noteDirty = planDirty = false; fillNote(); fillPlan(); refreshExisting(); });
   $('ghToken').addEventListener('change', () => { fillNote(); fillPlan(); fillFullPlan(); fillSettings(); refreshExisting(); });
   fillNote(); fillPlan(); fillFullPlan(); fillSettings(); refreshExisting();
+  /* Icône du voyage, enregistrement des infos pratiques, accès rapide à « Nouveau voyage » */
+  const ICONS = ['🧳', '✈️', '🏝️', '🏔️', '🗼', '🚗', '🚆', '⛵', '🏕️', '🎡', '🍷', '🏛️'];
+  [['setIcon', 'setIconPicks'], ['ntIcon', 'ntIconPicks']].forEach(([inp, box]) => $(box).replaceChildren(...ICONS.map(i => el('button', {class:'btn', type:'button', text:i, 'aria-label':'Icône ' + i, onclick:() => { $(inp).value = i; }}))));
+  $('saveInfo').addEventListener('click', () => $('saveSettings').click());
+  new MutationObserver(() => { $('infoStatus').textContent = $('settingsStatus').textContent; }).observe($('settingsStatus'), {childList:true, characterData:true, subtree:true});
+  const openNewTrip = () => { const b = $('newTripBox'); b.open = true; b.scrollIntoView({behavior:'smooth', block:'start'}); };
+  $('goNewTrip').addEventListener('click', e => { e.preventDefault(); openNewTrip(); });
+  window.openNewTrip = openNewTrip; if(!trips.length) $('newTripBox').open = true;
   /* Sauvegarde du voyage */
   $('backupBtn').addEventListener('click', async () => {
     say('backupStatus', 'Préparation…');
