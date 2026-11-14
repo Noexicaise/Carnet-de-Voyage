@@ -1,0 +1,9 @@
+{
+  "preset": "nature",
+  "title": "Europe de l'Est '23",
+  "destinationLabel": "Croatie",
+  "timezone": "Europe/Budapest",
+  "map": {
+    "mode": "auto"
+  }
+}

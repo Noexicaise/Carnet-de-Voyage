@@ -20,6 +20,13 @@
       "destination": "Canada",
       "start": "2027-06-01",
       "end": "2027-06-15"
+    },
+    {
+      "slug": "europe-de-l-est-23-2023",
+      "title": "Europe de l'Est '23",
+      "destination": "Croatie",
+      "start": "2023-07-29",
+      "end": "2023-08-18"
     }
   ]
 }
