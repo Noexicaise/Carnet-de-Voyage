@@ -4,6 +4,57 @@
   "destinationLabel": "Croatie",
   "timezone": "Europe/Budapest",
   "map": {
-    "mode": "auto"
-  }
+    "mode": "osm",
+    "places": [
+      {
+        "label": "Bruxelles",
+        "lat": 50.8551,
+        "lon": 4.35109,
+        "e": 0
+      },
+      {
+        "label": "Heidelberg",
+        "lat": 49.40936,
+        "lon": 8.69472,
+        "e": 1
+      },
+      {
+        "label": "Salzbourg",
+        "lat": 47.79813,
+        "lon": 13.04648,
+        "e": 2
+      },
+      {
+        "label": "Bled",
+        "lat": 46.36842,
+        "lon": 14.11006,
+        "e": 3
+      },
+      {
+        "label": "Plitvice",
+        "lat": 45.75286,
+        "lon": 14.36696,
+        "e": 3
+      },
+      {
+        "label": "Verona",
+        "lat": 45.4425,
+        "lon": 10.98574,
+        "e": 4
+      },
+      {
+        "label": "Liechtenstein",
+        "lat": 47.14163,
+        "lon": 9.55315,
+        "e": 5
+      },
+      {
+        "label": "Baden-Baden",
+        "lat": 48.75745,
+        "lon": 8.24374,
+        "e": 6
+      }
+    ]
+  },
+  "cover": "photos/2023-07-29-mwgcbku5-2.jpg"
 }
