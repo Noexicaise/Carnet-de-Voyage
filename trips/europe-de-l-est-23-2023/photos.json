@@ -116,7 +116,8 @@
     },
     {
       "src": "photos/2023-07-31-mwgctrxk-3.jpg",
-      "thumb": "photos/thumbs/2023-07-31-mwgctrxk-3.jpg"
+      "thumb": "photos/thumbs/2023-07-31-mwgctrxk-3.jpg",
+      "star": true
     },
     {
       "src": "photos/2023-07-31-mwgctrxk-4.jpg",
