@@ -29,7 +29,8 @@
     },
     {
       "src": "photos/2023-07-30-mwgcqs1p-2.jpg",
-      "thumb": "photos/thumbs/2023-07-30-mwgcqs1p-2.jpg"
+      "thumb": "photos/thumbs/2023-07-30-mwgcqs1p-2.jpg",
+      "star": true
     },
     {
       "src": "photos/2023-07-30-mwgcqs1p-3.jpg",
