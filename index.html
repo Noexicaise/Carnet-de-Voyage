@@ -456,6 +456,8 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
 
 <footer id="footer">Carnet de voyage — mis à jour au fil du voyage.</footer>
 
+<div id="gallery" class="ovl" hidden role="dialog" aria-modal="true" aria-label="Galerie"><div class="ovl-head"><select id="galFilter" aria-label="Filtrer"></select><button class="btn" id="galClose" type="button">Fermer</button></div><div id="galGrid" class="gal-grid"></div></div>
+<div id="show" class="ovl show" hidden role="dialog" aria-modal="true" aria-label="Revoir le voyage"><div class="show-bg" id="showBg"></div><div class="show-txt"><h2 id="showH"></h2><p class="show-sub" id="showSub"></p><p class="show-note" id="showTxt"></p></div><div class="show-bar"><button class="btn" id="showPrev" type="button" aria-label="Précédent">‹</button><button class="btn" id="showPlay" type="button" aria-label="Pause">⏸</button><button class="btn" id="showNext" type="button" aria-label="Suivant">›</button><button class="btn" id="showClose" type="button" aria-label="Fermer">✕</button></div><div class="show-prog"><i id="showProg"></i></div></div>
 <script>
 (async function(){
 'use strict';
@@ -532,7 +534,7 @@ const PATTERNS = {
 };
 const MAX_PHOTOS = 20;   /* photos par envoi (le total par jour n'est pas limité) */
 
-const APP_VERSION = '2026.11.13-3';
+const APP_VERSION = '2026.11.13-4';
 /* ---------- Langue de l'interface publique (fr / en / nl) ---------- */
 const UI_DICT = {
   en:{'Voyage':'Trip','Carnet de voyage':'Travel journal','Partager le lien ↗':'Share link ↗','Réinitialiser les filtres':'Reset filters',
@@ -2073,8 +2075,6 @@ if(location.hash === '#admin') initAdmin();
 showQuick();
 })();
 </script>
-<div id="gallery" class="ovl" hidden role="dialog" aria-modal="true" aria-label="Galerie"><div class="ovl-head"><select id="galFilter" aria-label="Filtrer"></select><button class="btn" id="galClose" type="button">Fermer</button></div><div id="galGrid" class="gal-grid"></div></div>
-<div id="show" class="ovl show" hidden role="dialog" aria-modal="true" aria-label="Revoir le voyage"><div class="show-bg" id="showBg"></div><div class="show-txt"><h2 id="showH"></h2><p class="show-sub" id="showSub"></p><p class="show-note" id="showTxt"></p></div><div class="show-bar"><button class="btn" id="showPrev" type="button" aria-label="Précédent">‹</button><button class="btn" id="showPlay" type="button" aria-label="Pause">⏸</button><button class="btn" id="showNext" type="button" aria-label="Suivant">›</button><button class="btn" id="showClose" type="button" aria-label="Fermer">✕</button></div><div class="show-prog"><i id="showProg"></i></div></div>
 <div id="book" aria-hidden="true"></div>
 </body>
 </html>
