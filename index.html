@@ -18,6 +18,7 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="alternate" type="application/rss+xml" id="rssLink" href="feed.xml" title="Nouvelles du voyage">
 <meta name="theme-color" content="#A65A40">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <style>
@@ -213,6 +214,30 @@ body.quick-mode > :not(#quickPanel):not(script):not(dialog){display:none !import
 .search{width:100%;box-sizing:border-box;padding:8px 14px;border:1px solid var(--line);border-radius:var(--rb,20px);background:var(--card);color:var(--ink);font:inherit;margin-bottom:8px}
 .osm-pin.small{width:10px;height:10px;background:var(--warm);margin:3px 0 0 3px}
 .warn{border:1px solid var(--warm);border-left-width:5px;border-radius:var(--r,10px);padding:10px 12px;background:var(--card)}
+.mem-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;max-width:760px;margin:12px auto}
+.mem-grid .btn{padding:22px 10px;font-size:1rem;text-align:center;line-height:1.3}
+.wrp{background:var(--primary);color:var(--on-primary,#fff)}.wrp .ovl-head{background:transparent}
+#wrpStage{display:flex;align-items:center;justify-content:center;min-height:62vh;text-align:center;padding:10px}
+.wrp-slide{max-width:620px;display:flex;flex-direction:column;gap:16px;align-items:center;animation:wpop .6s ease both}
+.wrp-slide img{width:min(80vw,420px);aspect-ratio:3/4;object-fit:cover;border-radius:var(--r,10px);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.wrp-big{font-family:var(--font-head);font-weight:700;font-size:clamp(2.2rem,11vw,4.6rem);line-height:1.05;overflow-wrap:anywhere}.wrp-sub{font-size:1.15rem;opacity:.9}
+.wrp-nav{display:flex;justify-content:center;gap:12px}.wrp-nav .btn{font-size:1.1rem}
+@keyframes wpop{from{opacity:0;transform:scale(.9) translateY(14px)}to{opacity:1;transform:none}}
+.pc-form{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:8px}.pc-form select,.pc-form textarea{font:inherit;padding:8px;border:1px solid var(--line);border-radius:var(--r,10px);background:var(--card);color:var(--ink)}
+#pcCanvas{width:100%;height:auto;border:1px solid var(--line);border-radius:6px;background:#fbf7ef}
+.ch-list{display:flex;flex-direction:column;gap:6px;max-width:640px;margin:10px auto}.ch-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--line);border-radius:var(--r,10px);background:var(--card)}
+.ch-item.done{border-color:var(--green)}.ch-item img{width:44px;height:44px;object-fit:cover;border-radius:6px}.ch-item span{flex:1}
+#vaultBody{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:8px}#vaultBody input,#vaultBody textarea{font:inherit;padding:10px;border:1px solid var(--line);border-radius:var(--r,10px);background:var(--card);color:var(--ink);width:100%;box-sizing:border-box}
+.v-item{border:1px solid var(--line);border-radius:var(--r,10px);padding:10px 12px;background:var(--card)}.v-item pre{white-space:pre-wrap;margin:6px 0;font-family:inherit}
+#poster{display:none}
+@media print{
+  body.poster-mode > :not(#poster):not(script){display:none !important}
+  body.poster-mode #poster{display:block}body.poster-mode::before{display:none}
+  .pst-page{min-height:270mm;display:flex;flex-direction:column;gap:7mm;text-align:center;align-items:center;justify-content:space-between}
+  .pst-page img.pst-cover{width:100%;max-height:105mm;object-fit:cover;border-radius:var(--r,10px)}.pst-page h1{font-size:2.6rem;margin:0}.pst-sub{color:var(--ink-soft);font-size:1.15rem}
+  .pst-map{width:100%;height:auto}.pst-map text{font-family:var(--font-body);fill:var(--ink);font-size:15px;text-anchor:middle}.pst-stats{display:flex;gap:10mm;justify-content:center;font-size:1.1rem}.pst-stats strong{display:block;font-size:1.8rem;font-family:var(--font-head)}
+}
+.pst-map{display:block}
 .etape-head{border-bottom:var(--hr,1px solid var(--line))}
 h1,h2,h3,h4{text-transform:var(--hcase,none);letter-spacing:var(--hspace,0);font-weight:var(--hweight,700)}
 .item,.today-card,.empty,.day-note{border-radius:var(--r,10px);box-shadow:var(--shadow,none)}
@@ -275,6 +300,7 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
     <button class="btn" id="themeBtn" type="button">🌓 Thème : auto</button>
     <button class="btn" id="printBtn" type="button">🖨️ Version imprimable / PDF</button>
     <button class="btn" id="bookBtn" type="button">📖 Livre souvenir (PDF)</button>
+    <button class="btn" id="memBtn" type="button">✨ Souvenirs</button>
     <button class="btn" id="galleryBtn" type="button">🖼️ Galerie</button>
     <button class="btn" id="showBtn" type="button">▶️ Revoir le voyage</button>
     <select class="btn" id="langSelect" aria-label="Langue"><option value="fr">Français</option><option value="en">English</option><option value="nl">Nederlands</option></select>
@@ -297,6 +323,19 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
 <section id="adminPanel" class="admin-panel" hidden>
   <h3>Admin</h3>
   <p class="meta" id="adminTripLabel"></p>
+  <div class="adm-sec" id="helpBox">
+    <h4 class="adm-h">📘 Aide et guide</h4>
+    <p class="meta">Le guide pas à pas explique toutes les fonctions, de l'installation à la sauvegarde.</p>
+    <a class="btn" id="guideLink" href="guide.pdf" target="_blank" rel="noopener">Ouvrir le guide (PDF)</a>
+    <p class="meta" id="guideNote"></p>
+    <details><summary>Questions fréquentes</summary>
+      <p><strong>Je n'arrive pas à publier.</strong> Ouvrez « Connexion GitHub » et cliquez sur « Enregistrer et tester ». Une erreur 401 signifie un token faux ou expiré ; vérifiez aussi que le token a le droit « Contents : Read and write » sur le bon dépôt.</p>
+      <p><strong>Le site n'affiche pas mes changements.</strong> Attendez 1 à 2 minutes, puis rechargez la page (sur téléphone, fermez et rouvrez l'onglet).</p>
+      <p><strong>J'ai perdu mon token.</strong> Créez-en un nouveau dans GitHub : Settings, Developer settings, Fine-grained tokens, puis collez-le dans « Connexion GitHub ».</p>
+      <p><strong>Comment mettre à jour le carnet ?</strong> Remplacez <code>index.html</code> (et les fichiers fournis avec) dans votre dépôt GitHub via « Add file, Upload files ». Vos voyages ne sont pas touchés.</p>
+      <p><strong>Mes données sont-elles privées ?</strong> Non : le site gratuit est public. Seul le coffre-fort est chiffré. Ne publiez rien de confidentiel.</p>
+    </details>
+  </div>
   <p><a href="#quick">⚡ Publier vite (écran simplifié pour téléphone)</a> · <a href="#newTrip" id="goNewTrip">➕ Nouveau voyage</a></p>
   <div id="onboard" class="tools" hidden><strong>Pour démarrer</strong><ol id="onboardList"></ol></div>
 
@@ -383,6 +422,17 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
       <div id="planStatus" class="meta" role="status"></div>
     </details>
 
+    <details id="aiBox">
+      <summary>🤖 Assistant de planning (IA)</summary>
+      <p class="meta">1. Décrivez le voyage. 2. Copiez la demande dans l’assistant IA de votre choix (Claude, ChatGPT…). 3. Collez sa réponse ci-dessous : elle est vérifiée avant d’être importée dans l’éditeur d’étapes (rien n’est publié avant « Enregistrer les étapes »).</p>
+      <label for="aiWho">Voyageurs</label><input id="aiWho" placeholder="Ex. 2 adultes et 1 enfant de 8 ans">
+      <label for="aiWish">Envies, rythme, contraintes</label><textarea id="aiWish" rows="3" placeholder="Ex. rythme tranquille, beaucoup de cuisine locale, pas plus d'une visite payante par jour"></textarea>
+      <button class="btn" id="aiCopy" type="button">📋 Préparer et copier la demande pour l’IA</button>
+      <textarea id="aiPrompt" class="mono" rows="5" readonly hidden aria-label="Demande à copier"></textarea>
+      <label for="aiReply">Réponse de l’IA (JSON)</label><textarea id="aiReply" class="mono" rows="6" spellcheck="false"></textarea>
+      <button class="btn" id="aiImport" type="button">Vérifier et importer dans l’éditeur d’étapes</button>
+      <div id="aiStatus" class="meta" role="status"></div>
+    </details>
     <details id="stagesBox">
       <summary>Étapes et jours du voyage</summary>
       <p class="meta">Renommez les étapes, ajoutez ou retirez des jours et des étapes, puis enregistrez. Les activités déjà saisies sont conservées. « Ajouter un jour » décale d'un jour les étapes suivantes.</p>
@@ -447,6 +497,12 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
 
   <div class="adm-sec">
     <h4 class="adm-h">🧰 Outils des voyages</h4>
+    <details id="rssBox"><summary>Flux RSS (nouvelles du voyage)</summary>
+      <p class="meta">Chaque publication de photos ou de compte rendu met à jour un fichier <code>feed.xml</code>. Vos proches peuvent s’abonner avec un lecteur RSS (Feedly, Inoreader…).</p>
+      <p class="meta" id="rssUrl"></p>
+      <button class="btn" id="rssBtn" type="button">Régénérer le flux maintenant</button>
+      <div id="rssStatus" class="meta" role="status"></div>
+    </details>
   <details id="backupBox">
     <summary>Sauvegarde du voyage</summary>
     <p class="meta">Télécharge un fichier avec le planning, les comptes rendus, les réglages et la liste des photos (avec leurs adresses). Les photos elles-mêmes restent hébergées sur GitHub.</p>
@@ -480,6 +536,11 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
 
 <footer id="footer">Carnet de voyage — mis à jour au fil du voyage.</footer>
 
+<div id="memories" class="ovl" hidden role="dialog" aria-modal="true" aria-label="Souvenirs"><div class="ovl-head"><strong>✨ Souvenirs</strong><button class="btn" data-close type="button">Fermer</button></div><div id="memGrid" class="mem-grid"></div></div>
+<div id="wrapped" class="ovl wrp" hidden role="dialog" aria-modal="true" aria-label="Récap du voyage"><div class="ovl-head"><span id="wrpStep" class="meta"></span><button class="btn" data-close type="button">Fermer</button></div><div id="wrpStage"></div><div class="wrp-nav"><button class="btn" id="wrpPrev" type="button" aria-label="Précédent">‹</button><button class="btn" id="wrpImg" type="button">📤 Image à partager</button><button class="btn" id="wrpNext" type="button" aria-label="Suivant">›</button></div></div>
+<div id="postcard" class="ovl" hidden role="dialog" aria-modal="true" aria-label="Carte postale"><div class="ovl-head"><strong>💌 Carte postale</strong><button class="btn" data-close type="button">Fermer</button></div><div class="pc-form"><label for="pcPhoto">Photo</label><select id="pcPhoto"></select><label for="pcText">Message</label><textarea id="pcText" rows="4" maxlength="400"></textarea><canvas id="pcCanvas" width="1500" height="1000" aria-label="Aperçu de la carte postale"></canvas><button class="btn" id="pcShare" type="button">📤 Partager / télécharger l’image</button></div></div>
+<div id="challenge" class="ovl" hidden role="dialog" aria-modal="true" aria-label="Défi photo"><div class="ovl-head"><strong>🎯 Défi photo</strong><span id="chScore" class="meta"></span><button class="btn" data-close type="button">Fermer</button></div><p class="meta">Cochez chaque défi relevé ; ajoutez une photo souvenir si vous voulez. Tout reste sur cet appareil.</p><div id="chList" class="ch-list"></div><div class="pf-row"><input id="chNew" placeholder="Ajouter un défi (ex. une glace géante)" maxlength="60"><button class="btn" id="chAdd" type="button">+ Ajouter</button><button class="btn" id="chReset" type="button">Tout décocher</button></div></div>
+<div id="vault" class="ovl" hidden role="dialog" aria-modal="true" aria-label="Coffre-fort"><div class="ovl-head"><strong>🔐 Coffre-fort</strong><button class="btn" data-close type="button">Fermer</button></div><div id="vaultBody"></div></div>
 <div id="gallery" class="ovl" hidden role="dialog" aria-modal="true" aria-label="Galerie"><div class="ovl-head"><select id="galFilter" aria-label="Filtrer"></select><button class="btn" id="galClose" type="button">Fermer</button></div><div id="galGrid" class="gal-grid"></div></div>
 <div id="show" class="ovl show" hidden role="dialog" aria-modal="true" aria-label="Revoir le voyage"><div class="show-bg" id="showBg"></div><div class="show-txt"><h2 id="showH"></h2><p class="show-sub" id="showSub"></p><p class="show-note" id="showTxt"></p></div><div class="show-bar"><button class="btn" id="showPrev" type="button" aria-label="Précédent">‹</button><button class="btn" id="showPlay" type="button" aria-label="Pause">⏸</button><button class="btn" id="showNext" type="button" aria-label="Suivant">›</button><button class="btn" id="showClose" type="button" aria-label="Fermer">✕</button></div><div class="show-prog"><i id="showProg"></i></div></div>
 <script>
@@ -559,7 +620,7 @@ const PATTERNS = {
 const PRESET_ICON = {japan:'⛩️', mediterranee:'⛱️', nature:'🌲', ville:'🏙️', tropical:'🌴', nordique:'❄️', desert:'🐪', montagne:'⛰️', amerique:'🚗', famille:'🎈'};
 const MAX_PHOTOS = 20;   /* photos par envoi (le total par jour n'est pas limité) */
 
-const APP_VERSION = '2026.11.15-8';
+const APP_VERSION = '2026.11.15-11';
 /* ---------- Langue de l'interface publique (fr / en / nl) ---------- */
 const UI_DICT = {
   en:{'Voyage':'Trip','Carnet de voyage':'Travel journal','Partager le lien ↗':'Share link ↗','Réinitialiser les filtres':'Reset filters',
@@ -953,7 +1014,7 @@ function routeKm(){
 }
 const photosOf = iso => (SITE_PHOTOS[iso] || []).map(normPhoto);
 const starOf = iso => { const l = photosOf(iso); return l.find(p => p.star) || l[0]; };
-function closeOverlays(){ ['gallery', 'show'].forEach(i => { $(i).hidden = true; }); stopShow(); document.body.style.overflow = ''; }
+function closeOverlays(){ OVL_IDS.forEach(i => { $(i).hidden = true; }); stopShow(); stopWrp(); document.body.style.overflow = ''; }
 function openGallery(){
   const sel = $('galFilter'), grid = $('galGrid'), days = Object.keys(SITE_PHOTOS).filter(d => (SITE_PHOTOS[d] || []).length).sort();
   sel.replaceChildren(el('option', {value:'all', text:tr('Tous les jours')}), el('option', {value:'star', text:tr('⭐ Photos du jour')}), ...days.map(d => el('option', {value:d, text:dayLabel(d)})));
@@ -1021,7 +1082,177 @@ async function printBook(){
   await Promise.race([Promise.all(imgs.map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; }))), new Promise(r => setTimeout(r, 8000))]);
   window.print();
 }
-window.addEventListener('afterprint', () => document.body.classList.remove('book-mode'));
+window.addEventListener('afterprint', () => document.body.classList.remove('book-mode', 'poster-mode'));
+/* ---------- Souvenirs : Wrapped, affiche, carte postale, défi photo, coffre-fort, RSS ---------- */
+const OVL_IDS = ['gallery', 'show', 'wrapped', 'postcard', 'challenge', 'vault', 'memories'];
+let wrpTimer = null, wrpI = 0, wrpSlides = [], VAULT_PASS = '';
+const fmtLong = iso => new Date(iso + 'T12:00:00Z').toLocaleDateString(LOC, {day:'numeric', month:'long', year:'numeric', timeZone:'UTC'});
+const stopWrp = () => { clearInterval(wrpTimer); wrpTimer = null; VAULT_PASS = ''; };
+function openOvl(id){ closeOverlays(); $(id).hidden = false; document.body.style.overflow = 'hidden'; $(id).scrollTop = 0; }
+const loadImg = src => new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src; });
+const cssv = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function wrapText(g, text, x, y, maxW, lh, maxLines){
+  let line = '', n = 0;
+  for(const w of String(text).split(/\s+/)){ const t = line ? line + ' ' + w : w; if(g.measureText(t).width > maxW && line){ g.fillText(line, x, y); y += lh; line = w; if(++n >= maxLines) return y; } else line = t; }
+  if(line) g.fillText(line, x, y); return y + lh;
+}
+async function shareCanvas(c, name){
+  const blob = await new Promise(r => c.toBlob(r, 'image/png')), f = new File([blob], name + '.png', {type:'image/png'});
+  if(navigator.canShare && navigator.canShare({files:[f]})){ try{ await navigator.share({files:[f], title:cfg.title || ''}); return; }catch(e){ if(e && e.name === 'AbortError') return; } }
+  const a = el('a', {href:URL.createObjectURL(blob), download:name + '.png'}); document.body.append(a); a.click(); a.remove();
+}
+/* 1. Récap Wrapped */
+function wrappedSlides(){
+  const items = allDays.flatMap(d => d.items || []), cnt = arr => arr.reduce((m, k) => (k && (m[k] = (m[k] || 0) + 1), m), {}), top = o => Object.entries(o).sort((a, b) => b[1] - a[1])[0];
+  const phN = d => photosOf(d.iso).length, best = allDays.slice().sort((a, b) => phN(b) - phN(a))[0], nPh = allDays.reduce((a, d) => a + phN(d), 0);
+  const words = Object.values(NOTES || {}).reduce((a, n) => a + String(typeof n === 'string' ? n : ((n && n.text) || '')).split(/\s+/).filter(Boolean).length, 0);
+  const reg = top(cnt(items.map(i => i.region))), ty = top(cnt(items.map(i => i.type))), km = routeKm(), places = new Set(items.map(i => i.region).filter(Boolean)).size;
+  const S = [{big:cfg.title || 'Mon voyage', sub:allDays.length ? fmtLong(allDays[0].iso) + ' → ' + fmtLong(allDays[allDays.length - 1].iso) : ''}, {big:TOTAL + ' jours', sub:DATA.length + ' étape(s) · ' + places + ' lieu(x)'}];
+  if(km) S.push({big:'≈ ' + km + ' km', sub:'parcourus entre les étapes'});
+  if(nPh) S.push({big:nPh + ' photos', sub:best && phN(best) ? 'Journée record : ' + (best.title || dayLabel(best.iso)) + ' (' + phN(best) + ')' : '', photo:best && phN(best) ? starOf(best.iso) : null});
+  if(reg) S.push({big:reg[0], sub:'le lieu le plus visité (' + reg[1] + ' activités)'});
+  if(ty) S.push({big:(TYPES[ty[0]] && TYPES[ty[0]].label) || ty[0], sub:'votre activité favorite (' + ty[1] + ' fois)'});
+  if(words) S.push({big:words + ' mots', sub:'écrits dans les comptes rendus'});
+  S.push({big:'À bientôt ✈️', sub:'pour le prochain voyage'}); return S;
+}
+function showWrp(i){
+  wrpI = (i + wrpSlides.length) % wrpSlides.length; const sl = wrpSlides[wrpI]; $('wrpStep').textContent = (wrpI + 1) + ' / ' + wrpSlides.length;
+  $('wrpStage').replaceChildren(el('div', {class:'wrp-slide'}, sl.photo ? el('img', {src:abs(sl.photo.src), alt:''}) : null, el('div', {class:'wrp-big', text:sl.big}), sl.sub ? el('div', {class:'wrp-sub', text:sl.sub}) : null));
+}
+function openWrapped(){ wrpSlides = wrappedSlides(); openOvl('wrapped'); showWrp(0); clearInterval(wrpTimer); wrpTimer = setInterval(() => { if(wrpI < wrpSlides.length - 1) showWrp(wrpI + 1); else clearInterval(wrpTimer); }, 5000); }
+async function wrpImage(){
+  const sl = wrpSlides[wrpI], c = el('canvas'); c.width = 1080; c.height = 1920; const g = c.getContext('2d'), gr = g.createLinearGradient(0, 0, 0, 1920);
+  gr.addColorStop(0, cssv('--primary') || '#7a3e2b'); gr.addColorStop(1, cssv('--warm') || '#c4572a'); g.fillStyle = gr; g.fillRect(0, 0, 1080, 1920);
+  let y = 900; if(sl.photo){ const im = await loadImg(abs(sl.photo.src)); if(im){ const w = 820, h = 1000, r = Math.max(w / im.width, h / im.height); g.save(); g.beginPath(); g.rect(130, 200, w, h); g.clip(); g.drawImage(im, 130 + (w - im.width * r) / 2, 200 + (h - im.height * r) / 2, im.width * r, im.height * r); g.restore(); y = 1420; } }
+  const head = cssv('--font-head') || 'serif', body = cssv('--font-body') || 'sans-serif'; g.fillStyle = '#fff'; g.textAlign = 'center';
+  let fs = 170; do{ g.font = '700 ' + fs + 'px ' + head; fs -= 6; }while(g.measureText(sl.big).width > 940 && fs > 50);
+  g.fillText(sl.big, 540, y); g.font = '46px ' + body; if(sl.sub) wrapText(g, sl.sub, 540, y + 90, 900, 62, 3);
+  g.font = '32px ' + body; g.globalAlpha = .8; g.fillText((cfg.title || '') + ' · ' + location.host, 540, 1850);
+  await shareCanvas(c, 'recap-' + (wrpI + 1));
+}
+/* 3. Carte postale */
+function openPostcard(){
+  const sel = $('pcPhoto'), all = Object.keys(SITE_PHOTOS).sort().flatMap(d => photosOf(d).map(p => [p.src, dayLabel(d) + (p.caption ? ' · ' + p.caption : '')]));
+  if(cfg.cover) all.unshift([cfg.cover, 'Photo de couverture']);
+  sel.replaceChildren(...[['', 'Sans photo']].concat(all).map(o => el('option', {value:o[0], text:o[1]})));
+  const fav = allDays.map(d => starOf(d.iso)).filter(Boolean)[0]; sel.value = fav ? fav.src : (all[0] ? all[0][0] : '');
+  if(!$('pcText').value) $('pcText').value = 'Bons baisers de ' + (cfg.destinationLabel || cfg.title || 'voyage') + ' ! On pense à vous.';
+  openOvl('postcard'); drawPostcard();
+}
+async function drawPostcard(){
+  const c = $('pcCanvas'), g = c.getContext('2d'); g.clearRect(0, 0, 1500, 1000); g.fillStyle = '#fbf7ef'; g.fillRect(0, 0, 1500, 1000);
+  const src = $('pcPhoto').value; if(src){ const im = await loadImg(abs(src)); if(im){ const w = 880, h = 920, r = Math.max(w / im.width, h / im.height); g.save(); g.beginPath(); g.rect(40, 40, w, h); g.clip(); g.drawImage(im, 40 + (w - im.width * r) / 2, 40 + (h - im.height * r) / 2, im.width * r, im.height * r); g.restore(); } }
+  const pr = cssv('--primary') || '#7a3e2b'; g.strokeStyle = '#cfc6b3'; g.lineWidth = 2; g.beginPath(); g.moveTo(960, 300); g.lineTo(960, 900); g.stroke();
+  g.setLineDash([9, 7]); g.strokeStyle = pr; g.lineWidth = 4; g.strokeRect(1270, 50, 180, 210); g.setLineDash([]);
+  g.textAlign = 'center'; g.font = '92px serif'; g.fillStyle = '#000'; g.fillText(cfg.icon || PRESET_ICON[cfg.preset] || '✈️', 1360, 170); g.font = '26px sans-serif'; g.fillStyle = pr; g.fillText(String((allDays[0] || {iso:'2026'}).iso).slice(0, 4), 1360, 232);
+  g.beginPath(); g.arc(1160, 150, 78, 0, 7); g.lineWidth = 3; g.strokeStyle = pr; g.stroke(); g.font = '24px sans-serif'; g.fillText(String(cfg.destinationLabel || cfg.title || '').slice(0, 14).toUpperCase(), 1160, 158);
+  g.textAlign = 'left'; g.fillStyle = '#2b2b2b'; g.font = '46px "Bradley Hand","Segoe Script","Comic Sans MS",cursive'; wrapText(g, $('pcText').value, 1000, 340, 450, 66, 8);
+  g.strokeStyle = '#cfc6b3'; g.lineWidth = 2; for(let i = 0; i < 3; i++){ g.beginPath(); g.moveTo(1000, 780 + i * 55); g.lineTo(1450, 780 + i * 55); g.stroke(); }
+}
+/* 2. Affiche */
+function buildPoster(){
+  const NS = 'http://www.w3.org/2000/svg', sv = (t, a) => { const n = document.createElementNS(NS, t); Object.entries(a || {}).forEach(([k, v]) => n.setAttribute(k, v)); return n; };
+  const pl = ((cfg.map && cfg.map.places) || []).filter(hasXY); let pts = pl.length > 1 ? pl.map(p => ({lat:+p.lat, lon:+p.lon, label:p.label || ''})) : DATA.filter(hasXY).map(e => ({lat:+e.lat, lon:+e.lon, label:shortName(e)}));
+  if(pts.length < 2) pts = DATA.map((e, i) => ({x:70 + i * (460 / Math.max(DATA.length - 1, 1)), y:i % 2 ? 290 : 150, label:shortName(e)}));
+  else { const cl = Math.cos(pts.reduce((a, q) => a + q.lat, 0) / pts.length * Math.PI / 180), xs = pts.map(q => q.lon * cl), ys = pts.map(q => -q.lat), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), sc = Math.min(460 / ((x1 - x0) || 1), 280 / ((y1 - y0) || 1));
+    pts.forEach((q, i) => { q.x = 70 + (xs[i] - x0) * sc + (460 - (x1 - x0) * sc) / 2; q.y = 70 + (ys[i] - y0) * sc + (280 - (y1 - y0) * sc) / 2; }); }
+  const svg = sv('svg', {viewBox:'0 0 600 420', class:'pst-map'}); svg.append(sv('polyline', {points:pts.map(q => q.x.toFixed(1) + ',' + q.y.toFixed(1)).join(' '), fill:'none', stroke:cssv('--primary') || '#7a3e2b', 'stroke-width':3, 'stroke-dasharray':'8 7'}));
+  pts.forEach(q => { svg.append(sv('circle', {cx:q.x.toFixed(1), cy:q.y.toFixed(1), r:7, fill:cssv('--warm') || '#c4572a'})); const t = sv('text', {x:q.x.toFixed(1), y:(q.y + 26).toFixed(1)}); t.textContent = q.label; svg.append(t); });
+  const items = allDays.flatMap(d => d.items || []), nPh = allDays.reduce((a, d) => a + photosOf(d.iso).length, 0), km = routeKm(), cv = cfg.cover, cover = (typeof cv === 'string' && !cv.includes('..') && /^[\w\-\/.]+$/.test(cv)) ? abs(cv) : null;
+  const stat = (n, l) => el('div', {}, el('strong', {text:String(n)}), l);
+  $('poster').replaceChildren(el('section', {class:'pst-page'}, cover ? el('img', {class:'pst-cover', src:cover, alt:''}) : null, el('div', {}, el('h1', {text:cfg.title || 'Mon voyage'}), el('div', {class:'pst-sub', text:[cfg.destinationLabel, allDays.length ? fmtLong(allDays[0].iso) + ' → ' + fmtLong(allDays[allDays.length - 1].iso) : ''].filter(Boolean).join(' · ')})), svg,
+    el('div', {class:'pst-stats'}, stat(TOTAL, 'jours'), stat(DATA.length, 'étapes'), stat(new Set(items.map(i => i.region).filter(Boolean)).size, 'lieux'), km ? stat('≈ ' + km, 'km') : null, nPh ? stat(nPh, 'photos') : null)));
+}
+async function printPoster(){
+  buildPoster(); document.body.classList.add('poster-mode');
+  const imgs = [...document.querySelectorAll('#poster img')]; await Promise.race([Promise.all(imgs.map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; }))), new Promise(r => setTimeout(r, 8000))]); window.print();
+}
+/* 9. Défi photo */
+const CH_DEFAULT = ['Un chat dans la rue', 'Une fontaine', 'Un drapeau', 'Un marché coloré', 'Un monument vu de loin', 'Une spécialité locale', 'Un panneau rigolo', 'Un animal inattendu', 'Un coucher de soleil', 'Un transport typique', 'Une fresque ou un graffiti', 'Un selfie de famille devant un lieu célèbre'];
+const chKey = () => 'carnet.chal.' + ((CUR && CUR.slug) || 'voyage');
+const chLoad = () => { try{ return JSON.parse(localStorage.getItem(chKey())) || {}; }catch(e){ return {}; } };
+const chSave = st => { try{ localStorage.setItem(chKey(), JSON.stringify(st)); }catch(e){ alert('Stockage plein sur cet appareil : retirez une photo de défi.'); } };
+const smallImg = f => new Promise(ok => { const r = new FileReader(); r.onload = () => { const im = new Image(); im.onload = () => { const c = document.createElement('canvas'), k = 320 / Math.max(im.width, im.height); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); ok(c.toDataURL('image/jpeg', .7)); }; im.src = r.result; }; r.readAsDataURL(f); });
+function renderChallenge(){
+  const st = chLoad(); st.done = st.done || {}; const list = CH_DEFAULT.concat(st.custom || []), n = list.filter((_, i) => st.done[i]).length; $('chScore').textContent = n + ' / ' + list.length + (n === list.length ? ' 🏆' : '');
+  $('chList').replaceChildren(...list.map((label, i) => {
+    const d = st.done[i], cb = el('input', {type:'checkbox', checked:!!d, 'aria-label':label}), file = el('input', {type:'file', accept:'image/*', hidden:true});
+    cb.addEventListener('change', () => { const s2 = chLoad(); s2.done = s2.done || {}; if(cb.checked) s2.done[i] = s2.done[i] || true; else delete s2.done[i]; chSave(s2); renderChallenge(); });
+    file.addEventListener('change', async () => { const f = file.files[0]; if(!f) return; const u = await smallImg(f), s2 = chLoad(); s2.done = s2.done || {}; s2.done[i] = u; chSave(s2); renderChallenge(); });
+    return el('div', {class:'ch-item' + (d ? ' done' : '')}, cb, el('span', {text:label}), typeof d === 'string' ? el('img', {src:d, alt:''}) : null, el('button', {class:'btn', type:'button', text:'📷', 'aria-label':'Ajouter une photo', onclick:() => file.click()}), file);
+  }));
+}
+/* 10. Coffre-fort chiffré (AES-GCM, clé dérivée du code par PBKDF2) */
+const b64e = u => { let s = ''; for(let i = 0; i < u.length; i += 8192) s += String.fromCharCode.apply(null, u.subarray(i, i + 8192)); return btoa(s); };
+const b64d = t => Uint8Array.from(atob(t), c => c.charCodeAt(0));
+async function vKey(pass, salt, it){ const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']); return crypto.subtle.deriveKey({name:'PBKDF2', salt, iterations:it, hash:'SHA-256'}, base, {name:'AES-GCM', length:256}, false, ['encrypt', 'decrypt']); }
+async function vEnc(obj, pass){ const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12)), it = 250000, key = await vKey(pass, salt, it); const ct = new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, new TextEncoder().encode(JSON.stringify(obj)))); return {v:1, kdf:'PBKDF2-SHA256', it, salt:b64e(salt), iv:b64e(iv), data:b64e(ct)}; }
+async function vDec(blob, pass){ const key = await vKey(pass, b64d(blob.salt), blob.it || 250000), pt = await crypto.subtle.decrypt({name:'AES-GCM', iv:b64d(blob.iv)}, key, b64d(blob.data)); return JSON.parse(new TextDecoder().decode(pt)); }
+const vPath = () => DIR + 'vault.enc.json', vCache = () => 'carnet.vault.' + ((CUR && CUR.slug) || 'voyage');
+async function vLoadBlob(){ try{ const r = await fetch(vPath(), {cache:'no-store'}); if(r.ok){ const b = await r.json(); try{ localStorage.setItem(vCache(), JSON.stringify(b)); }catch(e){} return b; } }catch(e){} try{ return JSON.parse(localStorage.getItem(vCache())); }catch(e){ return null; } }
+const ghReady = () => { try{ const g = JSON.parse(localStorage.getItem('ghCfg') || '{}'); return !!(g.owner && g.repo); }catch(e){ return false; } };
+async function openVault(){ openOvl('vault'); VAULT_PASS = ''; $('vaultBody').replaceChildren(el('p', {class:'meta', text:'…'})); vaultLock(await vLoadBlob()); }
+function vaultLock(blob){
+  const pass = el('input', {type:'password', placeholder:'Code secret', autocomplete:'off'}), pass2 = blob ? null : el('input', {type:'password', placeholder:'Répéter le code secret', autocomplete:'off'}), msg = el('p', {class:'meta', role:'status'});
+  const go = el('button', {class:'btn', type:'button', text:blob ? 'Ouvrir' : 'Créer le coffre', onclick:async () => {
+    try{
+      if(blob){ const data = await vDec(blob, pass.value); VAULT_PASS = pass.value; vaultShow(data); return; }
+      if(pass.value.length < 12){ msg.textContent = 'Choisissez une phrase de passe d’au moins 12 caractères.'; return; }
+      if(pass.value !== pass2.value){ msg.textContent = 'Les deux codes sont différents.'; return; }
+      VAULT_PASS = pass.value; vaultShow({items:[]});
+    }catch(e){ msg.textContent = 'Code incorrect ou coffre illisible.'; }
+  }});
+  $('vaultBody').replaceChildren(el('p', {class:'meta', text:blob ? 'Entrez votre code secret pour déchiffrer vos documents (billets, assurances, numéros de réservation…).' : 'Aucun coffre pour ce voyage. Vos documents sont chiffrés sur votre appareil avant d’être enregistrés : sans le code, personne ne peut les lire. Le code ne peut pas être récupéré en cas d’oubli. Le fichier chiffré est public comme le reste du site : choisissez une phrase de passe longue et unique.'}), pass, pass2, go, msg);
+}
+function vaultShow(data){
+  const msg = el('p', {class:'meta', role:'status'}), body = $('vaultBody');
+  const save = async () => {
+    msg.textContent = 'Chiffrement…'; const text = JSON.stringify(await vEnc(data, VAULT_PASS)); try{ localStorage.setItem(vCache(), text); }catch(e){}
+    if(!window.__commit && ghReady()){ initAdmin(); $('adminPanel').hidden = location.hash !== '#admin'; }
+    if(window.__commit){ try{ await window.__commit('Coffre-fort chiffré', [{path:vPath(), text}]); msg.textContent = '✓ Enregistré chiffré sur GitHub et sur cet appareil.'; }catch(e){ msg.textContent = 'Enregistré sur cet appareil seulement (' + e.message + ').'; } }
+    else msg.textContent = 'Enregistré sur cet appareil seulement : configurez GitHub dans l’Admin pour synchroniser.';
+  };
+  const draw = () => {
+    const t = el('input', {placeholder:'Titre (ex. Billets d’avion)', maxlength:'60'}), x = el('textarea', {rows:3, placeholder:'Détails, numéros de réservation…'}), f = el('input', {type:'file'});
+    const add = el('button', {class:'btn', type:'button', text:'+ Ajouter au coffre', onclick:async () => {
+      if(!t.value.trim() && !x.value.trim() && !f.files[0]) return; const it = {title:t.value.trim() || 'Sans titre', text:x.value};
+      if(f.files[0]){ if(f.files[0].size > 400 * 1024){ msg.textContent = 'Fichier trop gros (400 Ko maximum) : réduisez-le d’abord.'; return; } it.file = {name:f.files[0].name, type:f.files[0].type || 'application/octet-stream', b64:b64e(new Uint8Array(await f.files[0].arrayBuffer()))}; }
+      data.items.push(it); await save(); draw();
+    }});
+    const list = data.items.map((it, i) => el('div', {class:'v-item'}, el('strong', {text:it.title}), it.text ? el('pre', {text:it.text}) : null,
+      it.file ? el('button', {class:'btn', type:'button', text:'⬇️ ' + it.file.name, onclick:() => { const a = el('a', {href:URL.createObjectURL(new Blob([b64d(it.file.b64)], {type:it.file.type})), download:it.file.name}); document.body.append(a); a.click(); a.remove(); }}) : null,
+      el('button', {class:'btn', type:'button', text:'✕ Supprimer', onclick:async () => { if(!confirm('Supprimer « ' + it.title + ' » ?')) return; data.items.splice(i, 1); await save(); draw(); }})));
+    body.replaceChildren(el('p', {class:'meta', text:'🔓 Coffre ouvert (' + data.items.length + ' élément(s)). Tout est chiffré avant l’enregistrement.'}), ...list, t, x, f, add, el('button', {class:'btn', type:'button', text:'🔒 Verrouiller', onclick:openVault}), msg);
+  };
+  draw();
+}
+/* 4. Flux RSS */
+function feedFile(phMap, ntMap){
+  const x = v => String(v == null ? '' : v).replace(/[&<>]/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;'}[c]));
+  const base = SITE_URL + ((trips.length > 1 && CUR && CUR.slug) ? '?trip=' + encodeURIComponent(CUR.slug) : '');
+  const dates = [...new Set(Object.keys(phMap || {}).filter(d => (phMap[d] || []).length).concat(Object.keys(ntMap || {}).filter(d => ntMap[d])))].sort().reverse().slice(0, 40);
+  const items = dates.map(d => {
+    const day = allDays.find(a => a.iso === d) || {}, n = ntMap && ntMap[d], note = typeof n === 'string' ? n : ((n && n.text) || ''), ph = ((phMap && phMap[d]) || []).map(normPhoto);
+    const enc = ph[0] ? '<enclosure url="' + x(new URL(abs(ph[0].src), location.href).href) + '" length="0" type="image/jpeg"/>' : '';
+    return '<item><title>' + x((day.date || dayLabel(d)) + (day.title ? ' — ' + day.title : '')) + '</title><link>' + x(base + '#jour-' + d) + '</link><guid isPermaLink="false">' + x(((CUR && CUR.slug) || 'voyage') + '-' + d) + '</guid><pubDate>' + new Date(d + 'T12:00:00Z').toUTCString() + '</pubDate><description>' + x((note ? note + '\n\n' : '') + (ph.length ? ph.length + ' photo(s)' : '')) + '</description>' + enc + '</item>';
+  });
+  return {path:DIR + 'feed.xml', text:'<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel><title>' + x(cfg.title || 'Carnet de voyage') + '</title><link>' + x(base) + '</link><description>' + x('Nouvelles du voyage : ' + (cfg.destinationLabel || cfg.title || '')) + '</description><language>fr</language>' + items.join('') + '</channel></rss>\n'};
+}
+function openMemories(){
+  const feedUrl = new URL(DIR + 'feed.xml', location.href).href;
+  const B = (t, f) => el('button', {class:'btn', type:'button', text:t, onclick:f});
+  $('memGrid').replaceChildren(B('📊 Récap « Wrapped »', openWrapped), B('🖼️ Affiche du voyage (PDF)', () => { closeOverlays(); printPoster(); }), B('💌 Carte postale', openPostcard), B('🎯 Défi photo', () => { renderChallenge(); openOvl('challenge'); }), B('🔐 Coffre-fort', openVault),
+    B('📡 Flux RSS : copier l’adresse', function(){ try{ navigator.clipboard.writeText(feedUrl); this.textContent = '✓ Adresse copiée'; }catch(e){ prompt('Adresse du flux RSS :', feedUrl); } }));
+  openOvl('memories');
+}
+(function setupSouvenirs(){
+  document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeOverlays));
+  $('memBtn').addEventListener('click', openMemories);
+  $('wrpPrev').addEventListener('click', () => { clearInterval(wrpTimer); showWrp(wrpI - 1); }); $('wrpNext').addEventListener('click', () => { clearInterval(wrpTimer); showWrp(wrpI + 1); }); $('wrpImg').addEventListener('click', wrpImage);
+  $('pcPhoto').addEventListener('change', drawPostcard); $('pcText').addEventListener('input', drawPostcard); $('pcShare').addEventListener('click', () => shareCanvas($('pcCanvas'), 'carte-postale'));
+  $('chAdd').addEventListener('click', () => { const v = $('chNew').value.trim(); if(!v) return; const st = chLoad(); st.custom = (st.custom || []).concat(v.slice(0, 60)); chSave(st); $('chNew').value = ''; renderChallenge(); });
+  $('chReset').addEventListener('click', () => { const st = chLoad(); st.done = {}; chSave(st); renderChallenge(); });
+})();
 function renderTools(){
   const box = $('toolsBody'); if(!box || !allDays.length) return;
   const items = allDays.flatMap(d => (d.items || []).map(it => ({d, it}))), todo = items.filter(x => x.it.booked === false), done = items.filter(x => x.it.booked === true);
@@ -1199,7 +1430,7 @@ function renderTrip(){
     $('searchBox').value = '';
     applyFilters();
   };
-  renderTools(); renderPractice(); liveWeather(); todayWeather();
+  renderTools(); renderPractice(); liveWeather(); todayWeather(); $('rssLink').href = DIR + 'feed.xml';
   $('footer').textContent = (cfg.title || 'Carnet de voyage') + ' — mis à jour au fil du voyage.';
 }
 function applyFilters(){
@@ -1630,7 +1861,7 @@ function initAdmin(){
       prepared.forEach(p => { map[p.day] = [...(map[p.day] || []), serialize({src:'photos/' + p.name, thumb:'photos/thumbs/' + p.name, caption:p.caption})]; });
       const out = [];
       prepared.forEach(p => out.push({path:P('photos/' + p.name), base64:p.full}, {path:P('photos/thumbs/' + p.name), base64:p.thumb}));
-      out.push({path:P('photos.json'), text:toText(map)});
+      out.push({path:P('photos.json'), text:toText(map)}, feedFile(map, NOTES));
       await commitFiles('Photos du ' + [...new Set(prepared.map(p => p.day))].sort().join(', '), out, (a, b) => say('adminStatus', 'Envoi ' + a + '/' + b + '…'));
       say('adminStatus', '✓ ' + prepared.length + '/' + files.length + ' photo(s) publiée(s)' + (failed ? ' — ' + failed + ' illisible(s), à renvoyer.' : '.') + ' En ligne dans ~1 min.');
       $('photoFiles').value = ''; $('newCaps').replaceChildren(); $('capsBox').hidden = true;
@@ -1670,7 +1901,7 @@ function initAdmin(){
       if(kept.length) map[date] = kept.map(serialize); else delete map[date];
       if(!removals.length && toText(map) === before){ say('editStatus', 'Rien à modifier.'); return; }
       say('editStatus', 'Envoi en cours…');
-      await commitFiles('Photos du ' + date + ' : modifications', [...removals.map(path => ({path, remove:true})), {path:P('photos.json'), text:toText(map)}]);
+      await commitFiles('Photos du ' + date + ' : modifications', [...removals.map(path => ({path, remove:true})), {path:P('photos.json'), text:toText(map)}, feedFile(map, NOTES)]);
       say('editStatus', '✓ Modifications publiées. Visibles dans ~1 min.');
       refreshExisting();
     }catch(err){ say('editStatus', 'Erreur : ' + err.message); }
@@ -1705,7 +1936,7 @@ function initAdmin(){
         if(map[date] === text){ say('noteStatus', 'Ce compte rendu est déjà publié.'); return; }
         map[date] = text;
       }
-      await commitFiles('Compte rendu du ' + date, [{path:P('notes.json'), text:toText(map)}]);
+      await commitFiles('Compte rendu du ' + date, [{path:P('notes.json'), text:toText(map)}, feedFile(SITE_PHOTOS, map)]);
       NOTES = map;
       say('noteStatus', text ? '✓ Compte rendu publié. En ligne dans ~1 min — attendez avant de partager le lien.' : '✓ Compte rendu supprimé. Il disparaît du site dans ~1 min.');
       $('shareNote').hidden = !text;
@@ -2078,6 +2309,26 @@ function initAdmin(){
   $('photoDate').addEventListener('change', () => { noteDirty = planDirty = false; fillNote(); fillPlan(); refreshExisting(); });
   $('ghToken').addEventListener('change', () => { fillNote(); fillPlan(); fillFullPlan(); fillSettings(); refreshExisting(); });
   fillNote(); fillPlan(); fillFullPlan(); fillSettings(); refreshExisting();
+  window.__commit = commitFiles;
+  /* Flux RSS (admin) */
+  $('rssUrl').textContent = 'Adresse du flux : ' + new URL(DIR + 'feed.xml', location.href).href;
+  $('rssBtn').addEventListener('click', async () => { say('rssStatus', 'Création…'); try{ await commitFiles('Flux RSS', [feedFile(SITE_PHOTOS, NOTES)]); say('rssStatus', '✓ Flux mis à jour (en ligne dans ~1 min).'); }catch(err){ say('rssStatus', 'Erreur : ' + err.message); } });
+  /* Assistant de planning (IA) */
+  function aiPrompt(){
+    const dates = allDays.map(d => d.iso), dest = cfg.destinationLabel || cfg.title || 'à préciser', types = Object.entries(TYPES).map(([k, t]) => k + (t.label ? ' (' + t.label + ')' : '')).join(', ');
+    return 'Tu es un expert en organisation de voyages. Prépare l’itinéraire détaillé du voyage suivant.\nDestination : ' + dest + '\nDates : du ' + dates[0] + ' au ' + dates[dates.length - 1] + ' (' + dates.length + ' jours)\nVoyageurs : ' + ($('aiWho').value.trim() || 'à préciser') + '\nEnvies et contraintes : ' + ($('aiWish').value.trim() || 'aucune') + '\n\n' +
+      'Réponds UNIQUEMENT avec un tableau JSON valide (aucun texte autour, pas de Markdown), en français, exactement dans ce format :\n[{"etape":"Étape 1 — Nom du lieu","icon":"🏙️","meta":"dates · hébergement suggéré","weather":"~20°C / 12°C","transit":"transport pour y arriver (facultatif)","days":[{"iso":"AAAA-MM-JJ","title":"Titre du jour","items":[{"time":"Matin","type":"culture","region":"Ville","text":"Activité","info":"Une ou deux phrases.","booked":false}]}]}]\n\n' +
+      'Règles : un objet « days » pour chacune de ces dates, dans l’ordre, sans en oublier ni en ajouter : ' + dates.join(', ') + '. Regroupe les jours consécutifs d’un même lieu en une étape. Le champ « type » doit valoir exactement l’une de ces valeurs : ' + types + '. Chaque jour compte 3 à 6 activités avec une heure (ex. 9h, Matin, Midi, Soir). Mets "booked":false pour ce qui demande une réservation, sinon omets ce champ. Ne mets ni coordonnées ni prix.';
+  }
+  $('aiCopy').addEventListener('click', async () => { const t = aiPrompt(), box = $('aiPrompt'); box.value = t; box.hidden = false; try{ await navigator.clipboard.writeText(t); say('aiStatus', '✓ Demande copiée : collez-la dans votre assistant IA.'); }catch(e){ box.select(); say('aiStatus', 'Copiez le texte ci-dessus (copie automatique indisponible).'); } });
+  $('aiImport').addEventListener('click', () => {
+    const txt = $('aiReply').value.trim(), a = txt.indexOf('['), b = txt.lastIndexOf(']'); if(a < 0 || b < a){ say('aiStatus', 'Aucun tableau JSON trouvé dans la réponse.'); return; }
+    let plan; try{ plan = JSON.parse(txt.slice(a, b + 1)); }catch(e){ say('aiStatus', 'JSON invalide (' + e.message + '). Demandez à l’IA de corriger le format.'); return; }
+    const bad = validatePlan(plan); if(bad){ say('aiStatus', 'Refusé : ' + bad); return; }
+    const mine = new Set(allDays.map(d => d.iso)), got = plan.flatMap(e => e.days.map(d => d.iso)), diff = got.filter(i => !mine.has(i)).length + [...mine].filter(i => !got.includes(i)).length;
+    $('fullPlanText').value = formatPlan(plan); buildStageForm(); $('stagesBox').open = true;
+    say('aiStatus', '✓ Plan valide : ' + plan.length + ' étape(s), ' + got.length + ' jour(s)' + (diff ? ' (⚠️ ' + diff + ' date(s) diffèrent de votre voyage actuel)' : '') + '. Vérifiez-le dans « Étapes et jours du voyage », puis cliquez sur « Enregistrer les étapes ». Il remplacera le planning actuel : pensez à la sauvegarde.');
+  });
   /* Alerte de taille du dépôt (GitHub recommande de rester sous 1 Go) */
   const REPO_WARN_MB = 700, REPO_LIMIT_MB = 1000;
   function showSize(kb){
@@ -2100,6 +2351,7 @@ function initAdmin(){
   const openNewTrip = () => { const b = $('newTripBox'); b.open = true; b.scrollIntoView({behavior:'smooth', block:'start'}); };
   $('goNewTrip').addEventListener('click', e => { e.preventDefault(); openNewTrip(); });
   window.openNewTrip = openNewTrip; if(!trips.length) $('newTripBox').open = true;
+  fetch('guide.pdf', {method:'HEAD', cache:'no-store'}).then(r => { if(!r.ok) throw 0; }).catch(() => { $('guideNote').textContent = 'Le fichier guide.pdf n’est pas encore dans votre dépôt : ajoutez-le à la racine (il est fourni dans l’archive modèle), puis rechargez.'; });
   /* Sauvegarde du voyage */
   $('backupBtn').addEventListener('click', async () => {
     say('backupStatus', 'Préparation…');
@@ -2129,5 +2381,6 @@ showQuick();
 })();
 </script>
 <div id="book" aria-hidden="true"></div>
+<div id="poster" aria-hidden="true"></div>
 </body>
 </html>
