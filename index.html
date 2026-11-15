@@ -159,6 +159,11 @@ main.filtering .timeline.collapsed{display:block}
 .admin-panel textarea{resize:vertical}
 .admin-panel textarea.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.8rem}
 .admin-panel details{border-top:1px solid var(--line);padding-top:8px}
+.adm-sec{border:1px solid var(--line);border-radius:12px;padding:12px 16px 14px;margin:20px 0 0;background:var(--paper)}
+.adm-sec>details:first-of-type{border-top:0;padding-top:0}
+.adm-h{margin:0 0 6px;font-family:var(--font-head);font-size:1.1rem}
+.adm-new{border:2px solid var(--primary);background:var(--paper2)}
+.adm-edit{border-left:6px solid var(--warm)}
 .admin-panel summary{cursor:pointer;font-family:var(--font-head);font-weight:700;padding:6px 0}
 .admin-panel details>*{margin-top:8px}
 .admin-panel .btn{align-self:flex-start}
@@ -207,6 +212,7 @@ body.quick-mode > :not(#quickPanel):not(script):not(dialog){display:none !import
 .tools{margin:14px 0;border:1px solid var(--line);border-radius:var(--r,10px);background:var(--card);padding:8px 14px;max-width:620px}.tools summary{cursor:pointer;font-weight:700}.tools h3{font-size:1rem;margin:10px 0 4px}.tools ul{margin:4px 0;padding-left:18px}.tools a{color:var(--primary-ink)}
 .search{width:100%;box-sizing:border-box;padding:8px 14px;border:1px solid var(--line);border-radius:var(--rb,20px);background:var(--card);color:var(--ink);font:inherit;margin-bottom:8px}
 .osm-pin.small{width:10px;height:10px;background:var(--warm);margin:3px 0 0 3px}
+.warn{border:1px solid var(--warm);border-left-width:5px;border-radius:var(--r,10px);padding:10px 12px;background:var(--card)}
 .etape-head{border-bottom:var(--hr,1px solid var(--line))}
 h1,h2,h3,h4{text-transform:var(--hcase,none);letter-spacing:var(--hspace,0);font-weight:var(--hweight,700)}
 .item,.today-card,.empty,.day-note{border-radius:var(--r,10px);box-shadow:var(--shadow,none)}
@@ -294,8 +300,9 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
   <p><a href="#quick">⚡ Publier vite (écran simplifié pour téléphone)</a> · <a href="#newTrip" id="goNewTrip">➕ Nouveau voyage</a></p>
   <div id="onboard" class="tools" hidden><strong>Pour démarrer</strong><ol id="onboardList"></ol></div>
 
+  <div class="adm-sec">
   <details id="ghBox" open>
-    <summary>Connexion GitHub</summary>
+    <summary>🔌 Connexion GitHub</summary>
     <p class="meta">Le token (fine-grained, « Contents : Read and write » sur ce seul dépôt) reste uniquement dans ce navigateur.</p>
     <label for="ghOwner">Compte GitHub (propriétaire du dépôt)</label>
     <input id="ghOwner" autocomplete="off" autocapitalize="none" spellcheck="false">
@@ -311,10 +318,15 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
       <button class="btn" id="ghForget" type="button">Oublier ce token</button>
     </div>
     <div id="ghStatus" class="meta" role="status"></div>
+    <div id="ghSize" class="meta"></div>
   </details>
+  </div>
 
+  <div class="adm-sec adm-new" id="secNew">
+    <h4 class="adm-h">➕ Créer un nouveau voyage</h4>
+    <p class="meta">Le nouveau voyage s’ajoute au menu « Tous les voyages ». Vos voyages existants ne sont pas modifiés.</p>
   <details id="newTripBox">
-    <summary>➕ Nouveau voyage</summary>
+    <summary>Ouvrir le formulaire de création</summary>
     <p class="meta">Crée un dossier de voyage dans ce dépôt. Les voyages existants restent consultables dans le menu « Voyage » en haut de page.</p>
     <label for="ntTitle">Titre</label><input id="ntTitle" placeholder="Italie 2027">
     <label for="ntDest">Destination (pour l'horloge)</label><input id="ntDest" placeholder="Italie">
@@ -328,8 +340,12 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
     <button class="btn" id="createTrip" type="button">Créer le voyage</button>
     <div id="ntStatus" class="meta" role="status"></div>
   </details>
+  </div>
+  <div id="sizeBar" class="meta warn" role="alert" hidden></div>
   <div id="queueBar" class="meta" role="status" hidden></div>
-  <div id="tripAdmin" hidden>
+  <div id="tripAdmin" class="adm-sec adm-edit" hidden>
+    <h4 class="adm-h" id="editHead">✏️ Modifier le voyage affiché</h4>
+    <p class="meta">Tout ce qui suit s’applique à ce voyage seulement.</p>
     <label for="photoDate">Date du jour concerné</label>
     <input type="date" id="photoDate">
 
@@ -429,6 +445,8 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
     </details>
   </div>
 
+  <div class="adm-sec">
+    <h4 class="adm-h">🧰 Outils des voyages</h4>
   <details id="backupBox">
     <summary>Sauvegarde du voyage</summary>
     <p class="meta">Télécharge un fichier avec le planning, les comptes rendus, les réglages et la liste des photos (avec leurs adresses). Les photos elles-mêmes restent hébergées sur GitHub.</p>
@@ -440,6 +458,7 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
     <div id="tripsMgrList"></div>
     <div id="tripsMgrStatus" class="meta" role="status"></div>
   </details>
+  </div>
   <datalist id="tzList"></datalist>
 </section>
 
@@ -540,7 +559,7 @@ const PATTERNS = {
 const PRESET_ICON = {japan:'⛩️', mediterranee:'⛱️', nature:'🌲', ville:'🏙️', tropical:'🌴', nordique:'❄️', desert:'🐪', montagne:'⛰️', amerique:'🚗', famille:'🎈'};
 const MAX_PHOTOS = 20;   /* photos par envoi (le total par jour n'est pas limité) */
 
-const APP_VERSION = '2026.11.13-6';
+const APP_VERSION = '2026.11.15-8';
 /* ---------- Langue de l'interface publique (fr / en / nl) ---------- */
 const UI_DICT = {
   en:{'Voyage':'Trip','Carnet de voyage':'Travel journal','Partager le lien ↗':'Share link ↗','Réinitialiser les filtres':'Reset filters',
@@ -904,7 +923,7 @@ async function openTrips(){
   const dlg = $('tripsDialog'), box = $('tripsGrid'), fmt = iso => iso ? new Date(iso + 'T12:00:00Z').toLocaleDateString(LOC, {day:'numeric', month:'short', year:'numeric', timeZone:'UTC'}) : '';
   box.replaceChildren(el('p', {class:'meta', text:'…'})); if(!dlg.open) dlg.showModal();
   box.replaceChildren(...await Promise.all(trips.map(async t => {
-    let cov = '', ic = ''; try{ const r = await fetch((t.dir || '') + 'trip.json', {cache:'no-store'}); if(r.ok){ const c = await r.json(); ic = (typeof c.icon === 'string' && c.icon) || PRESET_ICON[c.preset] || ''; if(typeof c.cover === 'string' && !c.cover.includes('..') && /^[\w\-\/.]+$/.test(c.cover)) cov = (t.dir || '') + c.cover; } }catch(e){}
+    let cov = '', ic = ''; const tdir = dirOf(t); try{ const r = await fetch(tdir + 'trip.json', {cache:'no-store'}); if(r.ok){ const c = await r.json(); ic = (typeof c.icon === 'string' && c.icon) || PRESET_ICON[c.preset] || ''; if(typeof c.cover === 'string' && !c.cover.includes('..') && /^[\w\-\/.]+$/.test(c.cover)) cov = tdir + c.cover; } }catch(e){}
     return el('a', {class:'trip-card', href:'?trip=' + encodeURIComponent(t.slug)}, cov ? el('img', {src:cov, alt:'', loading:'lazy'}) : el('div', {class:'trip-card-ph', text:ic || '🧳'}),
       el('div', {class:'tc-body'}, el('strong', {text:t.title || t.slug}), el('span', {class:'meta', text:[t.destination, [fmt(t.start), fmt(t.end)].filter(Boolean).join(' → ')].filter(Boolean).join(' · ')})));
   })).then(cards => { let cfgd = false; try{ const g = JSON.parse(localStorage.getItem('ghCfg') || '{}'); cfgd = !!(g.owner && g.repo); }catch(e){}
@@ -1458,7 +1477,7 @@ function initAdmin(){
         throw e;
       }
       const warn = info.permissions && info.permissions.push === false ? ' — ⚠️ ce token n’a pas le droit d’écrire dans ce dépôt' : '';
-      say('ghStatus', '✓ Connecté à ' + info.full_name + ' (branche ' + g.branch + ')' + warn);
+      say('ghStatus', '✓ Connecté à ' + info.full_name + ' (branche ' + g.branch + ')' + warn); showSize(info.size);
       $('ghBox').open = false;
     }catch(err){
       say('ghStatus', err.status === 401 ? 'Token refusé (401) : vérifiez-le ou régénérez-en un.' : err.status === 404 ? 'Dépôt introuvable (404) : vérifiez le compte et le nom du dépôt, et que le token y a accès.' : 'Erreur : ' + err.message);
@@ -1522,7 +1541,7 @@ function initAdmin(){
   $('adminTripLabel').textContent = planOk ? 'Voyage modifié : ' + (cfg.title || CUR.slug) + (DIR ? ' (dossier ' + DIR + ')' : ' (racine du dépôt)') : 'Aucun voyage pour l’instant : connectez GitHub puis créez-en un.';
   $('newTripBox').open = !planOk;
   if(!planOk) return;
-  $('tripAdmin').hidden = false;
+  $('tripAdmin').hidden = false; $('editHead').textContent = '✏️ Modifier le voyage « ' + (cfg.title || CUR.slug) + ' »';
   $('photoDate').value = defaultDate();
 
   /* --- Photos : nouvelles --- */
@@ -1729,7 +1748,7 @@ function initAdmin(){
           if(!t.dir && t.slug === 'principal'){ say(st, 'Le voyage à la racine du dépôt ne se supprime pas ici (supprimez ses fichiers sur GitHub si besoin).'); return; }
           if(!confirm('Supprimer définitivement « ' + (t.title || t.slug) + ' » avec ses photos et comptes rendus ?')) return;
           try{
-            const dir = (t.dir || ('trips/' + t.slug)).replace(/\/?$/, '/'), br = ghFields().branch;
+            const dir = dirOf(t).replace(/\/?$/, '/'), br = ghFields().branch;
             const tree = (await gh('git/trees/' + encodeURIComponent(br) + '?recursive=1')).tree;
             const i = await load(); i.trips = i.trips.filter(y => y.slug !== t.slug);
             await save('Suppression : ' + (t.title || t.slug), i, tree.filter(f => f.type === 'blob' && f.path.startsWith(dir)).map(f => ({path:f.path, remove:true})));
@@ -2059,6 +2078,20 @@ function initAdmin(){
   $('photoDate').addEventListener('change', () => { noteDirty = planDirty = false; fillNote(); fillPlan(); refreshExisting(); });
   $('ghToken').addEventListener('change', () => { fillNote(); fillPlan(); fillFullPlan(); fillSettings(); refreshExisting(); });
   fillNote(); fillPlan(); fillFullPlan(); fillSettings(); refreshExisting();
+  /* Alerte de taille du dépôt (GitHub recommande de rester sous 1 Go) */
+  const REPO_WARN_MB = 700, REPO_LIMIT_MB = 1000;
+  function showSize(kb){
+    if(typeof kb !== 'number') return;
+    const mb = Math.round(kb / 1024), bar = $('sizeBar'), pct = Math.round(mb / REPO_LIMIT_MB * 100);
+    $('ghSize').textContent = 'Taille du dépôt : environ ' + mb + ' Mo sur 1 000 Mo recommandés (' + pct + ' %). Alerte à ' + REPO_WARN_MB + ' Mo.';
+    if(mb >= REPO_WARN_MB){
+      bar.textContent = (mb >= 900 ? '🚨 ' : '⚠️ ') + 'Votre dépôt GitHub fait environ ' + mb + ' Mo : GitHub recommande de rester sous 1 Go (' + pct + ' % atteint). ' + (mb >= 900 ? 'La limite est très proche : ' : '') + 'Pensez à créer un nouveau carnet (nouveau dépôt, à partir de l’archive modèle) pour les prochains voyages, voir la section « Les limites de GitHub gratuit » du guide.';
+      bar.hidden = false;
+    }else bar.hidden = true;
+  }
+  async function checkRepoSize(){ const g = ghFields(); if(!g.owner || !g.repo || !g.token) return; try{ const info = await gh(''); showSize(info.size); }catch(e){} }
+  checkRepoSize();
+  { const g0 = ghFields(); $('ghBox').open = !(g0.owner && g0.repo && g0.token); }
   /* Icône du voyage, enregistrement des infos pratiques, accès rapide à « Nouveau voyage » */
   const ICONS = ['🧳', '✈️', '🏝️', '🏔️', '🗼', '🚗', '🚆', '⛵', '🏕️', '🎡', '🍷', '🏛️'];
   [['setIcon', 'setIconPicks'], ['ntIcon', 'ntIconPicks']].forEach(([inp, box]) => $(box).replaceChildren(...ICONS.map(i => el('button', {class:'btn', type:'button', text:i, 'aria-label':'Icône ' + i, onclick:() => { $(inp).value = i; }}))));
