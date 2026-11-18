@@ -213,6 +213,7 @@ body.quick-mode > :not(#quickPanel):not(script):not(dialog){display:none !import
 .tools{margin:14px 0;border:1px solid var(--line);border-radius:var(--r,10px);background:var(--card);padding:8px 14px;max-width:620px}.tools summary{cursor:pointer;font-weight:700}.tools h3{font-size:1rem;margin:10px 0 4px}.tools ul{margin:4px 0;padding-left:18px}.tools a{color:var(--primary-ink)}
 .search{width:100%;box-sizing:border-box;padding:8px 14px;border:1px solid var(--line);border-radius:var(--rb,20px);background:var(--card);color:var(--ink);font:inherit;margin-bottom:8px}
 .osm-pin.small{width:10px;height:10px;background:var(--warm);margin:3px 0 0 3px}
+.demo-banner{max-width:620px;margin:0 auto 16px;border:2px dashed var(--warm);border-radius:var(--r,10px);padding:12px 16px;background:var(--card)}
 .warn{border:1px solid var(--warm);border-left-width:5px;border-radius:var(--r,10px);padding:10px 12px;background:var(--card)}
 .mem-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;max-width:760px;margin:12px auto}
 .mem-grid .btn{padding:22px 10px;font-size:1rem;text-align:center;line-height:1.3}
@@ -328,6 +329,12 @@ footer{max-width:900px;margin:0 auto;padding:0 24px 50px;color:var(--ink-soft);f
     <p class="meta">Le guide pas à pas explique toutes les fonctions, de l'installation à la sauvegarde.</p>
     <a class="btn" id="guideLink" href="guide.pdf" target="_blank" rel="noopener">Ouvrir le guide (PDF)</a>
     <p class="meta" id="guideNote"></p>
+    <button class="btn" id="diagBtn" type="button">📋 Copier le diagnostic</button> <span class="meta" id="diagStatus" role="status"></span>
+    <details><summary>À propos, licence et crédits</summary>
+      <p>Carnet de voyage, licence MIT (voir le fichier <code>LICENSE</code>). Vous pouvez l'utiliser, le copier et le modifier librement, en conservant la mention de licence.</p>
+      <p>Merci à : <strong>OpenStreetMap</strong> (carte et données, © contributeurs OpenStreetMap, licence ODbL), <strong>Leaflet</strong> (affichage de la carte), <strong>Nominatim</strong> (recherche de lieux), <strong>Open-Meteo</strong> (prévisions météo, licence CC BY 4.0) et <strong>Google Fonts</strong> (polices sous licence libre).</p>
+      <p>Visibilité : le carnet demande aux moteurs de recherche de ne pas l'indexer. Il reste accessible à toute personne qui possède l'adresse.</p>
+    </details>
     <details><summary>Questions fréquentes</summary>
       <p><strong>Je n'arrive pas à publier.</strong> Ouvrez « Connexion GitHub » et cliquez sur « Enregistrer et tester ». Une erreur 401 signifie un token faux ou expiré ; vérifiez aussi que le token a le droit « Contents : Read and write » sur le bon dépôt.</p>
       <p><strong>Le site n'affiche pas mes changements.</strong> Attendez 1 à 2 minutes, puis rechargez la page (sur téléphone, fermez et rouvrez l'onglet).</p>
@@ -620,7 +627,10 @@ const PATTERNS = {
 const PRESET_ICON = {japan:'⛩️', mediterranee:'⛱️', nature:'🌲', ville:'🏙️', tropical:'🌴', nordique:'❄️', desert:'🐪', montagne:'⛰️', amerique:'🚗', famille:'🎈'};
 const MAX_PHOTOS = 20;   /* photos par envoi (le total par jour n'est pas limité) */
 
-const APP_VERSION = '2026.11.15-11';
+const APP_VERSION = '2026.11.16-14';
+const ERR_LOG = [];
+window.addEventListener('error', e => { ERR_LOG.push((e.message || 'erreur') + ' (' + String(e.filename || '').split('/').pop() + ':' + e.lineno + ')'); if(ERR_LOG.length > 10) ERR_LOG.shift(); });
+window.addEventListener('unhandledrejection', e => { ERR_LOG.push('promesse rejetée : ' + String((e.reason && e.reason.message) || e.reason).slice(0, 160)); if(ERR_LOG.length > 10) ERR_LOG.shift(); });
 /* ---------- Langue de l'interface publique (fr / en / nl) ---------- */
 const UI_DICT = {
   en:{'Voyage':'Trip','Carnet de voyage':'Travel journal','Partager le lien ↗':'Share link ↗','Réinitialiser les filtres':'Reset filters',
@@ -899,6 +909,23 @@ if(CUR){
 cfg = Object.assign({preset:'ville'}, TRIP_RAW);
 if(!PRESETS[cfg.preset]) cfg.preset = 'ville';
 const planOk = Array.isArray(DATA) && DATA.length > 0 && DATA.every(e => e && Array.isArray(e.days) && e.days.length);
+/* Carnet vide : voyage de démonstration (jamais enregistré, l'Admin le considère comme absent) */
+let DEMO = false;
+if(!planOk && !CUR){
+  DEMO = true;
+  const dIso = n => new Date(Date.now() + n * 864e5).toISOString().slice(0, 10), it = (time, type, region, text, info, extra) => Object.assign({time, type, region, text, info}, extra || {});
+  DATA = [
+    {etape:'Étape 1 — Lisbonne', icon:'🚋', meta:'3 jours · hôtel dans l’Alfama', weather:'~22°C / 14°C', lat:38.7223, lon:-9.1393, days:[
+      {iso:dIso(-1), title:'Arrivée et Alfama', items:[it('Après-midi', 'transport', 'Lisbonne', 'Arrivée à l’aéroport et métro jusqu’à l’hôtel', 'Environ 25 minutes depuis l’aéroport.'), it('Soir', 'gastronomie', 'Alfama', 'Dîner avec fado', 'Une soirée de musique traditionnelle dans une petite taverne.', {booked:true})]},
+      {iso:dIso(0), title:'Belém et pastéis', items:[it('9h', 'culture', 'Belém', 'Monastère des Hiéronymites', 'Chef-d’œuvre de l’architecture manuéline, classé à l’UNESCO.'), it('Midi', 'gastronomie', 'Belém', 'Pastéis de Belém', 'La pâtisserie historique, à goûter encore tièdes.'), it('15h', 'culture', 'Belém', 'Tour de Belém', 'Réservez un créneau à l’avance en haute saison.', {booked:false})]},
+      {iso:dIso(1), title:'Tram 28 et miradors', items:[it('Matin', 'balade', 'Lisbonne', 'Tram 28 jusqu’à Graça', 'Partez tôt pour éviter la foule.'), it('Soir', 'detente', 'Lisbonne', 'Coucher de soleil au mirador de Santa Luzia', 'Vue sur les toits et le Tage.')]}]},
+    {etape:'Étape 2 — Sintra et côte', icon:'🏰', meta:'2 jours · maison d’hôtes à Cascais', weather:'~20°C / 13°C', transit:'→ Train, ~40 min', lat:38.7979, lon:-9.3813, days:[
+      {iso:dIso(2), title:'Palais de Sintra', items:[it('9h', 'culture', 'Sintra', 'Palais national de Pena', 'Des couleurs vives sur une colline boisée.', {booked:false}), it('Midi', 'gastronomie', 'Sintra', 'Déjeuner au centre historique', 'Essayez les queijadas, petites tartelettes au fromage.')]},
+      {iso:dIso(3), title:'Cabo da Roca et plage', items:[it('Matin', 'balade', 'Cabo da Roca', 'Point le plus à l’ouest de l’Europe continentale', 'Falaises et vent garantis.'), it('Après-midi', 'plage', 'Cascais', 'Baignade à la plage de Carcavelos', 'Plage de sable, idéale en famille.')]}]}
+  ];
+  TRIP_RAW = {preset:'mediterranee', title:'Voyage de démonstration', destinationLabel:'Portugal', timezone:'Europe/Lisbon', icon:'🛫', lead:'Ceci est un exemple pour découvrir le carnet : itinéraire, filtres, carte, météo et récapitulatif.', map:{mode:'auto'}};
+  cfg = Object.assign({preset:'mediterranee'}, TRIP_RAW);
+}
 
 /* ---------- Affichage du voyage ---------- */
 function resolveTypes(){
@@ -1456,6 +1483,7 @@ function applyFilters(){
 
 /* ---------- Photos et comptes rendus ---------- */
 function renderExtras(){
+  if(window.__fillCover) window.__fillCover();
   renderTools();
   const tally = DATA.map(() => ({p:0, n:0}));
   allDays.forEach(day => {
@@ -1495,8 +1523,9 @@ function goToHash(){
   d.classList.add('flash'); setTimeout(() => d.classList.remove('flash'), 2500);
 }
 
-if(planOk){
+if(planOk || DEMO){
   renderTrip();
+  if(DEMO) $('main').before(el('div', {class:'empty demo-banner'}, '🧪 ', el('strong', {text:'Voyage de démonstration.'}), ' Votre carnet est encore vide : ajoutez ', el('a', {href:'#admin', text:'#admin à l’adresse'}), ', connectez GitHub, puis créez votre premier voyage. Cet exemple disparaîtra alors.'));
   ;[SITE_PHOTOS, NOTES] = await Promise.all([fetchJson(DIR + 'photos.json', {}), fetchJson(DIR + 'notes.json', {})]);
   renderExtras();
   goToHash();
@@ -1507,7 +1536,7 @@ if(planOk){
     : el('p', {}, 'Aucun voyage pour l’instant. Ouvrez l’administration (', el('a', {href:'#admin', text:'ajoutez #admin à l’adresse'}), '), connectez GitHub puis créez votre premier voyage.');
   $('main').append(el('div', {class:'empty'}, msg));
 }
-window.addEventListener('hashchange', () => { goToHash(); if(location.hash === '#admin') initAdmin(); showQuick(); });
+window.addEventListener('hashchange', () => { goToHash(); if(location.hash === '#admin'){ initAdmin(); $('adminPanel').hidden = false; } showQuick(); });
 /* ---------- Publier vite (#quick) : réutilise les formulaires de l'Admin ---------- */
 let quickReady = false;
 function showQuick(){
@@ -1625,6 +1654,7 @@ function initAdmin(){
     const tree = await withRetry(() => gh('git/trees', {method:'POST', body:{base_tree:base, tree:entries}}));
     const commit = await withRetry(() => gh('git/commits', {method:'POST', body:{message, tree:tree.sha, parents:[head]}}));
     await withRetry(() => gh('git/refs/heads/' + branch, {method:'PATCH', body:{sha:commit.sha}}));
+    coverFromRepo();
   }
   /* Envois mis en attente quand le réseau manque (IndexedDB), republiés au retour de la connexion */
   const QDB = () => new Promise((ok, ko) => { const r = indexedDB.open('carnetQueue', 1); r.onupgradeneeded = () => r.result.createObjectStore('q', {autoIncrement:true}); r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
@@ -1768,6 +1798,54 @@ function initAdmin(){
     }catch(err){ say(st, 'Erreur : ' + err.message + ' — rien n’a été créé, vous pouvez réessayer.'); }
   });
 
+  /* --- Fonctions communes : actives même avant le premier voyage --- */
+  /* Alerte de taille du dépôt (GitHub recommande de rester sous 1 Go) */
+  const REPO_WARN_MB = 700, REPO_LIMIT_MB = 1000;
+  function showSize(kb){
+    if(typeof kb !== 'number') return;
+    const mb = Math.round(kb / 1024), bar = $('sizeBar'), pct = Math.round(mb / REPO_LIMIT_MB * 100);
+    $('ghSize').textContent = 'Taille du dépôt : environ ' + mb + ' Mo sur 1 000 Mo recommandés (' + pct + ' %). Alerte à ' + REPO_WARN_MB + ' Mo.';
+    if(mb >= REPO_WARN_MB){
+      bar.textContent = (mb >= 900 ? '🚨 ' : '⚠️ ') + 'Votre dépôt GitHub fait environ ' + mb + ' Mo : GitHub recommande de rester sous 1 Go (' + pct + ' % atteint). ' + (mb >= 900 ? 'La limite est très proche : ' : '') + 'Pensez à créer un nouveau carnet (nouveau dépôt, à partir de l’archive modèle) pour les prochains voyages, voir la section « Les limites de GitHub gratuit » du guide.';
+      bar.hidden = false;
+    }else bar.hidden = true;
+  }
+  async function checkRepoSize(){ const g = ghFields(); if(!g.owner || !g.repo || !g.token) return; try{ const info = await gh(''); showSize(info.size); }catch(e){} }
+  checkRepoSize();
+  { const g0 = ghFields(); $('ghBox').open = !(g0.owner && g0.repo && g0.token); }
+  /* Icône du voyage, enregistrement des infos pratiques, accès rapide à « Nouveau voyage » */
+  const ICONS = ['🧳', '✈️', '🏝️', '🏔️', '🗼', '🚗', '🚆', '⛵', '🏕️', '🎡', '🍷', '🏛️'];
+  [['setIcon', 'setIconPicks'], ['ntIcon', 'ntIconPicks']].forEach(([inp, box]) => $(box).replaceChildren(...ICONS.map(i => el('button', {class:'btn', type:'button', text:i, 'aria-label':'Icône ' + i, onclick:() => { $(inp).value = i; }}))));
+  $('saveInfo').addEventListener('click', () => $('saveSettings').click());
+  new MutationObserver(() => { $('infoStatus').textContent = $('settingsStatus').textContent; }).observe($('settingsStatus'), {childList:true, characterData:true, subtree:true});
+  const openNewTrip = () => { const b = $('newTripBox'); b.open = true; b.scrollIntoView({behavior:'smooth', block:'start'}); };
+  $('goNewTrip').addEventListener('click', e => { e.preventDefault(); openNewTrip(); });
+  window.openNewTrip = openNewTrip; if(!trips.length) $('newTripBox').open = true;
+  fetch('guide.pdf', {method:'HEAD', cache:'no-store'}).then(r => { if(!r.ok) throw 0; }).catch(() => { $('guideNote').textContent = 'Le fichier guide.pdf n’est pas encore dans votre dépôt : ajoutez-le à la racine (il est fourni dans l’archive modèle), puis rechargez.'; });
+  /* Diagnostic à envoyer en cas de problème (sans aucune donnée secrète) */
+  $('diagBtn').addEventListener('click', async () => {
+    const g = ghFields(), q = await qList().catch(() => []), st = id => (($(id) || {}).textContent || '').trim().slice(0, 120);
+    const lines = ['Carnet de voyage : diagnostic', 'Version : ' + APP_VERSION, 'Date : ' + new Date().toISOString(), 'Navigateur : ' + navigator.userAgent, 'Langue : ' + navigator.language + ' · interface : ' + LANG,
+      'Écran : ' + innerWidth + '×' + innerHeight + (matchMedia('(display-mode: standalone)').matches ? ' · application installée' : ''), 'En ligne : ' + (navigator.onLine ? 'oui' : 'non'),
+      'Adresse : ' + location.origin + location.pathname, 'Voyages : ' + trips.length + (CUR ? ' · affiché : ' + CUR.slug + ' (' + (cfg.preset || '') + ')' : ' · aucun voyage affiché') + (DEMO ? ' · démonstration' : ''),
+      'GitHub : ' + (g.owner && g.repo ? g.owner + '/' + g.repo + '@' + (g.branch || 'main') : 'non configuré') + ' · token : ' + (g.token ? 'présent' : 'absent'), 'Taille du dépôt : ' + (st('ghSize').replace(/^Taille du dépôt : /, '') || 'inconnue'),
+      'Envois en attente : ' + q.length, 'Fonctions : chiffrement ' + (window.crypto && crypto.subtle ? 'oui' : 'non') + ' · hors ligne ' + ('serviceWorker' in navigator ? 'oui' : 'non') + ' · stockage ' + (window.indexedDB ? 'oui' : 'non') + ' · carte ' + (window.L ? 'chargée' : 'non chargée'),
+      'Derniers messages : GitHub « ' + st('ghStatus') + ' » · photos « ' + st('adminStatus') + ' » · compte rendu « ' + st('noteStatus') + ' »', 'Erreurs récentes : ' + (ERR_LOG.length ? '\n  - ' + ERR_LOG.join('\n  - ') : 'aucune')];
+    const txt = lines.join('\n');
+    try{ await navigator.clipboard.writeText(txt); say('diagStatus', '✓ Diagnostic copié : collez-le dans votre message.'); }
+    catch(e){ const ta = el('textarea', {rows:8, readonly:true, style:'width:100%'}); ta.value = txt; $('diagStatus').replaceChildren(el('span', {text:'Copie impossible : sélectionnez le texte ci-dessous.'}), ta); ta.select(); }
+  });
+  /* Guide de démarrage */
+  function renderOnboard(){
+    const f = ghFields(), steps = [
+      [!!(f.owner && f.repo && f.token), 'Connexion GitHub : renseignez compte, dépôt et token, puis « Enregistrer et tester ».'],
+      [trips.length > 0, 'Créez votre premier voyage (section « Nouveau voyage »), puis rechargez la page.'],
+      [!DEMO && allDays.some(d => (d.items || []).length), 'Ajoutez le planning : étapes, jours et activités (Planning du jour ou Planning complet).']];
+    $('onboard').hidden = steps.every(x => x[0]);
+    $('onboardList').replaceChildren(...steps.map(x => el('li', {text:(x[0] ? '✓ ' : '○ ') + x[1]})));
+  }
+  $('adminTripLabel').insertAdjacentElement('afterend', el('p', {class:'meta', id:'appVersion', text:'Carnet de voyage · version ' + APP_VERSION}));
+  renderOnboard(); $('adminPanel').addEventListener('input', renderOnboard); $('adminPanel').addEventListener('click', () => setTimeout(renderOnboard, 1200));
   /* Les sections qui suivent concernent le voyage affiché : absentes tant qu'il n'y en a pas */
   $('adminTripLabel').textContent = planOk ? 'Voyage modifié : ' + (cfg.title || CUR.slug) + (DIR ? ' (dossier ' + DIR + ')' : ' (racine du dépôt)') : 'Aucun voyage pour l’instant : connectez GitHub puis créez-en un.';
   $('newTripBox').open = !planOk;
@@ -2019,9 +2097,18 @@ function initAdmin(){
     ['pat', 'orn', 'r', 'rb'].forEach(k => { if(c.look && c.look[k] !== undefined) TH.look[k] = c.look[k]; });
     syncColors(); $('thHead').value = TH.fonts.head || ''; $('thBody').value = TH.fonts.body || ''; $('thPat').value = TH.look.pat || '';
     $('thCorners').value = [2, 10, 22].includes(TH.look.r) ? String(TH.look.r) : ''; $('thOrn').value = (TH.look.orn || '').trim();
+    LAST_C = c; fillCoverOptions(c);
+  }
+  let LAST_C = {};
+  function fillCoverOptions(c){
     const all = Object.keys(SITE_PHOTOS || {}).sort().flatMap(d => (SITE_PHOTOS[d] || []).map(normPhoto).map(ph => [ph.src, d + ' · ' + (ph.caption || ph.src.split('/').pop())])).slice(0, 300);
     $('setCover').replaceChildren(...opts(all, all.length ? 'Aucune couverture' : 'Aucune couverture (publiez d’abord des photos)')); $('setCover').value = (c.cover && all.some(a => a[0] === c.cover)) ? c.cover : '';
   }
+  /* Les photos arrivent après l'ouverture de l'Admin : on rafraîchit la liste sans perdre le choix en cours */
+  window.__fillCover = () => { const cur = $('setCover').value; fillCoverOptions(Object.assign({}, LAST_C, cur ? {cover:cur} : {})); };
+  /* La liste vient du dépôt (à jour tout de suite), pas du site publié (qui a 1 à 2 minutes de retard) */
+  async function coverFromRepo(){ try{ if(!ghFields().token) return; const ph = await readRepoJson(P('photos.json'), null); if(ph && typeof ph === 'object'){ SITE_PHOTOS = ph; window.__fillCover(); } }catch(e){} }
+  coverFromRepo();
   function themeInto(cur, next){
     const pal = Object.assign({}, cur.palette || {}); Object.values(TH_PAL).forEach(k => { if(TH.palette[k]) pal[k] = TH.palette[k]; else delete pal[k]; });
     if(Object.keys(pal).length) next.palette = pal; else delete next.palette;
@@ -2329,29 +2416,6 @@ function initAdmin(){
     $('fullPlanText').value = formatPlan(plan); buildStageForm(); $('stagesBox').open = true;
     say('aiStatus', '✓ Plan valide : ' + plan.length + ' étape(s), ' + got.length + ' jour(s)' + (diff ? ' (⚠️ ' + diff + ' date(s) diffèrent de votre voyage actuel)' : '') + '. Vérifiez-le dans « Étapes et jours du voyage », puis cliquez sur « Enregistrer les étapes ». Il remplacera le planning actuel : pensez à la sauvegarde.');
   });
-  /* Alerte de taille du dépôt (GitHub recommande de rester sous 1 Go) */
-  const REPO_WARN_MB = 700, REPO_LIMIT_MB = 1000;
-  function showSize(kb){
-    if(typeof kb !== 'number') return;
-    const mb = Math.round(kb / 1024), bar = $('sizeBar'), pct = Math.round(mb / REPO_LIMIT_MB * 100);
-    $('ghSize').textContent = 'Taille du dépôt : environ ' + mb + ' Mo sur 1 000 Mo recommandés (' + pct + ' %). Alerte à ' + REPO_WARN_MB + ' Mo.';
-    if(mb >= REPO_WARN_MB){
-      bar.textContent = (mb >= 900 ? '🚨 ' : '⚠️ ') + 'Votre dépôt GitHub fait environ ' + mb + ' Mo : GitHub recommande de rester sous 1 Go (' + pct + ' % atteint). ' + (mb >= 900 ? 'La limite est très proche : ' : '') + 'Pensez à créer un nouveau carnet (nouveau dépôt, à partir de l’archive modèle) pour les prochains voyages, voir la section « Les limites de GitHub gratuit » du guide.';
-      bar.hidden = false;
-    }else bar.hidden = true;
-  }
-  async function checkRepoSize(){ const g = ghFields(); if(!g.owner || !g.repo || !g.token) return; try{ const info = await gh(''); showSize(info.size); }catch(e){} }
-  checkRepoSize();
-  { const g0 = ghFields(); $('ghBox').open = !(g0.owner && g0.repo && g0.token); }
-  /* Icône du voyage, enregistrement des infos pratiques, accès rapide à « Nouveau voyage » */
-  const ICONS = ['🧳', '✈️', '🏝️', '🏔️', '🗼', '🚗', '🚆', '⛵', '🏕️', '🎡', '🍷', '🏛️'];
-  [['setIcon', 'setIconPicks'], ['ntIcon', 'ntIconPicks']].forEach(([inp, box]) => $(box).replaceChildren(...ICONS.map(i => el('button', {class:'btn', type:'button', text:i, 'aria-label':'Icône ' + i, onclick:() => { $(inp).value = i; }}))));
-  $('saveInfo').addEventListener('click', () => $('saveSettings').click());
-  new MutationObserver(() => { $('infoStatus').textContent = $('settingsStatus').textContent; }).observe($('settingsStatus'), {childList:true, characterData:true, subtree:true});
-  const openNewTrip = () => { const b = $('newTripBox'); b.open = true; b.scrollIntoView({behavior:'smooth', block:'start'}); };
-  $('goNewTrip').addEventListener('click', e => { e.preventDefault(); openNewTrip(); });
-  window.openNewTrip = openNewTrip; if(!trips.length) $('newTripBox').open = true;
-  fetch('guide.pdf', {method:'HEAD', cache:'no-store'}).then(r => { if(!r.ok) throw 0; }).catch(() => { $('guideNote').textContent = 'Le fichier guide.pdf n’est pas encore dans votre dépôt : ajoutez-le à la racine (il est fourni dans l’archive modèle), puis rechargez.'; });
   /* Sauvegarde du voyage */
   $('backupBtn').addEventListener('click', async () => {
     say('backupStatus', 'Préparation…');
@@ -2364,19 +2428,8 @@ function initAdmin(){
       document.body.append(a); a.click(); a.remove(); say('backupStatus', '✓ Sauvegarde téléchargée. Les photos restent hébergées sur GitHub (leurs adresses sont dans le fichier).');
     }catch(err){ say('backupStatus', 'Erreur : ' + err.message); }
   });
-  /* Guide de démarrage */
-  function renderOnboard(){
-    const f = ghFields(), steps = [
-      [!!(f.owner && f.repo && f.token), 'Connexion GitHub : renseignez compte, dépôt et token, puis « Enregistrer et tester ».'],
-      [trips.length > 0, 'Créez votre premier voyage (section « Nouveau voyage »), puis rechargez la page.'],
-      [allDays.some(d => (d.items || []).length), 'Ajoutez le planning : étapes, jours et activités (Planning du jour ou Planning complet).']];
-    $('onboard').hidden = steps.every(x => x[0]);
-    $('onboardList').replaceChildren(...steps.map(x => el('li', {text:(x[0] ? '✓ ' : '○ ') + x[1]})));
-  }
-  $('adminTripLabel').insertAdjacentElement('afterend', el('p', {class:'meta', id:'appVersion', text:'Carnet de voyage · version ' + APP_VERSION}));
-  renderOnboard(); $('adminPanel').addEventListener('input', renderOnboard); $('adminPanel').addEventListener('click', () => setTimeout(renderOnboard, 1200));
 }
-if(location.hash === '#admin') initAdmin();
+if(location.hash === '#admin'){ initAdmin(); $('adminPanel').hidden = false; }
 showQuick();
 })();
 </script>
